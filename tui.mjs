@@ -252,5 +252,5 @@ export function createTUI({ input = process.stdin, output = process.stdout, colo
   const note = (lines) => write(`${lines.map((l) => `${bar}  ${l}`).join('\n')}\n`)
   const outro = (msg) => write(`${bar}\n${c.gray('└')}  ${msg}\n\n`)
 
-  return { c, multiselect, select, text, confirm, spinner, intro, step, warn, note, outro, write }
+  return { c, color, multiselect, select, text, confirm, spinner, intro, step, warn, note, outro, write }
 }
