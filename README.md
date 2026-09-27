@@ -13,6 +13,8 @@ Take a screenshot only for what data cannot answer: images, charts, and
 
 ![How page-as-data helps](docs/diagram/how-it-helps.png)
 
+Full guide: [docs/usage.md](docs/usage.md).
+
 ## What it gives you
 
 | You want to know… | A screenshot | page-as-data |
