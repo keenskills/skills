@@ -1,0 +1,14 @@
+{
+  "name": "page-as-data",
+  "description": "page-as-data: read a web page as data instead of a screenshot, as a skill for Claude Code.",
+  "owner": {
+    "name": "rajaaltus"
+  },
+  "plugins": [
+    {
+      "name": "page-as-data",
+      "source": "./",
+      "description": "Read a web page as data instead of a screenshot: what is on screen, what broke behind it, and layout defects at phone and desktop widths."
+    }
+  ]
+}

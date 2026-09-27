@@ -281,3 +281,28 @@ describe('init and uninstall commands', () => {
     assert.ok(r.actions.every((a) => !('content' in a)))
   })
 })
+
+describe('Claude Code plugin', () => {
+  const repo = new URL('../', import.meta.url)
+  const json = (p) => JSON.parse(readFileSync(new URL(p, repo), 'utf8'))
+
+  it('carries the same skill text as init (run npm run build:skill after editing skill/)', () => {
+    assert.equal(readFileSync(new URL('skills/page-as-data/SKILL.md', repo), 'utf8'), renderSkill())
+  })
+
+  it('has the same version as the npm package', () => {
+    assert.equal(json('.claude-plugin/plugin.json').version, json('package.json').version)
+  })
+
+  it('lists this repo as the one plugin in the marketplace', () => {
+    const m = json('.claude-plugin/marketplace.json')
+    assert.equal(m.name, 'page-as-data')
+    assert.deepEqual(m.plugins.map((p) => [p.name, p.source]), [['page-as-data', './']])
+  })
+
+  it('publishes the skill body with the npm package', () => {
+    const pkg = json('package.json')
+    assert.equal(pkg.name, '@rajaaltus/page-as-data')
+    for (const f of ['install.mjs', 'skill/']) assert.ok(pkg.files.includes(f), f)
+  })
+})
