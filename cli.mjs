@@ -13,7 +13,7 @@
  *   common: [--port 9222 | --launch] [--json] [--timeout 15000]
  */
 import { spawn } from 'node:child_process'
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
 import { isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -616,4 +616,12 @@ async function main() {
   }
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) process.exitCode = await main()
+// npm installs the command as a symlink to this file, so compare real paths.
+const startedAsCli = () => {
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))
+  } catch {
+    return false
+  }
+}
+if (process.argv[1] && startedAsCli()) process.exitCode = await main()

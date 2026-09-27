@@ -1,7 +1,7 @@
 // init / uninstall: planning and writing against temp folders. No Chrome needed.
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { describe, it } from 'node:test'
@@ -286,6 +286,13 @@ describe('init and uninstall commands', () => {
     assert.match(gone.stderr, /No such folder/)
     assert.ok(!existsSync(missing))
     assert.equal(run('init', 'http://localhost:3000', '--dir', tmp()).status, 2)
+  })
+
+  it('runs when started through a symlink, as npm installs the command', () => {
+    const link = join(tmp(), 'page-as-data')
+    symlinkSync(cli, link)
+    const r = spawnSync(process.execPath, [link, '--help'], { encoding: 'utf8' })
+    assert.match(r.stdout, /read a web page as data/)
   })
 
   it('prints the plan as JSON, without file contents', () => {
