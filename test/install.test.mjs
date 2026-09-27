@@ -1,9 +1,12 @@
 // init / uninstall: planning and writing against temp folders. No Chrome needed.
 import assert from 'node:assert/strict'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { describe, it } from 'node:test'
+import { fileURLToPath } from 'node:url'
+import { parseArgs } from '../cli.mjs'
 import { AGENT_IDS, BODY, END, MANAGED, START, applyPlan, planInstall, planUninstall, renderSkill, stripBlock, upsertBlock } from '../install.mjs'
 
 const tmp = () => mkdtempSync(join(tmpdir(), 'page-as-data-install-'))
@@ -227,5 +230,54 @@ describe('planUninstall', () => {
 
   it('finds nothing to remove in a project it never touched', () => {
     assert.deepEqual(unplan(tmp()).actions, [])
+  })
+})
+
+const cli = fileURLToPath(new URL('../cli.mjs', import.meta.url))
+const run = (...args) => spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' })
+
+describe('init and uninstall commands', () => {
+  it('reads the install options', () => {
+    const o = parseArgs(['init', '--agent', 'claude,cursor', '--agent', 'copilot', '--global', '--force', '--dry-run', '--dir', 'x'])
+    assert.deepEqual(o.agents, ['claude', 'cursor', 'copilot'])
+    assert.ok(o.global && o.force && o.dryRun)
+    assert.equal(o.dir, resolve('x'))
+    assert.equal(parseArgs(['init']).dir, process.cwd())
+  })
+
+  it('shows the plan and writes nothing with --dry-run', () => {
+    const root = tmp()
+    const r = run('init', '--dry-run', '--dir', root)
+    assert.equal(r.status, 0, r.stderr)
+    assert.match(r.stdout, /No agent files found/)
+    assert.match(r.stdout, /would create \.claude\/skills\/page-as-data\/SKILL\.md \(Claude Code\)/)
+    assert.deepEqual(readdirSync(root), [])
+  })
+
+  it('installs, reruns as unchanged, then uninstalls', () => {
+    const root = tmp()
+    assert.match(run('init', '--agent', 'cursor', '--dir', root).stdout, /✔ created \.cursor\/rules\/page-as-data\.mdc \(Cursor\)/)
+    assert.match(run('init', '--agent', 'cursor', '--dir', root).stdout, /· unchanged \.cursor\/rules\/page-as-data\.mdc/)
+    assert.match(run('uninstall', '--dir', root).stdout, /✔ removed \.cursor\/rules\/page-as-data\.mdc/)
+    assert.match(run('uninstall', '--dir', root).stdout, /Nothing to remove/)
+  })
+
+  it('exits 2 on an unknown agent, a missing folder or a url, naming the problem', () => {
+    const bad = run('init', '--agent', 'vim', '--dir', tmp())
+    assert.equal(bad.status, 2)
+    assert.match(bad.stderr, /Unknown agent "vim"/)
+    const missing = join(tmp(), 'nope')
+    const gone = run('init', '--dir', missing)
+    assert.equal(gone.status, 2)
+    assert.match(gone.stderr, /No such folder/)
+    assert.ok(!existsSync(missing))
+    assert.equal(run('init', 'http://localhost:3000', '--dir', tmp()).status, 2)
+  })
+
+  it('prints the plan as JSON, without file contents', () => {
+    const r = JSON.parse(run('init', '--json', '--dry-run', '--dir', tmp()).stdout)
+    assert.equal(r.fallback, true)
+    assert.deepEqual(r.actions.map((a) => a.action), ['create', 'create'])
+    assert.ok(r.actions.every((a) => !('content' in a)))
   })
 })

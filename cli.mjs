@@ -7,14 +7,17 @@
  *                            [--press <key>]... [--wait-for <text>]...
  *                            [--inspect <text|selector>]... [--screenshot <file.png>]
  *   page-as-data check <url...> [--widths 390,1440] [--strict]
+ *   page-as-data init      [--agent claude,cursor,...|all] [--global] [--force] [--dry-run] [--dir <path>]
+ *   page-as-data uninstall [--agent ...] [--global] [--dry-run] [--dir <path>]
  *
  *   common: [--port 9222 | --launch] [--json] [--timeout 15000]
  */
 import { spawn } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { homedir, tmpdir } from 'node:os'
+import { isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { applyPlan, planInstall, planUninstall } from './install.mjs'
 
 const IN_PAGE = readFileSync(new URL('./page-as-data.js', import.meta.url), 'utf8')
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -378,6 +381,22 @@ const HELP = `page-as-data — read a web page as data instead of a screenshot
       --widths 390,1440         widths to check (default 390,1440)
       --strict                  exit 1 on warnings too
 
+  page-as-data init [options]
+      Teach the coding agents in this project to use page-as-data instead of
+      screenshots. Writes each agent's own skill or rule file; run it again to
+      update. Without --agent, it installs for the agents the project uses.
+
+      --agent claude,cursor     claude, agents (AGENTS.md), gemini, cursor,
+                                windsurf, cline, copilot, or all
+      --global                  Claude Code skill in ~/.claude, for every project
+      --force                   replace a same-named file it did not write
+      --dry-run                 show what would change; write nothing
+      --dir path                project folder (default: the current folder)
+
+  page-as-data uninstall [options]
+      Remove what init wrote, and nothing else. Takes --agent, --global,
+      --dry-run and --dir.
+
   Common
       --port 9222               attach to a Chrome started with --remote-debugging-port
                                 (use this for pages behind a sign-in)
@@ -389,7 +408,10 @@ Exit code: 0 clean, 1 problems found, 2 could not run.`
 
 export function parseArgs(argv) {
   const [command, ...rest] = argv
-  const opts = { command, urls: [], widths: [390, 1440], width: 1440, steps: [], inspect: [], port: 9222, launch: false, json: false, strict: false, timeoutMs: 15000 }
+  const opts = {
+    command, urls: [], widths: [390, 1440], width: 1440, steps: [], inspect: [], port: 9222, launch: false, json: false, strict: false, timeoutMs: 15000,
+    agents: [], global: false, force: false, dryRun: false, dir: process.cwd(),
+  }
   const value = (i, flag) => {
     if (rest[i] === undefined) throw new Error(`${flag} needs a value`)
     return rest[i]
@@ -413,6 +435,11 @@ export function parseArgs(argv) {
     else if (a === '--launch') opts.launch = true
     else if (a === '--json') opts.json = true
     else if (a === '--strict') opts.strict = true
+    else if (a === '--agent') opts.agents.push(...value(++i, a).split(',').map((s) => s.trim()).filter(Boolean))
+    else if (a === '--global') opts.global = true
+    else if (a === '--force') opts.force = true
+    else if (a === '--dry-run') opts.dryRun = true
+    else if (a === '--dir') opts.dir = resolve(value(++i, a))
     else if (a.startsWith('--')) throw new Error(`Unknown option ${a}`)
     else opts.urls.push(a)
   }
@@ -519,6 +546,36 @@ function printCheck(results) {
   out(`\n${results.length} page checks · ${count('errors')} errors · ${count('warnings')} warnings${failed ? ` · ${failed} could not run` : ''}`)
 }
 
+const DONE = { create: 'created', update: 'updated', unchanged: 'unchanged', skip: 'skipped', remove: 'removed', 'strip-block': 'removed its block from' }
+const WOULD = { create: 'would create', update: 'would update', unchanged: 'unchanged', skip: 'would skip', remove: 'would remove', 'strip-block': 'would remove its block from' }
+
+/** `init` / `uninstall`: write or remove the agent skill files. */
+function installCommand(opts) {
+  if (opts.urls.length) throw new Error(`${opts.command} takes no urls; use --dir for another project folder`)
+  const home = homedir()
+  const plan =
+    opts.command === 'init'
+      ? planInstall({ root: opts.dir, agents: opts.agents, global: opts.global, force: opts.force, home })
+      : planUninstall({ root: opts.dir, agents: opts.agents, global: opts.global, home })
+  if (!opts.dryRun) applyPlan(plan.actions)
+  if (opts.json) {
+    out(JSON.stringify({ ...plan, dryRun: opts.dryRun, actions: plan.actions.map(({ content, ...a }) => a) }, null, 2))
+    return 0
+  }
+  if (plan.fallback) out('No agent files found here, so installing for Claude Code and AGENTS.md. Choose others with --agent.')
+  const shown = (p) => {
+    const inProject = relative(opts.dir, p)
+    if (!inProject.startsWith('..') && !isAbsolute(inProject)) return inProject
+    return p.startsWith(home) ? `~${p.slice(home.length)}` : p
+  }
+  for (const a of plan.actions) {
+    const mark = a.action === 'skip' ? '–' : a.action === 'unchanged' ? '·' : '✔'
+    out(`${mark} ${(opts.dryRun ? WOULD : DONE)[a.action]} ${shown(a.path)} (${a.label})${a.reason ? `: ${a.reason}` : ''}`)
+  }
+  if (!plan.actions.length) out(opts.command === 'init' ? 'Nothing to install.' : 'Nothing to remove: no page-as-data files found.')
+  return 0
+}
+
 async function main() {
   let opts
   try {
@@ -526,6 +583,14 @@ async function main() {
   } catch (e) {
     console.error(e.message)
     return 2
+  }
+  if (['init', 'uninstall'].includes(opts.command)) {
+    try {
+      return installCommand(opts)
+    } catch (e) {
+      console.error(e.message)
+      return 2
+    }
   }
   if (!['read', 'check'].includes(opts.command) || !opts.urls.length) {
     out(HELP)
