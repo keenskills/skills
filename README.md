@@ -35,11 +35,8 @@ Nothing else. It has no dependencies.
 ## Install
 
 ```sh
-npm install --save-dev page-as-data   # or run it once with npx
+npm install --save-dev @rajaaltus/page-as-data   # or run it once with npx
 ```
-
-Until the package is on npm, clone this repository and run `node cli.mjs` in
-place of `npx page-as-data`.
 
 ## Use it
 
@@ -66,7 +63,7 @@ closes it when it is done. Your other tabs are not touched.
 ### 2. Read a screen
 
 ```sh
-npx page-as-data read http://localhost:3000/orders --width 390
+npx @rajaaltus/page-as-data read http://localhost:3000/orders --width 390
 ```
 
 You get the screen as text: problems first, then dialogs, alerts, headings,
@@ -83,7 +80,7 @@ a render, an upload. The page settles after each step, including screen
 changes an app schedules on a short timer (a fade, then the next route).
 
 ```sh
-npx page-as-data read http://localhost:3000/orders \
+npx @rajaaltus/page-as-data read http://localhost:3000/orders \
   --click "New order" --fill "Email=a@b.co" --click "Save" \
   --inspect "Save"
 ```
@@ -146,7 +143,7 @@ Add `--json` for the full result, including every table row and link.
 ### 4. Check many pages, for CI
 
 ```sh
-npx page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
+npx @rajaaltus/page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
 ```
 
 Each page is checked at each width. The exit code is `1` when an error is
@@ -155,13 +152,13 @@ found, so a CI job fails on a real defect. Warnings (small touch targets,
 
 ```yaml
 # GitHub Actions: after your app is running on port 3000
-- run: npx page-as-data check http://localhost:3000/ http://localhost:3000/orders --launch
+- run: npx @rajaaltus/page-as-data check http://localhost:3000/ http://localhost:3000/orders --launch
 ```
 
 ### 5. Take a screenshot, only when needed
 
 ```sh
-npx page-as-data read http://localhost:3000/dashboard --screenshot dashboard.png
+npx @rajaaltus/page-as-data read http://localhost:3000/dashboard --screenshot dashboard.png
 ```
 
 Use it for images, charts and overall visual polish. Everything else is
@@ -186,17 +183,46 @@ already in the data.
 Exit codes: `0` nothing found, `1` problems found, `2` could not run (no
 Chrome, bad URL, a step could not find its control).
 
-## For AI coding agents
+## Install as an agent skill
 
-An agent that looks at screenshots spends a large image on every look, and
-still guesses. Put this in your `CLAUDE.md`, `AGENTS.md` or similar:
+One command teaches the coding agents in a project to read screens with
+`page-as-data` instead of taking screenshots:
 
-```markdown
-## Checking a screen
-Read it with `npx page-as-data read <url>` (add `--width 390` for phone,
-`--click` / `--fill` to reproduce, `--inspect` for "is it visible / readable").
-Take a screenshot only for images, charts or overall visual polish.
-Before calling UI work done, run `npx page-as-data check <urls>`; it must exit 0.
+```sh
+npx @rajaaltus/page-as-data init
+```
+
+It finds the agents the project already uses and writes each one's own file:
+
+| Agent | File |
+| --- | --- |
+| Claude Code | `.claude/skills/page-as-data/SKILL.md` |
+| Codex, opencode, Amp and other `AGENTS.md` readers | a block in `AGENTS.md` |
+| Gemini CLI | a block in `GEMINI.md` |
+| Cursor | `.cursor/rules/page-as-data.mdc` |
+| Windsurf | `.windsurf/rules/page-as-data.md` |
+| Cline | `.clinerules/page-as-data.md` (a block, when `.clinerules` is one file) |
+| GitHub Copilot | `.github/instructions/page-as-data.instructions.md` |
+
+When it finds none, it installs for Claude Code and `AGENTS.md`. Run it again
+to update. It changes only what it wrote: in `AGENTS.md` and `GEMINI.md`, only
+the text between `<!-- page-as-data:start -->` and `<!-- page-as-data:end -->`.
+
+| Option | What it does |
+| --- | --- |
+| `--agent claude,cursor` | Choose agents: `claude`, `agents`, `gemini`, `cursor`, `windsurf`, `cline`, `copilot`, or `all`. |
+| `--global` | Install the Claude Code skill for every project, in `~/.claude/skills`. |
+| `--force` | Replace a same-named file that page-as-data did not write. |
+| `--dry-run` | Show what would change, and write nothing. |
+| `--dir path` | The project folder. Default: the current folder. |
+
+`npx @rajaaltus/page-as-data uninstall` removes what `init` wrote, and nothing else.
+
+### As a Claude Code plugin
+
+```text
+/plugin marketplace add rajaaltus/page-as-data
+/plugin install page-as-data@page-as-data
 ```
 
 ## Use it inside your own browser tooling
@@ -209,7 +235,7 @@ start, and call `window.__pageAsData`.
 // Playwright
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
-const inPage = readFileSync(createRequire(import.meta.url).resolve('page-as-data/in-page'), 'utf8')
+const inPage = readFileSync(createRequire(import.meta.url).resolve('@rajaaltus/page-as-data/in-page'), 'utf8')
 await page.addInitScript(inPage)
 await page.goto('http://localhost:3000/orders')
 await page.evaluate(() => window.__pageAsData.settle())
@@ -233,7 +259,7 @@ It reads the page and nothing else. It makes no network calls of its own, and
 it only wraps `window.fetch` to count React Server Component requests. It never
 changes them. Password fields are reported as `••••`, never their value.
 
-From Node, `import { readPage, checkPages } from 'page-as-data'` returns the
+From Node, `import { readPage, checkPages } from '@rajaaltus/page-as-data'` returns the
 same results as the CLI's `--json`.
 
 ## What the checks mean
@@ -263,7 +289,17 @@ same results as the CLI's `--json`.
 ## Develop
 
 ```sh
-npm test    # runs the CLI against test/fixture.html in a headless Chrome
+npm test              # the CLI against test/fixture.html in a headless Chrome, and init/uninstall in temp folders
+npm run build:skill   # after editing skill/page-as-data.md: refresh the Claude Code plugin copy
+```
+
+To release, bump the version and push the tag. The publish workflow runs the
+tests, then publishes to npm with provenance. It needs an `NPM_TOKEN`
+repository secret (or npm trusted publishing set up for this repository).
+
+```sh
+npm version patch        # also updates .claude-plugin/plugin.json and the plugin's SKILL.md
+git push --follow-tags
 ```
 
 The fixture plants one of each bug, next to a look-alike that is **not** a bug,
