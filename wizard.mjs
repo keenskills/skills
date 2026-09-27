@@ -4,6 +4,7 @@
  * Only runs when a person is at the keyboard; scripts, CI and agents get the
  * plain `init` in cli.mjs.
  */
+import { existsSync, statSync } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
 import { isAbsolute, join, relative } from 'node:path'
 import { AGENTS, applyPlan, planInstall, selectAgents } from './install.mjs'
@@ -77,6 +78,8 @@ export async function runWizard({
   findChrome,
   readPage,
 }) {
+  // Before any question: finding out after five answers is worse.
+  if (!existsSync(root) || !statSync(root).isDirectory()) throw new Error(`No such folder: ${root}`)
   const tui = createTUI({ input, output, ...(color === undefined ? {} : { color }) })
   const cancelled = () => {
     tui.outro('Cancelled. Nothing was written.')

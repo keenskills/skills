@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { describe, it } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { parseArgs } from '../cli.mjs'
+import { parseArgs, wantsWizard } from '../cli.mjs'
 import { AGENT_IDS, BODY, END, MANAGED, START, applyPlan, planInstall, planUninstall, renderSkill, stripBlock, upsertBlock } from '../install.mjs'
 
 const tmp = () => mkdtempSync(join(tmpdir(), 'page-as-data-install-'))
@@ -295,6 +295,23 @@ describe('init and uninstall commands', () => {
     assert.match(r.stdout, /read a web page as data/)
   })
 
+  it('opens the wizard only for a person at a terminal who gave no choices', () => {
+    const tty = { stdin: { isTTY: true }, stdout: { isTTY: true } }
+    assert.equal(wantsWizard(parseArgs(['init']), tty), true)
+    assert.equal(wantsWizard(parseArgs(['init', '--global']), tty), true)
+    for (const args of [['init', '--yes'], ['init', '-y'], ['init', '--agent', 'claude'], ['init', '--json'], ['init', '--dry-run'], ['uninstall']])
+      assert.equal(wantsWizard(parseArgs(args), tty), false, args.join(' '))
+    assert.equal(wantsWizard(parseArgs(['init']), { stdin: { isTTY: false }, stdout: { isTTY: true } }), false)
+    assert.equal(wantsWizard(parseArgs(['init']), { stdin: { isTTY: true }, stdout: { isTTY: false } }), false)
+  })
+
+  it('ends a plain init with commands to try', () => {
+    const r = run('init', '--yes', '--dir', tmp())
+    assert.equal(r.status, 0, r.stderr)
+    assert.match(r.stdout, /Next steps/)
+    assert.match(r.stdout, /npx @rajaaltus\/page-as-data read http:\/\/localhost:3000 --width 390 --launch/)
+  })
+
   it('prints the plan as JSON, without file contents', () => {
     const r = JSON.parse(run('init', '--json', '--dry-run', '--dir', tmp()).stdout)
     assert.equal(r.fallback, true)
@@ -324,6 +341,6 @@ describe('Claude Code plugin', () => {
   it('publishes the skill body with the npm package', () => {
     const pkg = json('package.json')
     assert.equal(pkg.name, '@rajaaltus/page-as-data')
-    for (const f of ['install.mjs', 'skill/']) assert.ok(pkg.files.includes(f), f)
+    for (const f of ['install.mjs', 'tui.mjs', 'wizard.mjs', 'skill/']) assert.ok(pkg.files.includes(f), f)
   })
 })

@@ -194,6 +194,11 @@ One command teaches the coding agents in a project to read screens with
 npx @rajaaltus/page-as-data init
 ```
 
+In a terminal it runs a short wizard. It checks Node and Chrome, asks which
+agents to set up (the ones found in the project are ticked), shows the files
+before writing them, offers to read your app once, and ends with commands to
+copy. In scripts, CI and agents, or with `--yes`, it asks nothing.
+
 It finds the agents the project already uses and writes each one's own file:
 
 | Agent | File |
@@ -212,6 +217,7 @@ the text between `<!-- page-as-data:start -->` and `<!-- page-as-data:end -->`.
 
 | Option | What it does |
 | --- | --- |
+| `--yes` | Ask nothing; use the agents found in the project. |
 | `--agent claude,cursor` | Choose agents: `claude`, `agents`, `gemini`, `cursor`, `windsurf`, `cline`, `copilot`, or `all`. |
 | `--global` | Install the Claude Code skill for every project, in `~/.claude/skills`. |
 | `--force` | Replace a same-named file that page-as-data did not write. |

@@ -84,6 +84,12 @@ describe('init wizard', () => {
     assert.match(screen, /--remote-debugging-port=9222/)
   })
 
+  it('refuses a project folder that does not exist before asking anything', async () => {
+    const { term, done } = start(join(tmp(), 'nope'))
+    await assert.rejects(done, /No such folder/)
+    assert.doesNotMatch(term.plain(), /Select agents/)
+  })
+
   it('writes nothing when cancelled with Ctrl-C, and exits 130', async () => {
     const root = tmp()
     const { term, done } = start(root)

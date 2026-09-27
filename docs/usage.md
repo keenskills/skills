@@ -259,6 +259,35 @@ This teaches the coding agents in a project to use `page-as-data` instead of scr
 npx @rajaaltus/page-as-data init
 ```
 
+### In a terminal: the setup wizard
+
+In a terminal, `init` walks you through setup:
+
+1. **It checks your machine.** It shows your Node version and whether it found Chrome. Without Chrome it warns you and tells you how to fix it; the skill still installs.
+2. **It asks which agents to set up.** It lists every supported agent, with the ones found in this project already ticked.
+   - `↑` `↓` move, `space` ticks, `enter` confirms.
+   - Type to filter the list.
+   - **Select All** ticks or clears every agent shown.
+   - The panel at the bottom says which file each agent gets.
+3. **Where the Claude Code skill goes**, if you ticked it: this project, or all your projects (`~/.claude/skills`).
+4. **Your app's URL** (default `http://localhost:3000`) and **whether its pages are behind a sign-in**. These answers only shape the example commands at the end; they are not saved.
+5. **The plan.** It shows each file it would create (`+`), update (`~`), leave as it is (`·`) or skip (`–`), and asks before writing.
+6. **"Try it now?"** It reads your app once and shows a one-line summary: problems found, headings, controls.
+7. **Next steps.** Commands to copy, tailored to your URL, and a prompt to give your agent.
+
+`Ctrl-C` or `Esc` at any question stops it, and nothing is written.
+
+### In scripts, CI and agents
+
+With `--yes`, `--agent`, `--json` or `--dry-run`, or when the output is not a terminal, `init` asks nothing. It installs for the agents the project already uses, prints what it wrote, and ends with the same example commands.
+
+```sh
+npx @rajaaltus/page-as-data init --yes
+npx @rajaaltus/page-as-data init --agent claude,cursor
+```
+
+### Which file each agent gets
+
 It looks for the agents the project already uses, and writes each one's own file:
 
 | Agent | Found by | File written |
@@ -276,7 +305,7 @@ When it finds none of these, it installs for Claude Code and `AGENTS.md`, and sa
 Example:
 
 ```text
-$ npx @rajaaltus/page-as-data init
+$ npx @rajaaltus/page-as-data init --yes
 ✔ created .claude/skills/page-as-data/SKILL.md (Claude Code)
 ✔ created .cursor/rules/page-as-data.mdc (Cursor)
 ✔ updated AGENTS.md (AGENTS.md)
@@ -288,7 +317,8 @@ Commit the files it writes, so everyone on the team gets the skill.
 
 | Option | What it does |
 | --- | --- |
-| `--agent claude,cursor` | Choose the agents yourself: `claude`, `agents`, `gemini`, `cursor`, `windsurf`, `cline`, `copilot`, or `all`. Repeatable. |
+| `--yes`, `-y` | Ask nothing: install for the agents found in the project. |
+| `--agent claude,cursor` | Choose the agents yourself, and ask nothing: `claude`, `agents`, `gemini`, `cursor`, `windsurf`, `cline`, `copilot`, or `all`. Repeatable. |
 | `--global` | Install the Claude Code skill once for all your projects, in `~/.claude/skills/page-as-data/`. |
 | `--dry-run` | Show what would change, and write nothing. |
 | `--force` | Replace a same-named file that `page-as-data` did not write. |
@@ -407,7 +437,7 @@ applyPlan(plan.actions)
 ```text
 page-as-data read <url>        one page as data, after optional steps
 page-as-data check <url...>    defects for every url at every width
-page-as-data init              install the agent skill
+page-as-data init              install the agent skill (a wizard in a terminal)
 page-as-data uninstall         remove it
 page-as-data --help
 ```

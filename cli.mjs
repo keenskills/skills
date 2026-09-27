@@ -7,7 +7,7 @@
  *                            [--press <key>]... [--wait-for <text>]...
  *                            [--inspect <text|selector>]... [--screenshot <file.png>]
  *   page-as-data check <url...> [--widths 390,1440] [--strict]
- *   page-as-data init      [--agent claude,cursor,...|all] [--global] [--force] [--dry-run] [--dir <path>]
+ *   page-as-data init      [--agent claude,cursor,...|all] [--yes] [--global] [--force] [--dry-run] [--dir <path>]
  *   page-as-data uninstall [--agent ...] [--global] [--dry-run] [--dir <path>]
  *
  *   common: [--port 9222 | --launch] [--json] [--timeout 15000]
@@ -18,8 +18,10 @@ import { homedir, tmpdir } from 'node:os'
 import { isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { applyPlan, planInstall, planUninstall } from './install.mjs'
+import { nextSteps, runWizard } from './wizard.mjs'
 
 const IN_PAGE = readFileSync(new URL('./page-as-data.js', import.meta.url), 'utf8')
+const VERSION = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 // ---------------------------------------------------------------------------
@@ -384,10 +386,13 @@ const HELP = `page-as-data — read a web page as data instead of a screenshot
   page-as-data init [options]
       Teach the coding agents in this project to use page-as-data instead of
       screenshots. Writes each agent's own skill or rule file; run it again to
-      update. Without --agent, it installs for the agents the project uses.
+      update. In a terminal it asks which agents and shows how to use it;
+      with --agent or --yes (and in scripts, CI and agents) it asks nothing
+      and installs for the agents the project uses.
 
       --agent claude,cursor     claude, agents (AGENTS.md), gemini, cursor,
                                 windsurf, cline, copilot, or all
+      --yes, -y                 ask nothing; use the agents found in the project
       --global                  Claude Code skill in ~/.claude, for every project
       --force                   replace a same-named file it did not write
       --dry-run                 show what would change; write nothing
@@ -410,7 +415,7 @@ export function parseArgs(argv) {
   const [command, ...rest] = argv
   const opts = {
     command, urls: [], widths: [390, 1440], width: 1440, steps: [], inspect: [], port: 9222, launch: false, json: false, strict: false, timeoutMs: 15000,
-    agents: [], global: false, force: false, dryRun: false, dir: process.cwd(),
+    agents: [], yes: false, global: false, force: false, dryRun: false, dir: process.cwd(),
   }
   const value = (i, flag) => {
     if (rest[i] === undefined) throw new Error(`${flag} needs a value`)
@@ -436,6 +441,7 @@ export function parseArgs(argv) {
     else if (a === '--json') opts.json = true
     else if (a === '--strict') opts.strict = true
     else if (a === '--agent') opts.agents.push(...value(++i, a).split(',').map((s) => s.trim()).filter(Boolean))
+    else if (a === '--yes' || a === '-y') opts.yes = true
     else if (a === '--global') opts.global = true
     else if (a === '--force') opts.force = true
     else if (a === '--dry-run') opts.dryRun = true
@@ -573,7 +579,17 @@ function installCommand(opts) {
     out(`${mark} ${(opts.dryRun ? WOULD : DONE)[a.action]} ${shown(a.path)} (${a.label})${a.reason ? `: ${a.reason}` : ''}`)
   }
   if (!plan.actions.length) out(opts.command === 'init' ? 'Nothing to install.' : 'Nothing to remove: no page-as-data files found.')
+  if (opts.command === 'init' && !opts.dryRun) {
+    out('\nNext steps')
+    for (const line of nextSteps({ url: 'http://localhost:3000', attach: false })) out(line && `  ${line}`)
+  }
   return 0
+}
+
+/** The wizard is for a person at a terminal who has not already said what they want. */
+export function wantsWizard(opts, { stdin = process.stdin, stdout = process.stdout } = {}) {
+  if (opts.command !== 'init' || opts.agents.length || opts.yes || opts.json || opts.dryRun || opts.urls.length) return false
+  return Boolean(stdin.isTTY && stdout.isTTY)
 }
 
 async function main() {
@@ -586,6 +602,7 @@ async function main() {
   }
   if (['init', 'uninstall'].includes(opts.command)) {
     try {
+      if (wantsWizard(opts)) return await runWizard({ root: opts.dir, version: VERSION, findChrome, readPage })
       return installCommand(opts)
     } catch (e) {
       console.error(e.message)
