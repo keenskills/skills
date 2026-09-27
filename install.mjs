@@ -156,6 +156,27 @@ export function planInstall({ root, agents = [], global = false, force = false, 
   return { ids, fallback, actions }
 }
 
+/** What `uninstall` would do: only what init wrote, wherever any agent keeps it. */
+export function planUninstall({ root, agents = [], global = false, home = homedir() }) {
+  checkRoot(root)
+  const ids = agents.length ? selectAgents({ root, agents }).ids : global ? ['claude'] : AGENT_IDS
+  const actions = []
+  for (const id of ids) {
+    const agent = AGENTS.find((a) => a.id === id)
+    const { path, shared } = agent.target(root, { global, home })
+    if (!isFile(path)) continue
+    const base = { agent: id, label: agent.label, path }
+    const text = readFileSync(path, 'utf8')
+    if (shared) {
+      const content = stripBlock(text)
+      if (content === null) actions.push({ ...base, action: 'skip', reason: BROKEN })
+      else if (content !== text) actions.push(content.trim() ? { ...base, action: 'strip-block', content } : { ...base, action: 'remove' })
+    } else if (text.includes(MANAGED)) actions.push({ ...base, action: 'remove' })
+    else actions.push({ ...base, action: 'skip', reason: 'was not written by page-as-data' })
+  }
+  return { ids, actions }
+}
+
 /** Carries out a plan from planInstall or planUninstall. The only function here that writes. */
 export function applyPlan(actions) {
   for (const a of actions) {

@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { describe, it } from 'node:test'
-import { AGENT_IDS, BODY, END, MANAGED, START, applyPlan, planInstall, renderSkill, stripBlock, upsertBlock } from '../install.mjs'
+import { AGENT_IDS, BODY, END, MANAGED, START, applyPlan, planInstall, planUninstall, renderSkill, stripBlock, upsertBlock } from '../install.mjs'
 
 const tmp = () => mkdtempSync(join(tmpdir(), 'page-as-data-install-'))
 const put = (root, path, text = '') => {
@@ -176,5 +176,56 @@ describe('planInstall', () => {
     const missing = join(tmp(), 'nope')
     assert.throws(() => plan(missing), /No such folder/)
     assert.ok(!existsSync(missing))
+  })
+})
+
+describe('planUninstall', () => {
+  const unplan = (root, opts = {}) => planUninstall({ root, home: join(root, 'fake-home'), ...opts })
+
+  it('removes its own files and only its block, leaving user text and user files', () => {
+    const root = tmp()
+    put(root, 'AGENTS.md', '# Rules\n\nBe kind.\n')
+    put(root, '.cursor/rules/mine.mdc', 'mine\n')
+    applyPlan(plan(root).actions)
+    const p = unplan(root)
+    assert.deepEqual(summary(p), ['agents:strip-block', 'cursor:remove'])
+    applyPlan(p.actions)
+    assert.equal(read(root, 'AGENTS.md'), '# Rules\n\nBe kind.\n')
+    assert.ok(!existsSync(join(root, '.cursor/rules/page-as-data.mdc')))
+    assert.equal(read(root, '.cursor/rules/mine.mdc'), 'mine\n')
+  })
+
+  it('deletes a shared file that held only its block, and the skill folder it made', () => {
+    const root = tmp()
+    applyPlan(plan(root).actions) // fallback: Claude Code + AGENTS.md
+    applyPlan(unplan(root).actions)
+    assert.ok(!existsSync(join(root, 'AGENTS.md')))
+    assert.ok(!existsSync(join(root, '.claude/skills/page-as-data')))
+    assert.ok(existsSync(join(root, '.claude/skills')))
+  })
+
+  it('keeps a file whose page-as-data marker the user removed', () => {
+    const root = tmp()
+    put(root, '.cursor/rules/page-as-data.mdc', 'rewritten by hand\n')
+    const p = unplan(root)
+    assert.deepEqual(summary(p), ['cursor:skip'])
+    assert.match(p.actions[0].reason, /not written by page-as-data/)
+  })
+
+  it('skips a half-marked shared file rather than cut text out of it', () => {
+    const root = tmp()
+    put(root, 'AGENTS.md', `x\n${START}\n`)
+    assert.deepEqual(summary(unplan(root)), ['agents:skip'])
+  })
+
+  it('removes the global skill only with global', () => {
+    const root = tmp()
+    applyPlan(plan(root, { global: true }).actions)
+    assert.deepEqual(summary(unplan(root)), [])
+    assert.deepEqual(summary(unplan(root, { global: true })), ['claude:remove'])
+  })
+
+  it('finds nothing to remove in a project it never touched', () => {
+    assert.deepEqual(unplan(tmp()).actions, [])
   })
 })
