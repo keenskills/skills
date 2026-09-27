@@ -56,6 +56,12 @@ describe('marked block', () => {
     assert.equal(stripBlock(`x\n${END}\n${START}\n`), null)
   })
 
+  it('refuses two blocks, as a merge can leave, rather than update one and keep a stale copy', () => {
+    const two = `${blk}\n\n${blk}\n`
+    assert.equal(upsertBlock(two, blk), null)
+    assert.equal(stripBlock(two), null)
+  })
+
   it('strips the block back to the exact text it was added to', () => {
     const text = '# Rules\n\nBe kind.\n'
     assert.equal(stripBlock(upsertBlock(text, blk)), text)
@@ -226,6 +232,14 @@ describe('planUninstall', () => {
     applyPlan(plan(root, { global: true }).actions)
     assert.deepEqual(summary(unplan(root)), [])
     assert.deepEqual(summary(unplan(root, { global: true })), ['claude:remove'])
+  })
+
+  it('never removes the project folder, even when it is named page-as-data', () => {
+    const root = join(tmp(), 'page-as-data')
+    mkdirSync(root)
+    applyPlan(plan(root, { agents: ['agents'] }).actions)
+    applyPlan(unplan(root).actions)
+    assert.ok(existsSync(root))
   })
 
   it('finds nothing to remove in a project it never touched', () => {

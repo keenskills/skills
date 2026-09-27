@@ -8,7 +8,7 @@
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { basename, dirname, join } from 'node:path'
+import { dirname, join } from 'node:path'
 
 export const BODY = readFileSync(new URL('./skill/page-as-data.md', import.meta.url), 'utf8').trim()
 export const DESCRIPTION =
@@ -30,13 +30,15 @@ export const renderWindsurf = () => owned(`trigger: model_decision\ndescription:
 export const renderCopilot = () => owned('applyTo: "**"')
 export const renderPlain = () => owned()
 
-// Where the marked block is. A merge can leave half of it behind: then say so
-// rather than guess, because guessing either duplicates it or cuts user text.
+// Where the marked block is. A merge can leave half of it behind, or two
+// copies: then say so rather than guess, because guessing either duplicates
+// it, keeps a stale copy, or cuts user text.
 function findBlock(text) {
   const s = text.indexOf(START)
   const e = s === -1 ? text.indexOf(END) : text.indexOf(END, s)
   if (s === -1 && e === -1) return null
   if (s === -1 || e === -1) return 'broken'
+  if (text.includes(START, s + START.length) || text.includes(END, e + END.length)) return 'broken'
   return { s, e: e + END.length }
 }
 
@@ -130,7 +132,7 @@ function checkRoot(root) {
   if (!existsSync(root) || !statSync(root).isDirectory()) throw new Error(`No such folder: ${root}`)
 }
 
-const BROKEN = `has a page-as-data marker without its pair (${START} … ${END}); fix it by hand, then run again`
+const BROKEN = `has page-as-data markers (${START} … ${END}) that do not form one block; fix it by hand, then run again`
 
 /** What `init` would do. Reads the disk, never writes. */
 export function planInstall({ root, agents = [], global = false, force = false, home = homedir() }) {
@@ -186,8 +188,9 @@ export function applyPlan(actions) {
     } else if (a.action === 'remove') {
       rmSync(a.path)
       // The Claude Code skill gets a folder of its own; leave no empty one behind.
+      // Only that one: any other file's folder may be the project itself.
       const dir = dirname(a.path)
-      if (basename(dir) === 'page-as-data' && readdirSync(dir).length === 0) rmdirSync(dir)
+      if (a.agent === 'claude' && readdirSync(dir).length === 0) rmdirSync(dir)
     }
   }
 }
