@@ -68,9 +68,9 @@ One source text, `skill/page-as-data.md`, holds the skill body: when to use the 
 New file `install.mjs`: pure planning plus a thin writer. `cli.mjs` stays focused on Chrome.
 
 - `AGENTS`: a table of `{ id, label, detect(root), target(root, { global, home }), shared, render(body) }`, one entry per agent.
-- `planInstall({ root, agents, global, force, home })` returns `[{ agent, path, action, reason, content }]`, where `action` is one of `create`, `update`, `unchanged`, `skip`. It reads the filesystem but never writes.
-- `planUninstall({ root, agents, global, home })` returns the same shape with `action` of `remove`, `strip-block` or `skip`.
-- `applyPlan(plan)` carries out the actions: creates folders, writes and removes files.
+- `planInstall({ root, agents, global, force, home })` returns `{ ids, fallback, actions }`. `actions` is `[{ agent, label, path, action, reason, content }]`, where `action` is one of `create`, `update`, `unchanged`, `skip`; `fallback` says the no-marker default was used. It reads the filesystem but never writes.
+- `planUninstall({ root, agents, global, home })` returns `{ ids, actions }` with `action` of `remove`, `strip-block` or `skip`.
+- `applyPlan(actions)` carries out the actions: creates folders, writes and removes files.
 - `renderSkill()` returns the Claude Code `SKILL.md` text. The plugin build uses it too.
 - `home` defaults to `os.homedir()`. Tests pass a temp folder.
 
