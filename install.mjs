@@ -6,7 +6,9 @@
  * Planning only reads the disk; applyPlan() is the one place that writes, so a
  * --dry-run is the very plan that would run.
  */
-import { readFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { basename, dirname, join } from 'node:path'
 
 export const BODY = readFileSync(new URL('./skill/page-as-data.md', import.meta.url), 'utf8').trim()
 export const DESCRIPTION =
@@ -55,4 +57,116 @@ export function stripBlock(text) {
   const before = text.slice(0, at.s).replace(/(\r?\n){0,2}$/, '')
   const after = text.slice(at.e).replace(/^\r?\n/, '')
   return before && after ? `${before}\n\n${after}` : before ? `${before}\n` : after
+}
+
+// ---------------------------------------------------------------------------
+// Agents: how to tell a project uses one, where its file goes, what it holds.
+
+const has = (root, ...paths) => paths.some((p) => existsSync(join(root, p)))
+const isFile = (p) => existsSync(p) && statSync(p).isFile()
+const project = (...parts) => (root) => ({ path: join(root, ...parts), shared: false })
+const sharedFile = (name) => (root) => ({ path: join(root, name), shared: true })
+
+export const AGENTS = [
+  {
+    id: 'claude',
+    label: 'Claude Code',
+    detect: (root) => has(root, '.claude', 'CLAUDE.md'),
+    target: (root, { global, home }) => ({ path: join(global ? home : root, '.claude', 'skills', 'page-as-data', 'SKILL.md'), shared: false }),
+    render: renderSkill,
+  },
+  { id: 'agents', label: 'AGENTS.md', detect: (root) => has(root, 'AGENTS.md'), target: sharedFile('AGENTS.md') },
+  { id: 'gemini', label: 'Gemini CLI', detect: (root) => has(root, 'GEMINI.md'), target: sharedFile('GEMINI.md') },
+  {
+    id: 'cursor',
+    label: 'Cursor',
+    detect: (root) => has(root, '.cursor', '.cursorrules'),
+    target: project('.cursor', 'rules', 'page-as-data.mdc'),
+    render: renderCursor,
+  },
+  {
+    id: 'windsurf',
+    label: 'Windsurf',
+    detect: (root) => has(root, '.windsurf', '.windsurfrules'),
+    target: project('.windsurf', 'rules', 'page-as-data.md'),
+    render: renderWindsurf,
+  },
+  {
+    id: 'cline',
+    label: 'Cline',
+    detect: (root) => has(root, '.clinerules'),
+    // .clinerules is either a folder of rule files or one file; a file cannot hold a folder.
+    target: (root) => {
+      const rules = join(root, '.clinerules')
+      return isFile(rules) ? { path: rules, shared: true } : { path: join(rules, 'page-as-data.md'), shared: false }
+    },
+    render: renderPlain,
+  },
+  {
+    id: 'copilot',
+    label: 'GitHub Copilot',
+    // Not .github alone: most repos have one for workflows only.
+    detect: (root) => has(root, join('.github', 'copilot-instructions.md'), join('.github', 'instructions')),
+    target: project('.github', 'instructions', 'page-as-data.instructions.md'),
+    render: renderCopilot,
+  },
+]
+export const AGENT_IDS = AGENTS.map((a) => a.id)
+
+/** Which agents to write for: the ones asked for, else the ones the project uses, else a sensible pair. */
+export function selectAgents({ root, agents = [], global = false }) {
+  if (agents.length) {
+    const asked = agents.includes('all') ? AGENT_IDS : agents
+    const unknown = asked.find((id) => !AGENT_IDS.includes(id))
+    if (unknown) throw new Error(`Unknown agent "${unknown}". Use one or more of: ${AGENT_IDS.join(', ')}, all`)
+    return { ids: AGENT_IDS.filter((id) => asked.includes(id)), fallback: false }
+  }
+  if (global) return { ids: ['claude'], fallback: false }
+  const found = AGENTS.filter((a) => a.detect(root)).map((a) => a.id)
+  return found.length ? { ids: found, fallback: false } : { ids: ['claude', 'agents'], fallback: true }
+}
+
+function checkRoot(root) {
+  if (!existsSync(root) || !statSync(root).isDirectory()) throw new Error(`No such folder: ${root}`)
+}
+
+const BROKEN = `has a page-as-data marker without its pair (${START} … ${END}); fix it by hand, then run again`
+
+/** What `init` would do. Reads the disk, never writes. */
+export function planInstall({ root, agents = [], global = false, force = false, home = homedir() }) {
+  checkRoot(root)
+  const { ids, fallback } = selectAgents({ root, agents, global })
+  const actions = ids.map((id) => {
+    const agent = AGENTS.find((a) => a.id === id)
+    const { path, shared } = agent.target(root, { global, home })
+    const base = { agent: id, label: agent.label, path }
+    const existing = isFile(path) ? readFileSync(path, 'utf8') : null
+    if (existing === null && existsSync(path)) return { ...base, action: 'skip', reason: 'is a folder' }
+    if (shared) {
+      const content = upsertBlock(existing ?? '', block())
+      if (content === null) return { ...base, action: 'skip', reason: BROKEN }
+      return { ...base, action: existing === null ? 'create' : content === existing ? 'unchanged' : 'update', content }
+    }
+    const content = agent.render()
+    if (existing === null) return { ...base, action: 'create', content }
+    if (existing === content) return { ...base, action: 'unchanged', content }
+    if (existing.includes(MANAGED) || force) return { ...base, action: 'update', content }
+    return { ...base, action: 'skip', reason: 'exists and was not written by page-as-data; pass --force to replace it' }
+  })
+  return { ids, fallback, actions }
+}
+
+/** Carries out a plan from planInstall or planUninstall. The only function here that writes. */
+export function applyPlan(actions) {
+  for (const a of actions) {
+    if (a.action === 'create' || a.action === 'update' || a.action === 'strip-block') {
+      mkdirSync(dirname(a.path), { recursive: true })
+      writeFileSync(a.path, a.content)
+    } else if (a.action === 'remove') {
+      rmSync(a.path)
+      // The Claude Code skill gets a folder of its own; leave no empty one behind.
+      const dir = dirname(a.path)
+      if (basename(dir) === 'page-as-data' && readdirSync(dir).length === 0) rmdirSync(dir)
+    }
+  }
 }

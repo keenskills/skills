@@ -1,7 +1,20 @@
 // init / uninstall: planning and writing against temp folders. No Chrome needed.
 import assert from 'node:assert/strict'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { dirname, join } from 'node:path'
 import { describe, it } from 'node:test'
-import { BODY, END, MANAGED, START, renderSkill, stripBlock, upsertBlock } from '../install.mjs'
+import { AGENT_IDS, BODY, END, MANAGED, START, applyPlan, planInstall, renderSkill, stripBlock, upsertBlock } from '../install.mjs'
+
+const tmp = () => mkdtempSync(join(tmpdir(), 'page-as-data-install-'))
+const put = (root, path, text = '') => {
+  mkdirSync(dirname(join(root, path)), { recursive: true })
+  writeFileSync(join(root, path), text)
+}
+const read = (root, path) => readFileSync(join(root, path), 'utf8')
+// A fake home inside the temp folder, so no test can touch the real ~/.claude.
+const plan = (root, opts = {}) => planInstall({ root, home: join(root, 'fake-home'), ...opts })
+const summary = (p) => p.actions.map((a) => `${a.agent}:${a.action}`)
 
 describe('rendering', () => {
   it('renders the Claude Code skill with valid frontmatter first, then the managed note and the body', () => {
@@ -47,5 +60,121 @@ describe('marked block', () => {
 
   it('leaves text without a block as it is', () => {
     assert.equal(stripBlock('plain\n'), 'plain\n')
+  })
+})
+
+describe('planInstall', () => {
+  it('installs for each agent the project already uses, and only those', () => {
+    const markers = [
+      ['CLAUDE.md', 'claude'],
+      ['.claude/settings.json', 'claude'],
+      ['AGENTS.md', 'agents'],
+      ['GEMINI.md', 'gemini'],
+      ['.cursor/mcp.json', 'cursor'],
+      ['.cursorrules', 'cursor'],
+      ['.windsurf/x.md', 'windsurf'],
+      ['.windsurfrules', 'windsurf'],
+      ['.clinerules/style.md', 'cline'],
+      ['.github/copilot-instructions.md', 'copilot'],
+      ['.github/instructions/x.instructions.md', 'copilot'],
+    ]
+    for (const [marker, id] of markers) {
+      const root = tmp()
+      put(root, marker)
+      const p = plan(root)
+      assert.deepEqual(p.ids, [id], marker)
+      assert.equal(p.fallback, false, marker)
+    }
+  })
+
+  it('does not take a .github folder with only workflows for Copilot', () => {
+    const root = tmp()
+    put(root, '.github/workflows/test.yml')
+    assert.equal(plan(root).fallback, true)
+  })
+
+  it('falls back to Claude Code and AGENTS.md when the project has no agent files', () => {
+    const p = plan(tmp())
+    assert.equal(p.fallback, true)
+    assert.deepEqual(summary(p), ['claude:create', 'agents:create'])
+  })
+
+  it('installs for every agent with "all", and rejects an unknown one', () => {
+    assert.deepEqual(plan(tmp(), { agents: ['all'] }).ids, AGENT_IDS)
+    assert.throws(() => plan(tmp(), { agents: ['claude', 'vim'] }), /Unknown agent "vim"/)
+  })
+
+  it('writes each agent file in its own format', () => {
+    const root = tmp()
+    applyPlan(plan(root, { agents: ['all'] }).actions)
+    assert.equal(read(root, '.claude/skills/page-as-data/SKILL.md'), renderSkill())
+    assert.match(read(root, '.cursor/rules/page-as-data.mdc'), /^---\ndescription: ".+"\nalwaysApply: false\n---\n/)
+    assert.match(read(root, '.windsurf/rules/page-as-data.md'), /^---\ntrigger: model_decision\ndescription: ".+"\n---\n/)
+    assert.match(read(root, '.github/instructions/page-as-data.instructions.md'), /^---\napplyTo: "\*\*"\n---\n/)
+    assert.ok(read(root, '.clinerules/page-as-data.md').startsWith(`<!-- ${MANAGED}`))
+    for (const f of ['AGENTS.md', 'GEMINI.md']) assert.equal(read(root, f), `${START}\n${BODY}\n${END}\n`)
+  })
+
+  it('changes nothing on a second run', () => {
+    const root = tmp()
+    applyPlan(plan(root, { agents: ['all'] }).actions)
+    assert.ok(plan(root, { agents: ['all'] }).actions.every((a) => a.action === 'unchanged'))
+  })
+
+  it('updates its own old block in a CRLF AGENTS.md and keeps the user text around it byte for byte', () => {
+    const root = tmp()
+    put(root, 'AGENTS.md', `# Ours\r\n\r\n${START}\nold text\n${END}\r\n\r\n## Theirs\r\n`)
+    const p = plan(root)
+    assert.deepEqual(summary(p), ['agents:update'])
+    applyPlan(p.actions)
+    assert.equal(read(root, 'AGENTS.md'), `# Ours\r\n\r\n${START}\n${BODY}\n${END}\r\n\r\n## Theirs\r\n`)
+  })
+
+  it('skips a half-marked AGENTS.md instead of adding a second block', () => {
+    const root = tmp()
+    put(root, 'AGENTS.md', `x\n${START}\n`)
+    const p = plan(root)
+    assert.deepEqual(summary(p), ['agents:skip'])
+    assert.match(p.actions[0].reason, /fix it by hand/)
+  })
+
+  it('skips a same-named file it did not write, and replaces it only with force', () => {
+    const root = tmp()
+    put(root, '.cursor/rules/page-as-data.mdc', 'my own rule\n')
+    const p = plan(root)
+    assert.deepEqual(summary(p), ['cursor:skip'])
+    assert.match(p.actions[0].reason, /--force/)
+    applyPlan(p.actions)
+    assert.equal(read(root, '.cursor/rules/page-as-data.mdc'), 'my own rule\n')
+    assert.deepEqual(summary(plan(root, { force: true })), ['cursor:update'])
+  })
+
+  it('updates a file it wrote earlier, even when the body has changed since', () => {
+    const root = tmp()
+    put(root, '.cursor/rules/page-as-data.mdc', `old body\n<!-- ${MANAGED} -->\n`)
+    assert.deepEqual(summary(plan(root)), ['cursor:update'])
+  })
+
+  it('writes a marked block into .clinerules when it is a single file', () => {
+    const root = tmp()
+    put(root, '.clinerules', 'Use tabs.\n')
+    applyPlan(plan(root).actions)
+    assert.equal(read(root, '.clinerules'), `Use tabs.\n\n${START}\n${BODY}\n${END}\n`)
+  })
+
+  it('installs the Claude Code skill under home with global, not in the project', () => {
+    const root = tmp()
+    const home = join(root, 'fake-home')
+    const p = planInstall({ root, home, global: true })
+    assert.deepEqual(summary(p), ['claude:create'])
+    applyPlan(p.actions)
+    assert.ok(existsSync(join(home, '.claude/skills/page-as-data/SKILL.md')))
+    assert.ok(!existsSync(join(root, '.claude')))
+  })
+
+  it('refuses a project folder that does not exist, and creates nothing', () => {
+    const missing = join(tmp(), 'nope')
+    assert.throws(() => plan(missing), /No such folder/)
+    assert.ok(!existsSync(missing))
   })
 })
