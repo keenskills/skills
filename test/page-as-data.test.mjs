@@ -9,7 +9,7 @@ import { checkPages, findChrome, parseArgs, readPage } from '../cli.mjs'
 const chrome = findChrome()
 const PORT = 9339
 // Suites run concurrently, and a killed Chrome can hold its port for a moment:
-// every launch in the steps suite gets a fresh debugging port.
+// every launch after the first gets a fresh debugging port.
 let nextPort = 9340
 const freshPort = () => nextPort++
 const fixture = readFileSync(new URL('./fixture.html', import.meta.url))
@@ -84,7 +84,7 @@ describe('read', { skip: !chrome && 'no Chrome found (set CHROME_PATH)' }, () =>
       steps: [{ label: 'Name', value: 'Ada' }, { click: 'Add row' }],
       inspect: ['Faint note', 'Secret', 'Hidden action', 'Modern faint', 'Primary action', 'Gradient action', 'Caption on photo', 'Faded action'],
       launch: true,
-      port: PORT,
+      port: freshPort(),
     })
   })
 
