@@ -1,0 +1,10 @@
+{
+  "name": "drawing-architecture-diagrams",
+  "version": "0.1.0",
+  "description": "Professional, print-ready architecture diagrams as editable draw.io files plus PNG and PDF.",
+  "author": {
+    "name": "keenskills"
+  },
+  "repository": "https://github.com/keenskills/skills",
+  "license": "MIT"
+}
