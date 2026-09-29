@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `shared/skill-installer.mjs` | The one installer both packages ship; vendored into `packages/*/lib/` by `pnpm sync` |
 | `scripts/sync-shared.mjs` | Writes those copies; `test/sync-shared.test.mjs` fails on a stale one |
 | `.claude-plugin/marketplace.json` | Claude Code marketplace `keenskills`; lists each plugin separately |
+| `apps/site` | Next.js 16 static site; docs built from the packages at build time; must pass `page-as-data check` at 390 and 1440 px |
 | `scripts/release-target.mjs` | Maps a tag like `page-as-data@v0.2.0` to its package for `publish.yml` |
 
 ## Commands
@@ -23,6 +24,8 @@ pnpm test:repo            # root checks only: marketplace, release tags
 pnpm --filter @keenskills/page-as-data test
 pnpm test:diagrams
 pnpm sync                 # after editing shared/
+pnpm site:dev
+pnpm site:check           # build, page tests, page-as-data on every page
 ```
 
 ## Release
@@ -33,5 +36,6 @@ From the package folder: `npm version <patch|minor|major> --no-git-tag-version`,
 
 - Packages stay independent: no imports across `packages/` and no runtime dependencies. Code both need lives in `shared/` and is copied in by `pnpm sync`.
 - The marketplace test in `test/repo.test.mjs` checks every listed plugin; keep a plugin's `plugin.json` version equal to its `package.json`.
+- Site copy about a skill comes from its package (README, CHANGELOG, package.json, skill file) through `apps/site/scripts/build-content.mjs`; do not duplicate it in site source.
 - LF line endings only.
 - Never use real client names in examples.

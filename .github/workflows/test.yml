@@ -49,3 +49,19 @@ jobs:
           python-version: ${{ matrix.python }}
       # Rendering needs draw.io desktop, which CI does not have; lint and install run.
       - run: npm test
+
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @keenskills/site test
+      - run: pnpm --filter @keenskills/site build
+      - run: pnpm --filter @keenskills/site test:pages
+      # ubuntu-latest ships Google Chrome at /usr/bin/google-chrome.
+      - run: pnpm --filter @keenskills/site self-check

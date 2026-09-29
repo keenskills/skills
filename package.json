@@ -10,7 +10,10 @@
     "test": "pnpm test:repo && pnpm -r test",
     "test:repo": "node --test \"test/*.test.mjs\"",
     "test:diagrams": "pnpm --filter @keenskills/drawing-architecture-diagrams test",
-    "sync": "node scripts/sync-shared.mjs"
+    "sync": "node scripts/sync-shared.mjs",
+    "site:dev": "pnpm --filter @keenskills/site dev",
+    "site:build": "pnpm --filter @keenskills/site build",
+    "site:check": "pnpm --filter @keenskills/site build && pnpm --filter @keenskills/site test:pages && pnpm --filter @keenskills/site self-check"
   },
   "license": "MIT"
 }

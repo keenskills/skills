@@ -107,3 +107,14 @@ describe('package docs', () => {
     })
   }
 })
+
+describe('site', () => {
+  // The site has to pass the tool it advertises, on every push.
+  it('is built, tested and checked with page-as-data in CI', () => {
+    const yml = readFileSync(new URL('.github/workflows/test.yml', root), 'utf8')
+    const job = yml.slice(yml.indexOf('\n  site:'))
+    for (const step of ['pnpm install --frozen-lockfile', 'pnpm --filter @keenskills/site test', 'pnpm --filter @keenskills/site build', 'pnpm --filter @keenskills/site test:pages', 'pnpm --filter @keenskills/site self-check']) {
+      assert.ok(job.includes(step), step)
+    }
+  })
+})
