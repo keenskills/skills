@@ -89,7 +89,7 @@ Each skill stays its own plugin with its own `plugin.json` and version; the mark
 Give the diagram skill the same one-command install as `page-as-data`:
 
 - Publish `@keenskills/drawing-architecture-diagrams` to npm. The npm package carries the skill files only (SKILL.md, scripts, references, examples) plus a tiny `cli.mjs` with `init` / `uninstall`.
-- Reuse `install.mjs` instead of copying it. Step 1: parameterise it by skill (name, source files, whether it is a folder skill with scripts). Step 2, only if a third skill appears: extract it into `packages/skill-installer`. Folder skills (scripts + references) matter here: Claude Code and Codex can take a folder; single-file targets (`AGENTS.md`, `.cursor/rules`) get the SKILL.md text plus the absolute path of the installed scripts.
+- One installer for both: `shared/skill-installer.mjs`, a factory parameterised by skill with support-file (folder skill) handling, vendored into each package's `lib/` by `pnpm sync` and checked by a drift test. This keeps packages independent and dependency-free; a published `packages/skill-installer` is only worth it if a third skill appears.
 - Python stays the runtime. `init` checks for `python3` and draw.io and prints what is missing, the way `page-as-data` reports a missing Chrome.
 - Also works with the generic `npx skills add keenskills/skills` flow because each package has a `SKILL.md` (verify the `skills` CLI discovers skills inside `packages/*` before we advertise it).
 - Old repo `rajaaltus/drawing-architecture-diagrams`: README replaced by a pointer, then archived.

@@ -118,6 +118,6 @@ describe('npm package', () => {
     const r = spawnSync('npm', ['pack', '--dry-run', '--json'], { cwd: pkg, encoding: 'utf8' })
     const files = JSON.parse(r.stdout)[0].files.map((f) => f.path).sort()
     const skillFiles = ['SKILL.md', ...FILES].map((f) => `skills/drawing-architecture-diagrams/${f}`)
-    assert.deepEqual(files, ['LICENSE', 'README.md', 'cli.mjs', 'install.mjs', 'lib/skill-installer.mjs', 'package.json', ...skillFiles].sort())
+    assert.deepEqual(files, ['CHANGELOG.md', 'LICENSE', 'README.md', 'cli.mjs', 'install.mjs', 'lib/skill-installer.mjs', 'package.json', ...skillFiles].sort())
   })
 })

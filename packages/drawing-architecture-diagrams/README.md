@@ -1,10 +1,10 @@
 # drawing-architecture-diagrams
 
-A [Claude Code](https://claude.com/claude-code) skill for producing **professional, print-ready architecture
+A skill for [Claude Code](https://claude.com/claude-code) and other coding agents for producing **professional, print-ready architecture
 diagrams** (Azure, AWS, GCP, network topology, hub-and-spoke, landing zones, private endpoints) as editable
 **draw.io** files plus PNG and PDF.
 
-![Sample: fictional event-driven order platform on A4](docs/sample-a4.png)
+![Sample: fictional event-driven order platform on A4](https://raw.githubusercontent.com/keenskills/skills/main/packages/drawing-architecture-diagrams/docs/sample-a4.png)
 
 The agent writes the diagram as a short Python script on top of a small design system, then iterates
 **lint → render → look → fix** until the page is clean. Every rearrangement is a cheap re-run, and the result
@@ -14,11 +14,12 @@ has consistent typography (font 10 at print size), colour, spacing and connector
 
 | Path | Purpose |
 |---|---|
-| `SKILL.md` | When to use the skill, the workflow, layout bands, design rules, patterns and common mistakes |
-| `scripts/archdiagram.py` | Design-system library: pages (A5/A4/A3), containers, subnets, panels, legend, numbered flows, observations, title block, edges; plus `lint` and `render` |
-| `examples/event_driven_platform_a4.py` | Worked example (fictional Northwind Traders): event-driven AKS + Service Bus order platform on one A4 page |
-| `references/icons.md` | Verified draw.io icon paths and how to find and verify new ones |
+| `skills/drawing-architecture-diagrams/SKILL.md` | When to use the skill, the workflow, layout bands, design rules, patterns and common mistakes |
+| `skills/drawing-architecture-diagrams/scripts/archdiagram.py` | Design-system library: pages (A5/A4/A3), containers, subnets, panels, legend, numbered flows, observations, title block, edges; plus `lint` and `render` |
+| `skills/drawing-architecture-diagrams/examples/event_driven_platform_a4.py` | Worked example (fictional Northwind Traders): event-driven AKS + Service Bus order platform on one A4 page |
+| `skills/drawing-architecture-diagrams/references/icons.md` | Verified draw.io icon paths and how to find and verify new ones |
 | `tests/selftest.py` | Checks that the example lints clean and that every lint rule fires |
+| `cli.mjs`, `install.mjs` | npm package: `init`, `uninstall` and `doctor` |
 
 **Lint** flags overlapping labels, labels outside the frame, titles covered by icons, icons that render as plain
 boxes, oversized icons, ragged label baselines, cells hidden behind filled boxes, and wasted space (empty boxes,
@@ -28,11 +29,27 @@ requires viewing the rendered PNG.
 ## Install
 
 ```bash
-git clone https://github.com/gjohnpaull/drawing-architecture-diagrams ~/.claude/skills/drawing-architecture-diagrams
+npx @keenskills/drawing-architecture-diagrams init            # this project, for the agents it uses
+npx @keenskills/drawing-architecture-diagrams init --global   # Claude Code, every project
+npx @keenskills/drawing-architecture-diagrams doctor          # check Python and draw.io
 ```
 
-Requirements: Python 3.9+ and [draw.io desktop](https://github.com/jgraph/drawio-desktop/releases) (used for
-PNG/PDF export; set `DRAWIO=<path>` if it is not in a standard location).
+`init` finds the agents a project uses (Claude Code, AGENTS.md, Gemini CLI, Cursor, Windsurf, Cline, GitHub
+Copilot) and installs the skill in each one's format; `--agent claude,cursor` picks them, `--dry-run` shows the
+plan. Claude Code gets the whole skill folder in `.claude/skills/drawing-architecture-diagrams/`; the others get
+the text, and the scripts go in `.agents/skills/drawing-architecture-diagrams/`. `uninstall` removes only what
+`init` wrote.
+
+As a Claude Code plugin:
+
+```text
+/plugin marketplace add keenskills/skills
+/plugin install drawing-architecture-diagrams@keenskills
+```
+
+Requirements: Python 3.9+ and [draw.io desktop](https://github.com/jgraph/drawio-desktop/releases) (only for
+PNG/PDF export; set `DRAWIO=<path>` if it is not in a standard location). A copied example finds the scripts by
+itself; for a plugin install set `ARCHDIAGRAM_DIR` to the skill's `scripts` folder.
 
 ## Use
 

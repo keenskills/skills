@@ -18,7 +18,8 @@
     "lib/",
     "tui.mjs",
     "wizard.mjs",
-    "skill/"
+    "skill/",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22"

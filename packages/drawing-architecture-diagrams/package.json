@@ -15,7 +15,8 @@
     "lib/",
     "skills/",
     "!**/__pycache__",
-    "!**/*.pyc"
+    "!**/*.pyc",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22"

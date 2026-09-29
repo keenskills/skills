@@ -11,9 +11,9 @@ plain text or JSON, in one command.
 Take a screenshot only for what data cannot answer: images, charts, and
 "does it look right overall".
 
-![How page-as-data helps](docs/diagram/how-it-helps.png)
+![How page-as-data helps](https://raw.githubusercontent.com/keenskills/skills/main/packages/page-as-data/docs/diagram/how-it-helps.png)
 
-Full guide: [docs/usage.md](docs/usage.md).
+Full guide: [docs/usage.md](https://github.com/keenskills/skills/blob/main/packages/page-as-data/docs/usage.md).
 
 ## What it gives you
 

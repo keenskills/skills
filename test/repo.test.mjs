@@ -90,3 +90,20 @@ describe('skills', () => {
     assert.match(yml, /drawing-architecture-diagrams:[\s\S]*setup-node[\s\S]*setup-python[\s\S]*run: npm test/)
   })
 })
+
+describe('package docs', () => {
+  for (const name of ['page-as-data', 'drawing-architecture-diagrams']) {
+    it(`${name} has a README, a CLAUDE.md, and a changelog entry for its version`, () => {
+      const dir = `packages/${name}/`
+      for (const f of ['README.md', 'CLAUDE.md', 'CHANGELOG.md']) assert.ok(existsSync(new URL(dir + f, root)), f)
+      const version = json(`${dir}package.json`).version
+      assert.match(readFileSync(new URL(`${dir}CHANGELOG.md`, root), 'utf8'), new RegExp(`^## ${version.replaceAll('.', '\\.')}$`, 'm'))
+    })
+
+    // npm renders a README without the monorepo around it, so relative images break there.
+    it(`${name} README uses absolute image URLs`, () => {
+      const text = readFileSync(new URL(`packages/${name}/README.md`, root), 'utf8')
+      assert.doesNotMatch(text, /!\[[^\]]*\]\((?!https:\/\/)/)
+    })
+  }
+})
