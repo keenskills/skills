@@ -1,4 +1,4 @@
-# Using @rajaaltus/page-as-data
+# Using @keenskills/page-as-data
 
 `page-as-data` reads a web page as data instead of a screenshot. In one command it tells you:
 
@@ -34,19 +34,19 @@ The package has no dependencies.
 Run it once without installing:
 
 ```sh
-npx @rajaaltus/page-as-data --help
+npx @keenskills/page-as-data --help
 ```
 
 Or add it to a project:
 
 ```sh
-npm install --save-dev @rajaaltus/page-as-data
-# pnpm add -D @rajaaltus/page-as-data
-# yarn add -D @rajaaltus/page-as-data
-# bun add -d @rajaaltus/page-as-data
+npm install --save-dev @keenskills/page-as-data
+# pnpm add -D @keenskills/page-as-data
+# yarn add -D @keenskills/page-as-data
+# bun add -d @keenskills/page-as-data
 ```
 
-After a project install, the command is `page-as-data` inside npm scripts, and `npx page-as-data` in a terminal. This guide writes `npx @rajaaltus/page-as-data` everywhere, which works in both cases.
+After a project install, the command is `page-as-data` inside npm scripts, and `npx page-as-data` in a terminal. This guide writes `npx @keenskills/page-as-data` everywhere, which works in both cases.
 
 > **Version note:** use 0.1.1 or later. In 0.1.0, the installed command printed nothing and exited 0, because npm starts it through a symlink.
 
@@ -61,13 +61,13 @@ After a project install, the command is `page-as-data` inside npm scripts, and `
 Use this for a local dev server, a public site, or a CI job. `page-as-data` starts its own headless Chrome and closes it at the end.
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/ --launch
+npx @keenskills/page-as-data read http://localhost:3000/ --launch
 ```
 
 It looks for Chrome at the standard install paths. If yours is elsewhere, set `CHROME_PATH`:
 
 ```sh
-CHROME_PATH=/opt/google/chrome/chrome npx @rajaaltus/page-as-data read http://localhost:3000/ --launch
+CHROME_PATH=/opt/google/chrome/chrome npx @keenskills/page-as-data read http://localhost:3000/ --launch
 ```
 
 ### Pages behind a sign-in: attach to your own Chrome
@@ -93,13 +93,13 @@ It opens a new tab for its own work and closes that tab at the end. Your other t
 ## 3. Reading a screen
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --launch
+npx @keenskills/page-as-data read http://localhost:3000/orders --launch
 ```
 
 The default width is 1440px. For a phone, add `--width 390`. Below 768px it also emulates a touch screen.
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --width 390 --launch
+npx @keenskills/page-as-data read http://localhost:3000/orders --width 390 --launch
 ```
 
 `page-as-data` waits for the page to settle before it reads. "Settled" means:
@@ -135,7 +135,7 @@ Add `--json` for the complete result, including every table row and link.
 Steps run in the order you give them. The page settles after each step.
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --launch \
+npx @keenskills/page-as-data read http://localhost:3000/orders --launch \
   --click "New order" \
   --fill "Email=a@b.co" \
   --press Enter \
@@ -158,7 +158,7 @@ If a step cannot find its control, the run stops there and reports what is on sc
 `--inspect` answers the questions you would take a screenshot for. It takes visible text or a CSS selector, and you can repeat it.
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --launch \
+npx @keenskills/page-as-data read http://localhost:3000/orders --launch \
   --inspect "Save" --inspect ".price-total"
 ```
 
@@ -183,7 +183,7 @@ For each match (up to 5), it reports:
 `check` loads every URL at every width and reports only defects.
 
 ```sh
-npx @rajaaltus/page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
+npx @keenskills/page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
 ```
 
 Example output:
@@ -226,7 +226,7 @@ Start your app, then check it. Hosted `ubuntu-latest` runners already have Googl
 - run: npm run build
 - run: npm start &
 - run: npx wait-on http://localhost:3000
-- run: npx @rajaaltus/page-as-data check http://localhost:3000/ http://localhost:3000/orders --launch
+- run: npx @keenskills/page-as-data check http://localhost:3000/ http://localhost:3000/orders --launch
 ```
 
 With `--json`, `check` prints one JSON object per page and width, one per line:
@@ -244,7 +244,7 @@ A page that could not load gives `{"url": ..., "width": ..., "error": "..."}` in
 Take one only for what data cannot answer: images, charts and overall visual polish.
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/dashboard --launch --screenshot dashboard.png
+npx @keenskills/page-as-data read http://localhost:3000/dashboard --launch --screenshot dashboard.png
 ```
 
 It first lets animations finish, so the picture shows the settled screen.
@@ -256,7 +256,7 @@ It first lets animations finish, so the picture shows the settled screen.
 This teaches the coding agents in a project to use `page-as-data` instead of screenshots. Run it at the project root:
 
 ```sh
-npx @rajaaltus/page-as-data init
+npx @keenskills/page-as-data init
 ```
 
 ### In a terminal: the setup wizard
@@ -282,8 +282,8 @@ In a terminal, `init` walks you through setup:
 With `--yes`, `--agent`, `--json` or `--dry-run`, or when the output is not a terminal, `init` asks nothing. It installs for the agents the project already uses, prints what it wrote, and ends with the same example commands.
 
 ```sh
-npx @rajaaltus/page-as-data init --yes
-npx @rajaaltus/page-as-data init --agent claude,cursor
+npx @keenskills/page-as-data init --yes
+npx @keenskills/page-as-data init --agent claude,cursor
 ```
 
 ### Which file each agent gets
@@ -305,7 +305,7 @@ When it finds none of these, it installs for Claude Code and `AGENTS.md`, and sa
 Example:
 
 ```text
-$ npx @rajaaltus/page-as-data init --yes
+$ npx @keenskills/page-as-data init --yes
 ✔ created .claude/skills/page-as-data/SKILL.md (Claude Code)
 ✔ created .cursor/rules/page-as-data.mdc (Cursor)
 ✔ updated AGENTS.md (AGENTS.md)
@@ -337,8 +337,8 @@ Commit the files it writes, so everyone on the team gets the skill.
 ### Removing it
 
 ```sh
-npx @rajaaltus/page-as-data uninstall            # this project
-npx @rajaaltus/page-as-data uninstall --global   # the global Claude Code skill
+npx @keenskills/page-as-data uninstall            # this project
+npx @keenskills/page-as-data uninstall --global   # the global Claude Code skill
 ```
 
 It removes only the files that carry its marker, and only its block from shared files. A shared file left empty is deleted. It takes `--agent`, `--dry-run` and `--dir` too.
@@ -348,8 +348,8 @@ It removes only the files that carry its marker, and only its block from shared 
 Instead of `init`, Claude Code users can install the skill as a plugin:
 
 ```text
-/plugin marketplace add rajaaltus/page-as-data
-/plugin install page-as-data@page-as-data
+/plugin marketplace add keenskills/skills
+/plugin install page-as-data@keenskills
 ```
 
 The plugin and `init` carry the same skill text.
@@ -363,7 +363,7 @@ The plugin and `init` carry the same skill text.
 `readPage` and `checkPages` return the same results as the CLI's `--json`.
 
 ```js
-import { checkPages, readPage } from '@rajaaltus/page-as-data'
+import { checkPages, readPage } from '@keenskills/page-as-data'
 
 const r = await readPage({
   url: 'http://localhost:3000/orders',
@@ -391,14 +391,14 @@ const failed = results.filter((x) => x.error || x.errors.length)
 
 ### Inside your own browser tooling
 
-The part that runs in the page is one file, exported as `@rajaaltus/page-as-data/in-page`. Inject it **before** the page's own scripts, so it can see router requests from the start. Then call `window.__pageAsData`.
+The part that runs in the page is one file, exported as `@keenskills/page-as-data/in-page`. Inject it **before** the page's own scripts, so it can see router requests from the start. Then call `window.__pageAsData`.
 
 ```js
 // Playwright
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 
-const inPage = readFileSync(createRequire(import.meta.url).resolve('@rajaaltus/page-as-data/in-page'), 'utf8')
+const inPage = readFileSync(createRequire(import.meta.url).resolve('@keenskills/page-as-data/in-page'), 'utf8')
 await page.addInitScript(inPage)
 await page.goto('http://localhost:3000/orders')
 await page.evaluate(() => window.__pageAsData.settle())
@@ -421,7 +421,7 @@ The script only reads. It makes no network calls of its own. It wraps `window.fe
 ### The installer, from code
 
 ```js
-import { applyPlan, planInstall } from '@rajaaltus/page-as-data/install'
+import { applyPlan, planInstall } from '@keenskills/page-as-data/install'
 
 const plan = planInstall({ root: process.cwd(), agents: ['claude', 'cursor'] })
 for (const a of plan.actions) console.log(a.action, a.path)

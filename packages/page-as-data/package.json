@@ -1,5 +1,5 @@
 {
-  "name": "@rajaaltus/page-as-data",
+  "name": "@keenskills/page-as-data",
   "version": "0.1.1",
   "description": "Read a web page as data instead of a screenshot: what is on screen, what broke behind it, and layout defects at phone and desktop widths. For developers and AI coding agents; installs itself as a skill for Claude Code, Codex, Gemini CLI, Cursor, Windsurf, Cline and Copilot.",
   "type": "module",
@@ -47,12 +47,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rajaaltus/page-as-data.git"
+    "url": "git+https://github.com/keenskills/skills.git",
+    "directory": "packages/page-as-data"
   },
   "bugs": {
-    "url": "https://github.com/rajaaltus/page-as-data/issues"
+    "url": "https://github.com/keenskills/skills/issues"
   },
-  "homepage": "https://github.com/rajaaltus/page-as-data#readme",
+  "homepage": "https://github.com/keenskills/skills/tree/main/packages/page-as-data#readme",
   "publishConfig": {
     "access": "public",
     "provenance": true

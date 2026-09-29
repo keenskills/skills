@@ -1,13 +1,13 @@
 {
-  "name": "page-as-data",
-  "description": "page-as-data: read a web page as data instead of a screenshot, as a skill for Claude Code.",
+  "name": "keenskills",
+  "description": "Keen Skills: agent skills by keenskills. Install only the ones you want.",
   "owner": {
-    "name": "rajaaltus"
+    "name": "keenskills"
   },
   "plugins": [
     {
       "name": "page-as-data",
-      "source": "./",
+      "source": "./packages/page-as-data",
       "description": "Read a web page as data instead of a screenshot: what is on screen, what broke behind it, and layout defects at phone and desktop widths."
     }
   ]

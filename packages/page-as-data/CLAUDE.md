@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`page-as-data` reads a rendered web page as text/JSON instead of a screenshot: what is on screen, what broke behind it (exceptions, failed requests, broken images), and layout defects at phone and desktop widths. It is a CLI plus an injectable in-page script, published as `@rajaaltus/page-as-data` (a fork of `gjohnpaull/page-as-data`). `init` installs it as a skill for coding agents, and the repo is also a Claude Code plugin marketplace. Zero runtime dependencies, Node 22+, and a Chrome-family browser (Chrome DevTools Protocol only).
+`page-as-data` reads a rendered web page as text/JSON instead of a screenshot: what is on screen, what broke behind it (exceptions, failed requests, broken images), and layout defects at phone and desktop widths. It is a CLI plus an injectable in-page script, published as `@keenskills/page-as-data` (a fork of `gjohnpaull/page-as-data`). `init` installs it as a skill for coding agents, and the repo is also a Claude Code plugin marketplace. Zero runtime dependencies, Node 22+, and a Chrome-family browser (Chrome DevTools Protocol only).
 
 ## Commands
 

@@ -28,7 +28,7 @@ describe('rendering', () => {
   })
 
   it('uses the scoped package name in every command', () => {
-    assert.match(BODY, /npx @rajaaltus\/page-as-data read/)
+    assert.match(BODY, /npx @keenskills\/page-as-data read/)
     assert.doesNotMatch(BODY, /npx page-as-data/)
   })
 })
@@ -309,7 +309,7 @@ describe('init and uninstall commands', () => {
     const r = run('init', '--yes', '--dir', tmp())
     assert.equal(r.status, 0, r.stderr)
     assert.match(r.stdout, /Next steps/)
-    assert.match(r.stdout, /npx @rajaaltus\/page-as-data read http:\/\/localhost:3000 --width 390 --launch/)
+    assert.match(r.stdout, /npx @keenskills\/page-as-data read http:\/\/localhost:3000 --width 390 --launch/)
   })
 
   it('prints the plan as JSON, without file contents', () => {
@@ -332,15 +332,9 @@ describe('Claude Code plugin', () => {
     assert.equal(json('.claude-plugin/plugin.json').version, json('package.json').version)
   })
 
-  it('lists this repo as the one plugin in the marketplace', () => {
-    const m = json('.claude-plugin/marketplace.json')
-    assert.equal(m.name, 'page-as-data')
-    assert.deepEqual(m.plugins.map((p) => [p.name, p.source]), [['page-as-data', './']])
-  })
-
   it('publishes the skill body with the npm package', () => {
     const pkg = json('package.json')
-    assert.equal(pkg.name, '@rajaaltus/page-as-data')
+    assert.equal(pkg.name, '@keenskills/page-as-data')
     for (const f of ['install.mjs', 'tui.mjs', 'wizard.mjs', 'skill/']) assert.ok(pkg.files.includes(f), f)
   })
 })

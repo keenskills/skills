@@ -37,7 +37,7 @@ Nothing else. It has no dependencies.
 ## Install
 
 ```sh
-npm install --save-dev @rajaaltus/page-as-data   # or run it once with npx
+npm install --save-dev @keenskills/page-as-data   # or run it once with npx
 ```
 
 ## Use it
@@ -65,7 +65,7 @@ closes it when it is done. Your other tabs are not touched.
 ### 2. Read a screen
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --width 390
+npx @keenskills/page-as-data read http://localhost:3000/orders --width 390
 ```
 
 You get the screen as text: problems first, then dialogs, alerts, headings,
@@ -82,7 +82,7 @@ a render, an upload. The page settles after each step, including screen
 changes an app schedules on a short timer (a fade, then the next route).
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders \
+npx @keenskills/page-as-data read http://localhost:3000/orders \
   --click "New order" --fill "Email=a@b.co" --click "Save" \
   --inspect "Save"
 ```
@@ -145,7 +145,7 @@ Add `--json` for the full result, including every table row and link.
 ### 4. Check many pages, for CI
 
 ```sh
-npx @rajaaltus/page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
+npx @keenskills/page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
 ```
 
 Each page is checked at each width. The exit code is `1` when an error is
@@ -154,13 +154,13 @@ found, so a CI job fails on a real defect. Warnings (small touch targets,
 
 ```yaml
 # GitHub Actions: after your app is running on port 3000
-- run: npx @rajaaltus/page-as-data check http://localhost:3000/ http://localhost:3000/orders --launch
+- run: npx @keenskills/page-as-data check http://localhost:3000/ http://localhost:3000/orders --launch
 ```
 
 ### 5. Take a screenshot, only when needed
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/dashboard --screenshot dashboard.png
+npx @keenskills/page-as-data read http://localhost:3000/dashboard --screenshot dashboard.png
 ```
 
 Use it for images, charts and overall visual polish. Everything else is
@@ -191,7 +191,7 @@ One command teaches the coding agents in a project to read screens with
 `page-as-data` instead of taking screenshots:
 
 ```sh
-npx @rajaaltus/page-as-data init
+npx @keenskills/page-as-data init
 ```
 
 In a terminal it runs a short wizard. It checks Node and Chrome, asks which
@@ -224,13 +224,13 @@ the text between `<!-- page-as-data:start -->` and `<!-- page-as-data:end -->`.
 | `--dry-run` | Show what would change, and write nothing. |
 | `--dir path` | The project folder. Default: the current folder. |
 
-`npx @rajaaltus/page-as-data uninstall` removes what `init` wrote, and nothing else.
+`npx @keenskills/page-as-data uninstall` removes what `init` wrote, and nothing else.
 
 ### As a Claude Code plugin
 
 ```text
-/plugin marketplace add rajaaltus/page-as-data
-/plugin install page-as-data@page-as-data
+/plugin marketplace add keenskills/skills
+/plugin install page-as-data@keenskills
 ```
 
 ## Use it inside your own browser tooling
@@ -243,7 +243,7 @@ start, and call `window.__pageAsData`.
 // Playwright
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
-const inPage = readFileSync(createRequire(import.meta.url).resolve('@rajaaltus/page-as-data/in-page'), 'utf8')
+const inPage = readFileSync(createRequire(import.meta.url).resolve('@keenskills/page-as-data/in-page'), 'utf8')
 await page.addInitScript(inPage)
 await page.goto('http://localhost:3000/orders')
 await page.evaluate(() => window.__pageAsData.settle())
@@ -267,7 +267,7 @@ It reads the page and nothing else. It makes no network calls of its own, and
 it only wraps `window.fetch` to count React Server Component requests. It never
 changes them. Password fields are reported as `••••`, never their value.
 
-From Node, `import { readPage, checkPages } from '@rajaaltus/page-as-data'` returns the
+From Node, `import { readPage, checkPages } from '@keenskills/page-as-data'` returns the
 same results as the CLI's `--json`.
 
 ## What the checks mean
@@ -314,7 +314,7 @@ The fixture plants one of each bug, next to a look-alike that is **not** a bug,
 and the tests check both: every bug found, no look-alike reported.
 
 The diagram is built from `docs/diagram/how-it-helps.py` with
-[drawing-architecture-diagrams](https://github.com/gjohnpaull/drawing-architecture-diagrams).
+[drawing-architecture-diagrams](https://github.com/keenskills/skills/tree/main/packages/drawing-architecture-diagrams).
 
 ## License
 

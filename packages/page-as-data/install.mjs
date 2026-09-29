@@ -16,7 +16,7 @@ export const DESCRIPTION =
 export const MANAGED = 'page-as-data:managed'
 export const START = '<!-- page-as-data:start -->'
 export const END = '<!-- page-as-data:end -->'
-const NOTE = `<!-- ${MANAGED}: generated from skill/page-as-data.md in @rajaaltus/page-as-data. Edits here are replaced on update. -->`
+const NOTE = `<!-- ${MANAGED}: generated from skill/page-as-data.md in @keenskills/page-as-data. Edits here are replaced on update. -->`
 // JSON strings are valid YAML double-quoted scalars; the description has a colon in it.
 const DESCRIPTION_YAML = JSON.stringify(DESCRIPTION)
 

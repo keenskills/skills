@@ -1,0 +1,52 @@
+import assert from 'node:assert/strict'
+import { existsSync, readFileSync } from 'node:fs'
+import { describe, it } from 'node:test'
+
+const root = new URL('../', import.meta.url)
+const json = (p) => JSON.parse(readFileSync(new URL(p, root), 'utf8'))
+
+describe('marketplace', () => {
+  const m = json('.claude-plugin/marketplace.json')
+
+  it('is the keenskills marketplace', () => {
+    assert.equal(m.name, 'keenskills')
+    assert.equal(m.owner.name, 'keenskills')
+  })
+
+  // Each listed plugin must install on its own, since the skills stay separate products.
+  for (const p of m.plugins) {
+    describe(p.name, () => {
+      const dir = `${p.source.replace(/^\.\//, '')}/`
+
+      it('has a plugin.json with the same name', () => {
+        assert.equal(json(`${dir}.claude-plugin/plugin.json`).name, p.name)
+      })
+
+      it('has the same plugin and npm version', () => {
+        assert.equal(json(`${dir}.claude-plugin/plugin.json`).version, json(`${dir}package.json`).version)
+      })
+
+      it('ships its skill where Claude Code looks for it', () => {
+        assert.ok(existsSync(new URL(`${dir}skills/${p.name}/SKILL.md`, root)))
+      })
+    })
+  }
+})
+
+describe('page-as-data package', () => {
+  const pkg = json('packages/page-as-data/package.json')
+
+  it('is published under the shared scope from this repo', () => {
+    assert.equal(pkg.name, '@keenskills/page-as-data')
+    assert.deepEqual(pkg.repository, { type: 'git', url: 'git+https://github.com/keenskills/skills.git', directory: 'packages/page-as-data' })
+  })
+
+  // A CRLF shebang makes npx fail with "env: node\r".
+  it('keeps LF line endings in the CLI', () => {
+    assert.ok(!readFileSync(new URL('packages/page-as-data/cli.mjs', root), 'utf8').includes('\r'))
+  })
+
+  it('no longer carries its own marketplace', () => {
+    assert.ok(!existsSync(new URL('packages/page-as-data/.claude-plugin/marketplace.json', root)))
+  })
+})

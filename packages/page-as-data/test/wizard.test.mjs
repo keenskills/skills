@@ -61,7 +61,7 @@ describe('init wizard', () => {
     assert.deepEqual(reads.map((r) => [r.url, r.launch]), [['http://localhost:3000', true]])
     assert.match(screen, /Read "Orders" in 312ms: 0 problems, 2 headings, 3 controls/)
     assert.match(screen, /Next steps/)
-    assert.match(screen, /npx @rajaaltus\/page-as-data read http:\/\/localhost:3000 --width 390 --launch/)
+    assert.match(screen, /npx @keenskills\/page-as-data read http:\/\/localhost:3000 --width 390 --launch/)
     assert.doesNotMatch(screen, /Install the Claude Code skill for/)
   })
 
@@ -80,7 +80,7 @@ describe('init wizard', () => {
     assert.ok(existsSync(join(root, 'AGENTS.md')))
     assert.deepEqual(reads, [])
     const screen = term.plain()
-    assert.match(screen, /npx @rajaaltus\/page-as-data read http:\/\/localhost:5173\/app --width 390\n/)
+    assert.match(screen, /npx @keenskills\/page-as-data read http:\/\/localhost:5173\/app --width 390\n/)
     assert.match(screen, /--remote-debugging-port=9222/)
   })
 

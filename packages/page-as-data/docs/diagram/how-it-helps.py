@@ -1,6 +1,6 @@
 """How page-as-data helps — A4 landscape, font 10.
 
-Built with archdiagram.py from https://github.com/gjohnpaull/drawing-architecture-diagrams.
+Built with archdiagram.py from https://github.com/keenskills/skills/tree/main/packages/drawing-architecture-diagrams.
 Point ARCHDIAGRAM_DIR at that repo's scripts/ folder (or install it as a Claude skill), then:
 
     python docs/diagram/how-it-helps.py docs/diagram/how-it-helps.drawio --render

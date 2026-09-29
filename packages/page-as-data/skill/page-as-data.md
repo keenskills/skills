@@ -12,8 +12,8 @@ It needs Node 22+ and Chrome, Chromium or Edge.
 ## Read a screen
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --launch
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --width 390 --launch   # phone
+npx @keenskills/page-as-data read http://localhost:3000/orders --launch
+npx @keenskills/page-as-data read http://localhost:3000/orders --width 390 --launch   # phone
 ```
 
 The output lists PROBLEMS first (uncaught exceptions, `console.error`, failed requests, broken images, invalid fields, layout defects), then dialogs, alerts, headings, form fields, tables, buttons and the visible text. Add `--json` for the full result.
@@ -23,7 +23,7 @@ The output lists PROBLEMS first (uncaught exceptions, `console.error`, failed re
 Steps run in the order given. The page settles after each one.
 
 ```sh
-npx @rajaaltus/page-as-data read http://localhost:3000/orders --launch \
+npx @keenskills/page-as-data read http://localhost:3000/orders --launch \
   --click "New order" --fill "Email=a@b.co" --press Enter --wait-for "Saved"
 ```
 
@@ -39,7 +39,7 @@ npx @rajaaltus/page-as-data read http://localhost:3000/orders --launch \
 ## Before calling UI work done
 
 ```sh
-npx @rajaaltus/page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
+npx @keenskills/page-as-data check http://localhost:3000/ http://localhost:3000/orders --widths 390,1440 --launch
 ```
 
 It must exit `0`. Exit codes: `0` nothing found, `1` problems found, `2` could not run (no Chrome, bad URL, a step could not find its control). `--strict` also fails on warnings.

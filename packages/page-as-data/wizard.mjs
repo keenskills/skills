@@ -10,8 +10,8 @@ import { isAbsolute, join, relative } from 'node:path'
 import { AGENTS, applyPlan, planInstall, selectAgents } from './install.mjs'
 import { banner, createTUI, isCancel } from './tui.mjs'
 
-const PKG = '@rajaaltus/page-as-data'
-const GUIDE = 'https://github.com/rajaaltus/page-as-data/blob/main/docs/usage.md'
+const PKG = '@keenskills/page-as-data'
+const GUIDE = 'https://github.com/keenskills/skills/blob/main/packages/page-as-data/docs/usage.md'
 const ATTACH_PORT = 9222
 // Not 9222: a Chrome the user started for debugging may already hold it.
 const LAUNCH_PORT = 9333
