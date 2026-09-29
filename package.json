@@ -1,0 +1,15 @@
+{
+  "name": "keenskills",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "pnpm test:repo && pnpm -r test && pnpm test:diagrams",
+    "test:repo": "node --test \"test/*.test.mjs\"",
+    "test:diagrams": "python3 packages/drawing-architecture-diagrams/tests/selftest.py"
+  },
+  "license": "MIT"
+}
