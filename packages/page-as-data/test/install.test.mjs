@@ -335,6 +335,6 @@ describe('Claude Code plugin', () => {
   it('publishes the skill body with the npm package', () => {
     const pkg = json('package.json')
     assert.equal(pkg.name, '@keenskills/page-as-data')
-    for (const f of ['install.mjs', 'tui.mjs', 'wizard.mjs', 'skill/']) assert.ok(pkg.files.includes(f), f)
+    for (const f of ['install.mjs', 'lib/', 'tui.mjs', 'wizard.mjs', 'skill/']) assert.ok(pkg.files.includes(f), f)
   })
 })

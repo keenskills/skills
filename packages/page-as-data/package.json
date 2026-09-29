@@ -15,6 +15,7 @@
     "cli.mjs",
     "page-as-data.js",
     "install.mjs",
+    "lib/",
     "tui.mjs",
     "wizard.mjs",
     "skill/"
