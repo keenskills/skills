@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { describe, it } from 'node:test'
 import content from '../.generated/content.json' with { type: 'json' }
+import pad from '../content/showcase/page-as-data.json' with { type: 'json' }
 
 const out = new URL('../out/', import.meta.url)
 const page = (p) => readFileSync(new URL(p, out), 'utf8')
@@ -72,6 +73,13 @@ describe('skill page', () => {
       assert.equal(/role="tab"[^>]*>Prompts</.test(html), s.gallery.length > 0, s.slug)
       for (const g of s.gallery) for (const p of g.prompts) assert.ok(html.includes(escape(p)), p)
     }
+  })
+})
+
+describe('page-as-data showcase', () => {
+  it('server-renders the real read output', () => {
+    const html = page('page-as-data.html')
+    for (const l of pad.read['390'].output.split('\n').filter((x) => x.includes('•'))) assert.ok(html.includes(escape(l.trim())), l)
   })
 })
 

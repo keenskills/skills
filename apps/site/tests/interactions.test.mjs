@@ -49,3 +49,25 @@ describe('skill page tabs', { skip }, () => {
     assert.equal(first(r, 1)?.visible ?? false, false)
   })
 })
+
+describe('page-as-data showcase', { skip }, () => {
+  it('swaps the screenshot and the output to 1440 px', async () => {
+    const r = await read('/page-as-data', { steps: [{ click: '1440 px' }], inspect: ['[data-read-output]', 'img[src$="fixture-1440.png"]'] })
+    ok(r)
+    assert.match(first(r, 0).text, /@ 1440px/)
+    assert.equal(first(r, 1).visible, true)
+  })
+
+  it('replays the check to its real summary line', async () => {
+    const r = await read('/page-as-data', { steps: [{ click: 'Replay the check' }], inspect: ['[data-check-output="check"]', '[data-check-output="check"] [data-kind="summary"]'] })
+    ok(r)
+    assert.match(first(r, 0).text, /npx @keenskills\/page-as-data check/)
+    assert.match(first(r, 1).text, /^2 page checks · \d+ errors · \d+ warnings$/)
+  })
+
+  it('fits a phone: nothing on the page scrolls sideways at 390 px', async () => {
+    const r = await read('/page-as-data', { width: 390, steps: [{ click: '1440 px' }] })
+    ok(r)
+    assert.deepEqual(r.problems.layout.errors, [])
+  })
+})

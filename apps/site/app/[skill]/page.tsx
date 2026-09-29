@@ -7,7 +7,9 @@ import { PmCommand } from '@/components/pm-command'
 import { PromptGallery } from '@/components/prompt-gallery'
 import { Prose } from '@/components/prose'
 import { SkillHeader } from '@/components/skill-header'
+import { ShowcasePageAsData } from '@/components/showcase-page-as-data'
 import { SkillTabs } from '@/components/skill-tabs'
+import pad from '@/content/showcase/page-as-data.json'
 import { getSkill, skills } from '@/lib/content'
 
 type Props = { params: Promise<{ skill: string }> }
@@ -28,7 +30,14 @@ export default async function SkillPage({ params }: Props) {
       <SkillHeader skill={skill} />
       <SkillTabs
         panels={{
-          preview: <Prose html={skill.intro} />,
+          preview: (
+            <>
+              {skill.slug === 'page-as-data' ? <ShowcasePageAsData data={pad} /> : null}
+              <div className={skill.slug === 'page-as-data' ? 'mt-12' : ''}>
+                <Prose html={skill.intro} />
+              </div>
+            </>
+          ),
           install: (
             <div className="grid gap-5">
               <h2 className="text-xl font-semibold tracking-tight">Install &amp; usage</h2>

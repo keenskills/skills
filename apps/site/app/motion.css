@@ -508,3 +508,8 @@ details.t-accordion[open] > summary .chev { transform: rotate(180deg); }
   details.t-accordion::details-content, details.t-accordion > summary .chev { transition: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
+
+/* Terminal lines enter like transitions.dev "Texts reveal", shortened: they are many and fast. */
+.term-line { animation: term-line 240ms var(--ease-out) both; }
+@keyframes term-line { from { opacity: 0; transform: translateY(4px); filter: blur(2px); } }
+@media (prefers-reduced-motion: reduce) { .term-line { animation: none; } }

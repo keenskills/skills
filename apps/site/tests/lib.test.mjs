@@ -4,6 +4,8 @@ import vm from 'node:vm'
 import { THEME_KEY, THEME_SCRIPT, nextTheme } from '../lib/theme-script.mjs'
 import { copyText } from '../lib/copy.mjs'
 import { PMS, commandFor } from '../lib/commands.mjs'
+import { lineKind, problemLines, replaySchedule } from '../lib/terminal.mjs'
+import pad from '../content/showcase/page-as-data.json' with { type: 'json' }
 
 describe('theme head script', () => {
   const run = (getItem) => {
@@ -60,4 +62,40 @@ describe('commandFor', () => {
   })
   it('falls back to npm for an unknown stored choice', () => assert.equal(commandFor('yarn2', 'x'), 'npx x'))
   it('offers npm, pnpm and bun in that order', () => assert.deepEqual(PMS.map((p) => p.id), ['npm', 'pnpm', 'bun']))
+})
+
+describe('terminal lines', () => {
+  const check = pad.check.output.split('\n')
+  it('colours every line of the real check output', () => {
+    assert.ok(check.some((l) => lineKind(l) === 'fail'))
+    assert.ok(check.some((l) => lineKind(l) === 'error'))
+    assert.ok(check.some((l) => lineKind(l) === 'warning'))
+    assert.equal(lineKind(check.at(-1)), 'summary')
+    assert.equal(lineKind(''), 'blank')
+    assert.equal(lineKind('           · div (div.wide-banner) ends at 616px'), 'detail')
+  })
+  it('sorts read PROBLEMS bullets into errors and warnings', () => {
+    assert.equal(lineKind('  • layout (warning): button "Crowded A" is 16×16px'), 'warning')
+    assert.equal(lineKind('  • broken image: http://localhost:3000/missing-image.png'), 'error')
+    assert.equal(lineKind('PROBLEMS'), 'section')
+  })
+  it('lists the PROBLEMS of a read', () => {
+    const p = problemLines(pad.read['390'].output)
+    assert.ok(p.length >= 10)
+    assert.ok(p.every((l) => !l.startsWith('•')))
+  })
+})
+
+describe('replaySchedule', () => {
+  const lines = ['✖ a', '  error    x', '', '  warning  y', '1 page checks · 1 errors · 1 warnings']
+  it('reveals lines in order, blanks for free', () => {
+    assert.deepEqual(replaySchedule(lines, { step: 40 }).map((l) => l.at), [0, 40, 80, 80, 120])
+  })
+  it('caps the wait so a long run never drags', () => {
+    const many = Array.from({ length: 100 }, (_, i) => `  error    ${i}`)
+    assert.equal(Math.max(...replaySchedule(many, { step: 40, max: 1200 }).map((l) => l.at)), 1200)
+  })
+  it('shows everything at once with reduced motion', () => {
+    assert.ok(replaySchedule(lines, { reduced: true }).every((l) => l.at === 0))
+  })
 })
