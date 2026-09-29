@@ -2,7 +2,7 @@
 
 Agent skills by rajaaltus and gjohnpaull. Each skill is its own package: install only the ones you want.
 
-Docs and install guide: see `apps/site` (deployed on Vercel).
+Docs and install guide: https://keenskills.d2studio.dev
 
 | Skill | What it does | Install |
 | --- | --- | --- |
