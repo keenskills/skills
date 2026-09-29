@@ -6,7 +6,8 @@ import content from '../.generated/content.json' with { type: 'json' }
 
 const out = new URL('../out/', import.meta.url)
 const page = (p) => readFileSync(new URL(p, out), 'utf8')
-const escape = (s) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+// As React escapes text: &, <, >, " and '.
+const escape = (s) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#x27;')
 
 describe('home', () => {
   it('shows every skill with its install command', () => {
@@ -51,6 +52,25 @@ describe('docs', () => {
       const html = page(`${s.slug}.html`)
       assert.ok(html.includes(`v${s.version}`), s.slug)
       assert.ok(html.includes(escape(s.install)), s.slug)
+    }
+  })
+})
+
+describe('skill page', () => {
+  it('offers one Copy prompt button per skill page', () => {
+    for (const s of content.skills) {
+      const html = page(`${s.slug}.html`)
+      assert.equal(html.match(/aria-label="Copy prompt"/g)?.length, 1, s.slug)
+    }
+  })
+
+  it('has Preview and Install tabs, and Prompts only where the README has example prompts', () => {
+    for (const s of content.skills) {
+      const html = page(`${s.slug}.html`)
+      assert.match(html, /role="tab"[^>]*>Preview</)
+      assert.match(html, /role="tab"[^>]*>Install &amp; Usage</)
+      assert.equal(/role="tab"[^>]*>Prompts</.test(html), s.gallery.length > 0, s.slug)
+      for (const g of s.gallery) for (const p of g.prompts) assert.ok(html.includes(escape(p)), p)
     }
   })
 })

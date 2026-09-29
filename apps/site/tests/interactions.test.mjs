@@ -40,3 +40,12 @@ describe('package manager switcher', { skip }, () => {
     assert.match(first(r, 1).text, /^pnpm dlx @keenskills\/page-as-data uninstall/)
   })
 })
+
+describe('skill page tabs', { skip }, () => {
+  it('opens the Prompts panel of the diagram skill', async () => {
+    const r = await read('/architecture-diagrams', { steps: [{ click: 'Prompts' }], inspect: ['#panel-prompts', '#panel-preview'] })
+    ok(r)
+    assert.equal(first(r, 0).visible, true)
+    assert.equal(first(r, 1)?.visible ?? false, false)
+  })
+})

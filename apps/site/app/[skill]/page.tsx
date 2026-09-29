@@ -1,9 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { CodeCommand } from '@/components/code-command'
 import { DocsShell } from '@/components/docs-shell'
+import { PmCommand } from '@/components/pm-command'
+import { PromptGallery } from '@/components/prompt-gallery'
 import { Prose } from '@/components/prose'
 import { SkillHeader } from '@/components/skill-header'
+import { SkillTabs } from '@/components/skill-tabs'
 import { getSkill, skills } from '@/lib/content'
 
 type Props = { params: Promise<{ skill: string }> }
@@ -22,9 +26,23 @@ export default async function SkillPage({ params }: Props) {
   return (
     <DocsShell skill={skill} active="">
       <SkillHeader skill={skill} />
-      <div className="mt-8">
-        <Prose html={skill.intro} />
-      </div>
+      <SkillTabs
+        panels={{
+          preview: <Prose html={skill.intro} />,
+          install: (
+            <div className="grid gap-5">
+              <h2 className="text-xl font-semibold tracking-tight">Install &amp; usage</h2>
+              <PmCommand pkg={skill.name} args="init" label="This project, for the agents it uses" name="install" />
+              <PmCommand pkg={skill.name} args="init --dry-run" label="See the plan first, write nothing" name="dry-run" switcher={false} />
+              <CodeCommand label="As a Claude Code plugin" command={`/plugin marketplace add keenskills/skills\n/plugin install ${skill.pkg}@keenskills`} />
+              <Link href="/how-to-use" className="text-sm font-medium text-accent hover:underline">
+                Every option, per agent
+              </Link>
+            </div>
+          ),
+          prompts: skill.gallery.length ? <PromptGallery gallery={skill.gallery} /> : undefined,
+        }}
+      />
       <h2 className="mt-12 text-xl font-semibold tracking-tight">Docs</h2>
       <ul className="mt-4 grid gap-3 sm:grid-cols-2">
         {skill.sections.map((s) => (

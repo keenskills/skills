@@ -1,4 +1,5 @@
 import type { Skill } from '@/lib/content'
+import { CopyButton } from './copy-button'
 import { PmCommand } from './pm-command'
 
 export function SkillHeader({ skill }: { skill: Skill }) {
@@ -9,6 +10,10 @@ export function SkillHeader({ skill }: { skill: Skill }) {
         <span className="rounded-full border border-border px-2 py-0.5 font-mono text-xs text-muted">{`v${skill.version}`}</span>
       </div>
       <p className="mt-3 max-w-2xl text-muted text-pretty">{skill.summary}</p>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <CopyButton text={skill.prompt} label="Copy prompt" ariaLabel="Copy prompt" variant="primary" />
+        <p className="text-sm text-muted">Paste it into Claude Code, Cursor or Codex.</p>
+      </div>
       <div className="mt-6 max-w-xl">
         <PmCommand pkg={skill.name} args="init" label="Install in your project" />
       </div>

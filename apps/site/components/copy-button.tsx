@@ -5,7 +5,12 @@ import { useTextSwap } from './use-text-swap'
 
 const SAID = { copied: 'Copied', failed: 'Copy failed' } as const
 
-export function CopyButton({ text, label = 'Copy', ariaLabel, className = '' }: { text: string; label?: string; ariaLabel?: string; className?: string }) {
+const LOOK = {
+  chip: 'h-8 gap-1.5 bg-chip px-3 text-xs text-text hover:bg-chip-hover',
+  primary: 'h-9 gap-2 bg-text px-4 text-sm text-bg',
+}
+
+export function CopyButton({ text, label = 'Copy', ariaLabel, variant = 'chip' }: { text: string; label?: string; ariaLabel?: string; variant?: keyof typeof LOOK }) {
   const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
   const [shown, ref] = useTextSwap(state === 'idle' ? label : SAID[state])
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -22,7 +27,7 @@ export function CopyButton({ text, label = 'Copy', ariaLabel, className = '' }: 
       type="button"
       onClick={onClick}
       aria-label={ariaLabel ?? label}
-      className={`press inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full bg-chip px-3 text-xs font-medium text-text hover:bg-chip-hover ${className}`}
+      className={`press inline-flex shrink-0 items-center rounded-full font-medium ${LOOK[variant]}`}
     >
       <span className="t-icon-swap" data-state={state === 'copied' ? 'b' : 'a'} data-ready="">
         <svg className="t-icon size-3.5" data-icon="a" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
