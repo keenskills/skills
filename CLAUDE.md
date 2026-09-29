@@ -24,7 +24,7 @@ pnpm test:diagrams
 
 ## Release
 
-From the package folder: `npm version <patch|minor|major> --no-git-tag-version`, commit, then tag `<package>@v<version>` at the repo root and `git push --follow-tags`. `publish.yml` tests and publishes only that package, with provenance (needs the `NPM_TOKEN` secret). A local `npm publish` fails because of provenance; publish from CI.
+From the package folder: `npm version <patch|minor|major> --no-git-tag-version`, commit, then from the repo root `git tag -a <package>@v<version> -m "<package> <version>"` and `git push --follow-tags` (`--follow-tags` only pushes annotated tags). `publish.yml` tests and publishes only that package, with provenance (needs the `NPM_TOKEN` secret). A local `npm publish` fails because of provenance; publish from CI.
 
 ## Conventions
 

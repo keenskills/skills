@@ -2,7 +2,9 @@ name: publish
 
 on:
   push:
-    tags: ['*@v*']
+    # Every tag, so scripts/release-target.mjs can reject a wrong one
+    # (such as v0.2.0) with a message instead of never running.
+    tags: ['**']
 
 permissions:
   contents: read

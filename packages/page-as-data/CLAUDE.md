@@ -46,7 +46,7 @@ In a terminal, `init` runs `wizard.mjs` instead (`wantsWizard()` in `cli.mjs` de
 
 ### Release
 
-From this folder: `npm version <patch|minor|major> --no-git-tag-version` (its `version` script regenerates the plugin files), commit, then tag `page-as-data@v<version>` and `git push --follow-tags` from the repo root. The root `.github/workflows/publish.yml` runs this package's tests, checks the tag against `package.json`, then publishes with provenance (needs the `NPM_TOKEN` secret). `provenance: true` means a local `npm publish` fails; publish from CI.
+From this folder: `npm version <patch|minor|major> --no-git-tag-version` (its `version` script regenerates the plugin files), commit, then from the repo root `git tag -a page-as-data@v<version> -m "page-as-data <version>"` and `git push --follow-tags` (`--follow-tags` only pushes annotated tags). The root `.github/workflows/publish.yml` runs this package's tests, checks the tag against `package.json`, then publishes with provenance (needs the `NPM_TOKEN` secret). `provenance: true` means a local `npm publish` fails; publish from CI.
 
 ## Tests
 

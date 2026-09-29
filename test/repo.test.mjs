@@ -50,3 +50,24 @@ describe('page-as-data package', () => {
     assert.ok(!existsSync(new URL('packages/page-as-data/.claude-plugin/marketplace.json', root)))
   })
 })
+
+describe('release docs', () => {
+  // git push --follow-tags only sends annotated tags, and npm version no longer
+  // tags inside the monorepo, so a plain `git tag` release never reaches CI.
+  for (const doc of ['CLAUDE.md', 'packages/page-as-data/CLAUDE.md', 'packages/page-as-data/README.md']) {
+    it(`${doc} tags releases with an annotated package tag`, () => {
+      const text = readFileSync(new URL(doc, root), 'utf8')
+      assert.match(text, /git tag -a page-as-data@v|git tag -a <package>@v/)
+      assert.doesNotMatch(text, /git tag (?!-a)/)
+    })
+  }
+})
+
+describe('publish workflow', () => {
+  // Old habits push tags like v0.2.0; the workflow must start and let
+  // scripts/release-target.mjs reject them with a message, not stay silent.
+  it('runs on every tag so release-target.mjs can reject a wrong one', () => {
+    const yml = readFileSync(new URL('.github/workflows/publish.yml', root), 'utf8')
+    assert.match(yml, /tags: \['\*\*'\]/)
+  })
+})

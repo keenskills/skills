@@ -301,12 +301,14 @@ npm test              # the CLI against test/fixture.html in a headless Chrome, 
 npm run build:skill   # after editing skill/page-as-data.md: refresh the Claude Code plugin copy
 ```
 
-To release, bump the version and push the tag. The publish workflow runs the
-tests, then publishes to npm with provenance. It needs an `NPM_TOKEN`
-repository secret (or npm trusted publishing set up for this repository).
+To release, bump the version, commit, and push an annotated tag named after
+the package. The monorepo's publish workflow runs this package's tests, then
+publishes to npm with provenance. It needs an `NPM_TOKEN` repository secret.
 
 ```sh
-npm version patch        # also updates .claude-plugin/plugin.json and the plugin's SKILL.md
+npm version patch --no-git-tag-version   # also updates .claude-plugin/plugin.json and the plugin's SKILL.md
+git commit -am "Release page-as-data <version>"
+git tag -a page-as-data@v<version> -m "page-as-data <version>"
 git push --follow-tags
 ```
 

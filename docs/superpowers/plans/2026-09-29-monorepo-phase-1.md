@@ -715,7 +715,7 @@ cd ../..
 pnpm test:repo
 git add -A
 git commit -m "Release page-as-data 0.2.0"
-git tag page-as-data@v0.2.0
+git tag -a page-as-data@v0.2.0 -m "page-as-data 0.2.0"
 git push --follow-tags
 gh run watch --repo keenskills/skills
 ```
