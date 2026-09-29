@@ -2,12 +2,13 @@
 // regenerate what can run here (page-as-data needs Chrome, the diagram needs
 // python3; draw.io renders are local only) and fail when the output drifts.
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import { mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, it } from 'node:test'
 import { findChrome } from '@keenskills/page-as-data'
-import { SHOWN_ORIGIN, comparable, normalizeOutput, pageAsDataShowcase, pngSize } from '../scripts/build-showcases.mjs'
+import { SHOWN_ORIGIN, comparable, diagramShowcase, normalizeOutput, pageAsDataShowcase, pngSize } from '../scripts/build-showcases.mjs'
 
 describe('normalizeOutput', () => {
   it('shows the fixture at localhost:3000 whatever port served it', () => {
@@ -50,5 +51,37 @@ describe('page-as-data showcase', { skip: findChrome() ? false : 'no Chrome' }, 
       assert.equal(fresh.read[w].exit, committed.read[w].exit)
     }
     assert.equal(comparable(fresh.check.output), comparable(committed.check.output), 'check output changed: run pnpm --filter @keenskills/site showcases')
+  })
+})
+
+const hasPython = spawnSync('python3', ['--version']).status === 0
+
+describe('diagram showcase', { skip: hasPython ? false : 'no python3' }, () => {
+  const committed = () => JSON.parse(readFileSync(new URL('../content/showcase/architecture-diagrams.json', import.meta.url), 'utf8'))
+
+  it('matches a fresh run of the example, the draft script and the real linter', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'diagram-'))
+    const fresh = await diagramShowcase({ publicDir: dir, render: false })
+    const c = committed()
+    assert.deepEqual(fresh.fixes, c.fixes)
+    assert.equal(fresh.draft.lint.output, c.draft.lint.output)
+    assert.equal(fresh.final.lint.output, c.final.lint.output)
+    assert.equal(readFileSync(join(dir, 'northwind.drawio'), 'utf8'), readFileSync(new URL('../public/showcase/architecture-diagrams/northwind.drawio', import.meta.url), 'utf8'))
+  })
+
+  it('shows a draft with findings and a final with none', () => {
+    const c = committed()
+    assert.equal(c.draft.lint.exit, 1)
+    assert.ok(c.draft.lint.output.split('\n').length >= 3)
+    assert.equal(c.final.lint.exit, 0)
+    assert.equal(c.fixes.length, 3)
+  })
+
+  it('draft and final images share one size, so the slider lines up', () => {
+    const c = committed()
+    assert.deepEqual([c.draft.image.width, c.draft.image.height], [c.final.image.width, c.final.image.height])
+    for (const img of [c.draft.image, c.final.image]) {
+      assert.deepEqual(pngSize(readFileSync(new URL(`../public${img.src}`, import.meta.url))), { width: img.width, height: img.height })
+    }
   })
 })

@@ -1,0 +1,338 @@
+<mxfile host="Electron">
+  <diagram name="Order platform (A4)" id="order-platform-a4-">
+    <mxGraphModel dx="1169" dy="827" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="frame" value="" style="rounded=0;fillColor=#FFFFFF;strokeColor=#C8C6C4;" vertex="1" parent="1">
+          <mxGeometry x="10" y="10" width="1149" height="807" as="geometry" />
+        </mxCell>
+        <mxCell id="vnet" value="&lt;b&gt;VNET&lt;/b&gt; · vnet-nw-prod-01 · 10.40.0.0/16" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;dashed=1;dashPattern=4 2;strokeColor=#0078D4;strokeWidth=1.2;fillColor=#F7FBFE;verticalAlign=top;align=left;spacingLeft=30;spacingRight=6;spacingTop=0;spacingBottom=0;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="184" y="206" width="516" height="466" as="geometry" />
+        </mxCell>
+        <mxCell id="design" value="DESIGN DECISIONS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="608" y="64" width="537" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="snPE" value="&lt;b&gt;SNET-PE&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;10.40.9.0/24&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;dashed=1;dashPattern=3 2;strokeColor=#A19F9D;strokeWidth=1;fillColor=#FAFAFA;verticalAlign=top;align=left;spacingLeft=6;spacingRight=6;spacingTop=0;spacingBottom=0;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="552" y="226" width="138" height="434" as="geometry" />
+        </mxCell>
+        <mxCell id="observability" value="OBSERVABILITY" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="580" y="686" width="565" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="platform" value="PLATFORM &amp; SECURITY" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="686" width="548" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="flows" value="KEY FLOWS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="192" y="64" width="408" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="snAks" value="&lt;b&gt;SNET-AKS&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;10.40.1.0/22&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;dashed=1;dashPattern=3 2;strokeColor=#A19F9D;strokeWidth=1;fillColor=#FAFAFA;verticalAlign=top;align=left;spacingLeft=6;spacingRight=6;spacingTop=0;spacingBottom=0;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="196" y="400" width="344" height="126" as="geometry" />
+        </mxCell>
+        <mxCell id="snFunc" value="&lt;b&gt;SNET-FUNC&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;10.40.8.0/24&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;dashed=1;dashPattern=3 2;strokeColor=#A19F9D;strokeWidth=1;fillColor=#FAFAFA;verticalAlign=top;align=left;spacingLeft=6;spacingRight=6;spacingTop=0;spacingBottom=0;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="196" y="536" width="344" height="126" as="geometry" />
+        </mxCell>
+        <mxCell id="titleBlock" value="&lt;b&gt;Northwind Traders · Order Platform&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Production · West Europe&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Fictional sample architecture&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;A4 landscape · Rev 1.0&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=0;fontColor=#323130;verticalAlign=middle;spacingTop=0;" vertex="1" parent="1">
+          <mxGeometry x="908" y="252" width="237" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="snAgw" value="&lt;b&gt;SNET-AGW&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;10.40.0.0/24&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;dashed=1;dashPattern=3 2;strokeColor=#A19F9D;strokeWidth=1;fillColor=#FAFAFA;verticalAlign=top;align=left;spacingLeft=6;spacingRight=6;spacingTop=0;spacingBottom=0;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="196" y="318" width="344" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="LEGEND" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="64" width="160" height="122" as="geometry" />
+        </mxCell>
+        <mxCell id="envchip" value="PRODUCTION" style="rounded=1;arcSize=50;html=1;fillColor=#FFF4CE;strokeColor=#E3B400;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#7A5B00;" vertex="1" parent="1">
+          <mxGeometry x="1057" y="20" width="88" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="observability_bar" value="" style="rounded=0;fillColor=#CA5010;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="580" y="686" width="565" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="rule" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="53" width="1121" height="1.5" as="geometry" />
+        </mxCell>
+        <mxCell id="platform_bar" value="" style="rounded=0;fillColor=#8661C5;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="686" width="548" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="design_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="608" y="64" width="537" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="flows_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="192" y="64" width="408" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="titleBlock_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="908" y="252" width="237" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="64" width="160" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="&lt;font style=&quot;font-size:16px&quot;&gt;&lt;b&gt;Northwind Traders — Event-Driven Order Platform on Azure&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Production · West Europe · AKS microservices, Service Bus orders, event capture to the lake · fictional sample&lt;/font&gt;" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="11" width="818.3" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="legend0t" value="HTTPS / app traffic" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="86" width="119" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend1t" value="Private endpoint" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="101" width="119" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend2t" value="Data flow" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="116" width="119" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend3t" value="Sign-in (Entra ID)" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="131" width="119" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend4t" value="Monitoring" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="146" width="119" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend5t" value="Image pull" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="161" width="119" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN0" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="198" y="88.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT0" value="Users → Front Door (HTTPS, WAF)" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="216" y="86" width="384" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN1" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="198" y="106.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT1" value="Front Door → App Gateway → AKS services" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="216" y="104" width="384" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN2" value="3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="198" y="124.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT2" value="AKS services → Service Bus, Cosmos DB, SQL, Key Vault" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="216" y="122" width="384" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN3" value="4" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="198" y="142.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT3" value="Functions consume the orders queue, update Cosmos DB" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="216" y="140" width="384" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN4" value="5" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="198" y="160.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT4" value="Event Hubs Capture → Data Lake → Synapse" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="216" y="158" width="384" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN5" value="6" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="198" y="178.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT5" value="Workload telemetry → App Insights → Log Analytics" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="216" y="176" width="384" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="designText" value="&lt;font color=&quot;#0078D4&quot;&gt;●&lt;/font&gt; Private endpoints for every data service; public access disabled&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;●&lt;/font&gt; Orders are commands on Service Bus; telemetry streams to Event Hubs&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;●&lt;/font&gt; Event Hubs Capture lands raw events in the Data Lake for Synapse&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;●&lt;/font&gt; AKS pods use workload identity; secrets live in Key Vault&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;●&lt;/font&gt; Zone-redundant AKS, Cosmos DB, SQL and Service Bus Premium&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;●&lt;/font&gt; Two WAF layers: Front Door at the edge, App Gateway in the VNet" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="616" y="80" width="526" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="users" value="&lt;b&gt;Users&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;web &amp; mobile&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;spacingRight=4;image=img/lib/azure2/identity/Users.svg;" vertex="1" parent="1">
+          <mxGeometry x="88.0" y="272" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="afd" value="&lt;b&gt;afd-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Premium · WAF&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/networking/Front_Doors.svg;" vertex="1" parent="1">
+          <mxGeometry x="88.0" y="342" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="entra" value="&lt;b&gt;Entra ID&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;customer sign-in&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/identity/Azure_Active_Directory.svg;" vertex="1" parent="1">
+          <mxGeometry x="88.0" y="482" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="vnetIco" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/networking/Virtual_Networks.svg;" vertex="1" parent="1">
+          <mxGeometry x="190" y="212" width="20" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="agw" value="&lt;b&gt;agw-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;WAF_v2 · ingress&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=4;image=img/lib/azure2/networking/Application_Gateways.svg;" vertex="1" parent="1">
+          <mxGeometry x="300.0" y="342" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="aks" value="&lt;b&gt;aks-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;3 zones · workload identity&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=4;image=img/lib/azure2/containers/Kubernetes_Services.svg;" vertex="1" parent="1">
+          <mxGeometry x="300.0" y="412" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="aksSvc" value="orders-svc · inventory-svc · shipping-svc&lt;br&gt;(namespaces on the user node pool)" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="300" y="474" width="232" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="func" value="&lt;b&gt;func-nw-orders&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Premium EP1 · VNet integrated&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=4;image=img/lib/azure2/compute/Function_Apps.svg;" vertex="1" parent="1">
+          <mxGeometry x="300.0" y="552" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="funcSvc" value="orders-processor · stock-sync&lt;br&gt;(Service Bus triggers)" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="300" y="612" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pe0" value="&lt;b&gt;Service Bus&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;.9.4&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;spacingRight=4;image=img/lib/azure2/networking/Private_Endpoint.svg;" vertex="1" parent="1">
+          <mxGeometry x="657.0" y="274" width="22" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="pe1" value="&lt;b&gt;Event Hubs&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;.9.5&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;spacingRight=4;image=img/lib/azure2/networking/Private_Endpoint.svg;" vertex="1" parent="1">
+          <mxGeometry x="657.0" y="344" width="22" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="pe2" value="&lt;b&gt;Data Lake&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;.9.6&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;spacingRight=4;image=img/lib/azure2/networking/Private_Endpoint.svg;" vertex="1" parent="1">
+          <mxGeometry x="657.0" y="414" width="22" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="pe3" value="&lt;b&gt;Cosmos DB&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;.9.7&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;spacingRight=4;image=img/lib/azure2/networking/Private_Endpoint.svg;" vertex="1" parent="1">
+          <mxGeometry x="657.0" y="484" width="22" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="pe4" value="&lt;b&gt;SQL&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;.9.8&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;spacingRight=4;image=img/lib/azure2/networking/Private_Endpoint.svg;" vertex="1" parent="1">
+          <mxGeometry x="657.0" y="554" width="22" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="pe5" value="&lt;b&gt;Key Vault&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;.9.9&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;spacingRight=4;image=img/lib/azure2/networking/Private_Endpoint.svg;" vertex="1" parent="1">
+          <mxGeometry x="657.0" y="624" width="22" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="hdrC" value="&lt;b&gt;MESSAGING &amp; LAKE&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=center;verticalAlign=middle;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="750" y="232" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="hdrD" value="&lt;b&gt;DATA &amp; ANALYTICS&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=center;verticalAlign=middle;fontColor=#605E5C;" vertex="1" parent="1">
+          <mxGeometry x="965" y="386" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="sb" value="&lt;b&gt;sb-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Premium · orders queue&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/integration/Service_Bus.svg;" vertex="1" parent="1">
+          <mxGeometry x="818.0" y="272" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="evh" value="&lt;b&gt;evh-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Capture → stnwlake&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/analytics/Event_Hubs.svg;" vertex="1" parent="1">
+          <mxGeometry x="818.0" y="342" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="lake" value="&lt;b&gt;stnwlake&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Data Lake · raw events&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/storage/Data_Lake_Storage_Gen1.svg;" vertex="1" parent="1">
+          <mxGeometry x="818.0" y="412" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="syn" value="&lt;b&gt;synw-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Synapse · managed VNet&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/analytics/Azure_Synapse_Analytics.svg;" vertex="1" parent="1">
+          <mxGeometry x="1033.0" y="412" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="cosmos" value="&lt;b&gt;cosmos-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;NoSQL · zone-redundant&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/databases/Azure_Cosmos_DB.svg;" vertex="1" parent="1">
+          <mxGeometry x="1033.0" y="482" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="sql" value="&lt;b&gt;sql-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Business Critical&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/databases/SQL_Database.svg;" vertex="1" parent="1">
+          <mxGeometry x="1033.0" y="552" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="kv" value="&lt;b&gt;kv-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;RBAC · purge protection&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/security/Key_Vaults.svg;" vertex="1" parent="1">
+          <mxGeometry x="1033.0" y="622" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="defender" value="&lt;b&gt;Defender for Cloud&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;CSPM + containers&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/security/Azure_Defender.svg;" vertex="1" parent="1">
+          <mxGeometry x="98.0" y="714" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="mi" value="&lt;b&gt;id-nw-workloads&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;workload identity&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/identity/Managed_Identities.svg;" vertex="1" parent="1">
+          <mxGeometry x="288.0" y="714" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="acr" value="&lt;b&gt;acrnwprod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Premium · geo-replicated&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/containers/Container_Registries.svg;" vertex="1" parent="1">
+          <mxGeometry x="478.0" y="714" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="appi" value="&lt;b&gt;appi-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;App Insights&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/devops/Application_Insights.svg;" vertex="1" parent="1">
+          <mxGeometry x="748.0" y="714" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="law" value="&lt;b&gt;log-nw-prod&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;Log Analytics&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/analytics/Log_Analytics_Workspaces.svg;" vertex="1" parent="1">
+          <mxGeometry x="908.0" y="714" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="monitor" value="&lt;b&gt;Azure Monitor&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;alerts · action groups&lt;/font&gt;" style="image;sketch=0;aspect=fixed;html=1;points=[];fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=none;verticalLabelPosition=bottom;verticalAlign=top;align=center;spacingTop=-2;image=img/lib/azure2/management_governance/Monitor.svg;" vertex="1" parent="1">
+          <mxGeometry x="1058.0" y="714" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="Fictional sample architecture for the drawing-architecture-diagrams skill · all names and addresses are invented" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#8A8886;" vertex="1" parent="1">
+          <mxGeometry x="24" y="799" width="1121" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="legend0" style="html=1;endArrow=blockThin;endFill=1;endSize=4;dashed=1;dashPattern=6 3 1 3;strokeColor=#243A5E;strokeWidth=1.2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="94" as="sourcePoint" />
+            <mxPoint x="58" y="94" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend1" style="html=1;endArrow=blockThin;endFill=1;endSize=4;strokeColor=#3A96DD;strokeWidth=1.3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="109" as="sourcePoint" />
+            <mxPoint x="58" y="109" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend2" style="html=1;endArrow=blockThin;endFill=1;endSize=4;strokeColor=#243A5E;strokeWidth=1.2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="124" as="sourcePoint" />
+            <mxPoint x="58" y="124" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend3" style="html=1;endArrow=blockThin;endFill=1;endSize=4;dashed=1;dashPattern=2 2;strokeColor=#8661C5;strokeWidth=1.2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="139" as="sourcePoint" />
+            <mxPoint x="58" y="139" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend4" style="html=1;endArrow=blockThin;endFill=1;endSize=4;strokeColor=#CA5010;strokeWidth=1.2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="154" as="sourcePoint" />
+            <mxPoint x="58" y="154" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend5" style="html=1;endArrow=blockThin;endFill=1;endSize=4;dashed=1;dashPattern=6 3;strokeColor=#8661C5;strokeWidth=1.2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="169" as="sourcePoint" />
+            <mxPoint x="58" y="169" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eUsersAfd" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=6 3 1 3;strokeColor=#243A5E;strokeWidth=1.2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="users" target="afd">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eAuth" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=2 2;strokeColor=#8661C5;strokeWidth=1.2;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="users" target="entra">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="150" y="284" />
+              <mxPoint x="150" y="494" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eAfdAgw" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=6 3 1 3;strokeColor=#243A5E;strokeWidth=1.2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="afd" target="agw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eAgwAks" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=6 3 1 3;strokeColor=#243A5E;strokeWidth=1.2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="agw" target="aks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eAksPe" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=6 3 1 3;strokeColor=#243A5E;strokeWidth=1.2;exitX=1;exitY=0.4762;entryX=0;entryY=0.5392;" edge="1" parent="1" source="snAks" target="snPE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eFuncPe" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=6 3 1 3;strokeColor=#243A5E;strokeWidth=1.2;exitX=1;exitY=0.5079;entryX=0;entryY=0.8618;" edge="1" parent="1" source="snFunc" target="snPE">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ePe0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#3A96DD;strokeWidth=1.3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pe0" target="sb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ePe1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#3A96DD;strokeWidth=1.3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pe1" target="evh">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ePe2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#3A96DD;strokeWidth=1.3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pe2" target="lake">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ePe3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#3A96DD;strokeWidth=1.3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pe3" target="cosmos">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ePe4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#3A96DD;strokeWidth=1.3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pe4" target="sql">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ePe5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#3A96DD;strokeWidth=1.3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="pe5" target="kv">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eLakeSyn" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#243A5E;strokeWidth=1.2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="lake" target="syn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eTelemetry" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#CA5010;strokeWidth=1.2;exitX=0.9612;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="vnet" target="appi">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="679" />
+              <mxPoint x="760" y="679" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eAppiLaw" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#CA5010;strokeWidth=1.2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="appi" target="law">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eLawMon" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#CA5010;strokeWidth=1.2;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="law" target="monitor">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ePull" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=6 3;strokeColor=#8661C5;strokeWidth=1.2;exitX=0.5;exitY=0;entryX=0.8547;entryY=1;" edge="1" parent="1" source="acr" target="snAks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="badge1" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="93" y="305" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge2" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="165" y="347" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge3" value="3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="544" y="453" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge4" value="4" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="544" y="593" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge5" value="5" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="931" y="417" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge6" value="6" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="673" y="672" width="14" height="14" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

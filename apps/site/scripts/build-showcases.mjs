@@ -5,8 +5,9 @@
 // CI cannot render with draw.io, so tests/showcases.test.mjs regenerates only
 // what it can and compares.
 import { spawn } from 'node:child_process'
-import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -99,6 +100,66 @@ export async function pageAsDataShowcase({ publicDir = join(site, 'public/showca
   }
 }
 
+export const SKILL_DIR = join(repo, 'packages/drawing-architecture-diagrams/skills/drawing-architecture-diagrams')
+const ARCH = join(SKILL_DIR, 'scripts/archdiagram.py')
+const EXAMPLE = join(SKILL_DIR, 'examples/event_driven_platform_a4.py')
+const DRAFT = join(site, 'showcase/northwind_draft.py')
+export const python = (args, opts = {}) => run('python3', args, { env: { ...process.env, ARCHDIAGRAM_DIR: join(SKILL_DIR, 'scripts') }, ...opts })
+
+async function lint(file, shown) {
+  const r = await python([ARCH, 'lint', file])
+  return { command: `python scripts/archdiagram.py lint ${shown}`, output: r.out.trimEnd(), exit: r.code }
+}
+
+async function renderPng(file, scale) {
+  const r = await python([ARCH, 'render', file, '--formats', 'png', '--scale', String(scale)])
+  if (r.code !== 0) throw new Error(`render failed: ${r.err || r.out}`)
+}
+
+/** The diagram loop: the worked example as the final, a linted first draft of it, the fixes between. */
+export async function diagramShowcase({ publicDir = join(site, 'public/showcase/architecture-diagrams'), render = true } = {}) {
+  mkdirSync(publicDir, { recursive: true })
+  const tmp = mkdtempSync(join(tmpdir(), 'northwind-'))
+  const final = join(tmp, 'northwind.drawio')
+  const draft = join(tmp, 'northwind-draft.drawio')
+  const made = await python([EXAMPLE, final])
+  if (made.code !== 0) throw new Error(`example failed: ${made.err}`)
+  const d = await python([DRAFT, final, draft])
+  if (d.code !== 0) throw new Error(`draft failed: ${d.err || d.out}`)
+  const fixes = JSON.parse(d.out)
+  copyFileSync(final, join(publicDir, 'northwind.drawio'))
+
+  const pub = (name) => `/showcase/architecture-diagrams/${name}`
+  if (render) {
+    // Downloads: the default export (3x PNG cropped to the frame, PDF at page size).
+    const r = await python([ARCH, 'render', final])
+    if (r.code !== 0) throw new Error(`render failed: ${r.err || r.out}`)
+    copyFileSync(join(tmp, 'northwind.png'), join(publicDir, 'northwind.png'))
+    copyFileSync(join(tmp, 'northwind.pdf'), join(publicDir, 'northwind.pdf'))
+    // On-page images: 2x is sharp on retina and a fraction of the download's weight.
+    for (const [src, name] of [[final, 'northwind-view'], [draft, 'northwind-draft-view']]) {
+      const copy = join(tmp, `${name}.drawio`)
+      copyFileSync(src, copy)
+      await renderPng(copy, 2)
+      copyFileSync(join(tmp, `${name}.png`), join(publicDir, `${name}.png`))
+    }
+  }
+  // Without draw.io (CI) the committed renders stand; their sizes still come from the files.
+  const imageDir = render ? publicDir : join(site, 'public/showcase/architecture-diagrams')
+  const image = (name) => ({ src: pub(name), ...pngSize(readFileSync(join(imageDir, name))) })
+  return {
+    example: 'https://github.com/keenskills/skills/blob/main/packages/drawing-architecture-diagrams/skills/drawing-architecture-diagrams/examples/event_driven_platform_a4.py',
+    draft: { lint: await lint(draft, 'northwind-draft.drawio'), image: image('northwind-draft-view.png') },
+    fixes,
+    final: { lint: await lint(final, 'northwind.drawio'), image: image('northwind-view.png') },
+    downloads: [
+      { label: 'draw.io file', href: pub('northwind.drawio'), ext: '.drawio' },
+      { label: 'PNG, 3×', href: pub('northwind.png'), ext: '.png' },
+      { label: 'PDF, A4 landscape', href: pub('northwind.pdf'), ext: '.pdf' },
+    ],
+  }
+}
+
 const write = (name, data) => {
   const dir = join(site, 'content/showcase')
   mkdirSync(dir, { recursive: true })
@@ -109,6 +170,7 @@ const write = (name, data) => {
 async function main() {
   const only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null
   if (!only || only === 'page-as-data') write('page-as-data.json', await pageAsDataShowcase())
+  if (!only || only === 'architecture-diagrams') write('architecture-diagrams.json', await diagramShowcase())
 }
 
 if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) await main()

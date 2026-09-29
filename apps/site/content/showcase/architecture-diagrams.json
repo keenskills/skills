@@ -1,0 +1,49 @@
+{
+  "example": "https://github.com/keenskills/skills/blob/main/packages/drawing-architecture-diagrams/skills/drawing-architecture-diagrams/examples/event_driven_platform_a4.py",
+  "draft": {
+    "lint": {
+      "command": "python scripts/archdiagram.py lint northwind-draft.drawio",
+      "output": "users: icon is 44x44 - keep icons 20-28 px; never enlarge icons to fill space\nentra / cosmos: labels overlap\nafd / evh: labels in one row are 7px off a common baseline - place row icons with icon_b()\nwhitespace: empty area 128x280 at x=16,y=404 (4% of page) - move a panel here or tighten the layout",
+      "exit": 1
+    },
+    "image": {
+      "src": "/showcase/architecture-diagrams/northwind-draft-view.png",
+      "width": 2339,
+      "height": 1655
+    }
+  },
+  "fixes": [
+    "users: icon back to 24×24 px (the draft had it at 44×44)",
+    "afd: moved 7 px up, back onto its row's baseline",
+    "entra: moved back to x=88, so its label no longer overlaps cosmos's"
+  ],
+  "final": {
+    "lint": {
+      "command": "python scripts/archdiagram.py lint northwind.drawio",
+      "output": "lint: no overlaps or whitespace findings (still view the PNG)",
+      "exit": 0
+    },
+    "image": {
+      "src": "/showcase/architecture-diagrams/northwind-view.png",
+      "width": 2339,
+      "height": 1655
+    }
+  },
+  "downloads": [
+    {
+      "label": "draw.io file",
+      "href": "/showcase/architecture-diagrams/northwind.drawio",
+      "ext": ".drawio"
+    },
+    {
+      "label": "PNG, 3×",
+      "href": "/showcase/architecture-diagrams/northwind.png",
+      "ext": ".png"
+    },
+    {
+      "label": "PDF, A4 landscape",
+      "href": "/showcase/architecture-diagrams/northwind.pdf",
+      "ext": ".pdf"
+    }
+  ]
+}
