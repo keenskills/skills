@@ -97,3 +97,23 @@ describe('mobile skills menu', { skip }, () => {
     assert.ok(r.inspected[0].elements.every((e) => e.visible))
   })
 })
+
+describe('review fixes', { skip }, () => {
+  it('shows the hero after client-side navigation to /', async () => {
+    const r = await read('/how-to-use', { steps: [{ click: 'Keen Skills' }, { waitFor: 'Sharper senses' }], inspect: ['#hero-copy h1'] })
+    ok(r)
+    assert.equal(first(r).styles.opacity, '1')
+    assert.equal(first(r).visible, true)
+  })
+
+  it('places the package-manager pill when the Install tab opens', async () => {
+    const r = await read('/page-as-data', { steps: [{ click: 'Install & Usage' }], inspect: ['#panel-install .t-tabs-pill'] })
+    ok(r)
+    assert.ok(first(r).box.w > 20, JSON.stringify(first(r).box))
+  })
+
+  it('prints the lint exit code at readable contrast', async () => {
+    const r = await read('/architecture-diagrams', { inspect: ['[data-lint-exit]'] })
+    assert.ok(first(r).contrast >= 4.5, String(first(r).contrast))
+  })
+})

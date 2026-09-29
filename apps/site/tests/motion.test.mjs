@@ -27,7 +27,17 @@ export function reducedBlocks(css) {
   return out.join('\n')
 }
 
+const components = new URL('../components/', import.meta.url)
+const tsx = readdirSync(components, { recursive: true }).filter((f) => f.endsWith('.tsx')).map((f) => [f, readFileSync(new URL(f, components), 'utf8')])
+
 describe('motion rules', () => {
+  // Inline transitions escape the reduced-motion guards; motion belongs in CSS.
+  for (const [name, src] of tsx) {
+    it(`${name}: no inline transition other than none`, () => {
+      for (const m of src.matchAll(/transition\s*[:=]\s*([^,}\n]+)/g)) assert.match(m[1], /^['"`]?none['"`]?\s*$|^''$/, m[0])
+    })
+  }
+
   for (const [name, css] of sheets) {
     it(`${name}: never transitions all properties`, () => assert.doesNotMatch(css, /transition(-property)?\s*:\s*all\b/))
     it(`${name}: nothing enters from scale(0)`, () => assert.doesNotMatch(css, /scale\(0(\.0*)?\)/))

@@ -101,6 +101,13 @@ describe('page-as-data showcase', () => {
 })
 
 describe('diagram showcase', () => {
+  it('says how the first draft was made', () => {
+    assert.match(page('architecture-diagrams.html'), /made by undoing three of the example/)
+  })
+  it('shows keyboard focus on the slider handle', () => {
+    const html = page('architecture-diagrams.html')
+    assert.match(html, /has-\[input:focus-visible\]:outline-2/)
+  })
   it('links the real downloads, and they are in the export', () => {
     const html = page('architecture-diagrams.html')
     for (const d of diagrams.downloads) {

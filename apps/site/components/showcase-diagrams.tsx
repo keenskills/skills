@@ -49,6 +49,9 @@ export function ShowcaseDiagrams({ data }: { data: DiagramShowcase }) {
             </a>{' '}
             (a fictional company): a first draft, the real linter&rsquo;s findings, the fixes, and the final render.
           </p>
+          <p className="mt-1 max-w-xl text-xs text-muted text-pretty">
+            The draft was made by undoing three of the example&rsquo;s details; its findings, the fixes and both renders are real output.
+          </p>
         </div>
         <SlidingTabs label="Step" options={STEPS} value={step} onChange={go} />
       </div>
@@ -71,7 +74,7 @@ export function ShowcaseDiagrams({ data }: { data: DiagramShowcase }) {
                 {chip}
               </span>
             </span>
-            <span className="font-mono text-xs text-faint">exit {step === 'fix' ? '—' : lint.exit}</span>
+            <span data-lint-exit="" className="font-mono text-xs text-muted">exit {step === 'fix' ? '—' : lint.exit}</span>
           </div>
           {step === 'fix' ? (
             <ol className="list-decimal space-y-1.5 py-4 pl-9 pr-4 font-mono text-[12.5px] leading-5" data-lint-output="fix">

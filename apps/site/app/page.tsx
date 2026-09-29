@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { HeroReveal } from '@/components/hero-reveal'
 import { DiagramDraw } from '@/components/illustrations/diagram-draw'
 import { PageScan } from '@/components/illustrations/page-scan'
 import diagrams from '@/content/showcase/architecture-diagrams.json'
@@ -27,8 +28,6 @@ const FAQS = [
   { q: 'Are they free?', a: 'Yes. Both are MIT licensed and open source on GitHub.' },
 ]
 
-const HERO_SCRIPT = "requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('hero-copy').classList.add('is-shown')))"
-
 // The four PROBLEMS lines the page-scan illustration numbers, in marker order.
 const PICK = [/cut off/, /^broken image/, /wide in a/, /^uncaught exception/]
 const problems = problemLines(pad.read['390'].output)
@@ -39,15 +38,13 @@ export default function Home() {
   return (
     <>
       <section className="py-16 sm:py-24">
-        <div className="t-stagger" id="hero-copy">
+        <HeroReveal>
         <p className="t-stagger-line t-stagger-line--1 text-sm font-medium text-accent">Open-source agent skills</p>
         <h1 className="t-stagger-line t-stagger-line--2 mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">Sharper senses for your coding agent</h1>
         <p className="t-stagger-line t-stagger-line--3 mt-4 max-w-2xl text-lg text-muted text-pretty">
           Skills that let an agent read what a web page really shows, and draw architecture diagrams you can print. Each one installs with a single command.
         </p>
-        </div>
-        {/* Starts the reveal after the first paint; <noscript> in the layout shows the text without script. */}
-        <script dangerouslySetInnerHTML={{ __html: HERO_SCRIPT }} />
+        </HeroReveal>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="#skills" className="rounded-lg bg-text px-4 py-2 text-sm font-medium text-bg">
             Browse skills

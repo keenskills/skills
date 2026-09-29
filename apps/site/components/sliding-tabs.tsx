@@ -43,11 +43,13 @@ export function SlidingTabs({
     animate.current = false
   }, [value])
   useLayoutEffect(() => {
-    const onResize = () => place(false)
-    window.addEventListener('resize', onResize)
-    // Webfonts change tab widths after first paint.
-    document.fonts?.ready.then(() => place(false))
-    return () => window.removeEventListener('resize', onResize)
+    // Re-measure whenever the bar's size changes: a window resize, a webfont swap,
+    // or a hidden tab panel becoming visible (it measures 0 while hidden).
+    const bar_ = bar.current
+    if (!bar_) return
+    const ro = new ResizeObserver(() => place(false))
+    ro.observe(bar_)
+    return () => ro.disconnect()
   }, [])
 
   const pick = (id: string, e: MouseEvent | KeyboardEvent) => {

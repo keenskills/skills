@@ -517,3 +517,8 @@ details.t-accordion[open] > summary .chev { transform: rotate(180deg); }
 .term-line { animation: term-line 240ms var(--ease-out) both; }
 @keyframes term-line { from { opacity: 0; transform: translateY(4px); filter: blur(2px); } }
 @media (prefers-reduced-motion: reduce) { .term-line { animation: none; } }
+
+/* Compare slider: step buttons glide the clip and handle (movement: ease-in-out); drag does not. */
+.cmp-glide { transition: clip-path 250ms var(--ease-in-out), transform 250ms var(--ease-in-out); }
+.cmp-chip { transition: opacity 150ms ease; }
+@media (prefers-reduced-motion: reduce) { .cmp-glide { transition: none; } }
