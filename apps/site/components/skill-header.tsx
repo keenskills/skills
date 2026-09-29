@@ -1,5 +1,5 @@
 import type { Skill } from '@/lib/content'
-import { CodeCommand } from './code-command'
+import { PmCommand } from './pm-command'
 
 export function SkillHeader({ skill }: { skill: Skill }) {
   return (
@@ -10,7 +10,7 @@ export function SkillHeader({ skill }: { skill: Skill }) {
       </div>
       <p className="mt-3 max-w-2xl text-muted text-pretty">{skill.summary}</p>
       <div className="mt-6 max-w-xl">
-        <CodeCommand command={skill.install} label="Install in your project" />
+        <PmCommand pkg={skill.name} args="init" label="Install in your project" />
       </div>
       <ul className="mt-4 flex flex-wrap gap-4 text-sm">
         <li>

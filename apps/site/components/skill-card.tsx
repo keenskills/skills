@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Skill } from '@/lib/content'
-import { CodeCommand } from './code-command'
+import { PmCommand } from './pm-command'
 
 export function SkillCard({ skill }: { skill: Skill }) {
   return (
@@ -9,7 +9,7 @@ export function SkillCard({ skill }: { skill: Skill }) {
         <h3 className="text-lg font-semibold tracking-tight">{skill.title}</h3>
         <p className="mt-1.5 text-sm text-muted text-pretty">{skill.summary}</p>
       </div>
-      <CodeCommand command={skill.install} />
+      <PmCommand pkg={skill.name} args="init" />
       <Link href={`/${skill.slug}`} className="mt-auto self-start text-sm font-medium text-accent hover:underline">
         Read the {skill.title} docs <span aria-hidden="true">→</span>
       </Link>

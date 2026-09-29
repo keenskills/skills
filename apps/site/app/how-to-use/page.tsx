@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { CodeCommand } from '@/components/code-command'
+import { PmCommand } from '@/components/pm-command'
 import { agents, skills } from '@/lib/content'
 
 export const metadata: Metadata = { title: 'How to use', description: 'Install a Keen Skills skill for your coding agent with one command, or as a Claude Code plugin.' }
@@ -18,11 +19,11 @@ export default function HowToUse() {
             {s.title}
           </h2>
           <div className="mt-4 grid gap-4">
-            <CodeCommand label="This project, for the agents it uses" command={s.install} />
-            <CodeCommand label="Claude Code, in every project" command={`${s.install} --global`} />
-            <CodeCommand label="Pick the agents yourself" command={`${s.install} --agent claude,cursor`} />
-            <CodeCommand label="See the plan first, write nothing" command={`${s.install} --dry-run`} />
-            <CodeCommand label="Remove what init wrote" command={`npx ${s.name} uninstall`} />
+            <PmCommand pkg={s.name} args="init" label="This project, for the agents it uses" name="install" />
+            <PmCommand pkg={s.name} args="init --global" label="Claude Code, in every project" name="global" switcher={false} />
+            <PmCommand pkg={s.name} args="init --agent claude,cursor" label="Pick the agents yourself" name="agents" switcher={false} />
+            <PmCommand pkg={s.name} args="init --dry-run" label="See the plan first, write nothing" name="dry-run" switcher={false} />
+            <PmCommand pkg={s.name} args="uninstall" label="Remove what init wrote" name="uninstall" switcher={false} />
             <CodeCommand label="As a Claude Code plugin" command={`/plugin marketplace add keenskills/skills\n/plugin install ${s.pkg}@keenskills`} />
           </div>
         </section>
