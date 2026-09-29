@@ -33,6 +33,8 @@ describe('home', () => {
     assert.match(html, /<noscript><style>[^<]*\.t-stagger-line/)
   })
 
+  it('has a favicon', () => assert.match(page('index.html'), /<link rel="icon"[^>]*href="\/icon\.svg/))
+
   it('links the CI run that checks this site with page-as-data', () => {
     assert.match(page('index.html'), /href="https:\/\/github\.com\/keenskills\/skills\/actions\/workflows\/test\.yml"/)
   })

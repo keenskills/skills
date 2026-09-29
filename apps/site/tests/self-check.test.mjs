@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, it } from 'node:test'
-import { resolveFile, routesFrom } from '../scripts/self-check.mjs'
+import { checkRoutes, resolveFile, routesFrom } from '../scripts/self-check.mjs'
 
 function fakeExport() {
   const out = mkdtempSync(join(tmpdir(), 'out-'))
@@ -17,6 +17,12 @@ function fakeExport() {
 describe('routesFrom', () => {
   it('lists every exported page, and not the 404 or build files', () => {
     assert.deepEqual(routesFrom(fakeExport()), ['/', '/how-to-use', '/page-as-data', '/page-as-data/install'])
+  })
+})
+
+describe('checkRoutes', () => {
+  it('also checks the 404 page', () => {
+    assert.deepEqual(checkRoutes(fakeExport()).at(-1), '/404')
   })
 })
 

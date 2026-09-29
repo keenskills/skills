@@ -20,18 +20,25 @@ export function routesFrom(outDir) {
     .sort()
 }
 
+/** routesFrom plus the 404 page, which a visitor sees as often as any other. */
+export function checkRoutes(outDir) {
+  return [...routesFrom(outDir), ...(existsSync(join(outDir, '404.html')) ? ['/404'] : [])]
+}
+
 async function main() {
   const outDir = fileURLToPath(new URL('../out', import.meta.url))
   if (!existsSync(outDir)) {
     console.error('No out/ folder: run pnpm build first.')
     return 2
   }
-  const routes = routesFrom(outDir)
+  const routes = checkRoutes(outDir)
   const server = await serveExport(outDir)
   const base = server.base
   console.log(`page-as-data check: ${routes.length} pages at 390 and 1440 px`)
   const code = await new Promise((done) => {
-    const child = spawn('pnpm', ['exec', 'page-as-data', 'check', ...routes.map((r) => base + r), '--widths', '390,1440', '--launch'], { stdio: 'inherit' })
+    // The CLI by path with this Node, so the check runs from any folder, with or without pnpm.
+    const cli = fileURLToPath(import.meta.resolve('@keenskills/page-as-data'))
+    const child = spawn(process.execPath, [cli, 'check', ...routes.map((r) => base + r), '--widths', '390,1440', '--launch'], { stdio: 'inherit' })
     child.on('exit', (c) => done(c ?? 2))
     child.on('error', () => done(2))
   })
