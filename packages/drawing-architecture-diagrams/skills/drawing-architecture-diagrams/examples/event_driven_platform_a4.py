@@ -11,13 +11,28 @@ Patterns shown:
 
 Run:  python event_driven_platform_a4.py out.drawio [--render]
 """
+import os
 import sys
 from pathlib import Path
 
-_SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
-if not (_SCRIPTS / "archdiagram.py").exists():          # copied elsewhere: use the installed skill
-    _SCRIPTS = Path.home() / ".claude" / "skills" / "drawing-architecture-diagrams" / "scripts"
-sys.path.insert(0, str(_SCRIPTS))
+
+def _find_scripts() -> Path:
+    """archdiagram.py sits next to this example in the skill folder. A copy made in a project looks where
+    `init` and Claude Code install the skill: .claude/skills or .agents/skills in this folder or a parent,
+    then ~/.claude/skills. A plugin install lives elsewhere, so ARCHDIAGRAM_DIR wins over all of them."""
+    name = "drawing-architecture-diagrams"
+    found = [Path(os.environ["ARCHDIAGRAM_DIR"])] if os.environ.get("ARCHDIAGRAM_DIR") else []
+    found.append(Path(__file__).resolve().parent.parent / "scripts")
+    for base in (Path.cwd(), *Path.cwd().parents):
+        found += [base / ".claude" / "skills" / name / "scripts", base / ".agents" / "skills" / name / "scripts"]
+    found.append(Path.home() / ".claude" / "skills" / name / "scripts")
+    for cand in found:
+        if (cand / "archdiagram.py").exists():
+            return cand
+    sys.exit(f"archdiagram.py not found. Set ARCHDIAGRAM_DIR to the scripts folder of the {name} skill.")
+
+
+sys.path.insert(0, str(_find_scripts()))
 from archdiagram import Diagram, lint_file, render  # noqa: E402
 
 OUT = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else "event_driven_platform_a4.drawio"

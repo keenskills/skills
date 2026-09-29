@@ -67,4 +67,26 @@ try:
 except ValueError:
     check("rel() raises outside the cell", True)
 
+# 6. a copy of the example made anywhere still finds archdiagram.py
+import os  # noqa: E402
+import shutil  # noqa: E402
+
+away = Path(tempfile.mkdtemp())
+shutil.copy(ROOT / "examples" / "event_driven_platform_a4.py", away / "build.py")
+bare = {k: v for k, v in os.environ.items() if k != "ARCHDIAGRAM_DIR"}
+bare["HOME"] = str(away)
+
+r = subprocess.run([sys.executable, "build.py", "out.drawio"], cwd=away, env={**bare, "ARCHDIAGRAM_DIR": str(ROOT / "scripts")}, capture_output=True, text=True)
+check("copied example uses ARCHDIAGRAM_DIR", r.returncode == 0 and "lint: 0 issue" in r.stdout)
+
+proj = Path(tempfile.mkdtemp())
+shutil.copytree(ROOT / "scripts", proj / ".agents" / "skills" / "drawing-architecture-diagrams" / "scripts")
+(proj / "docs").mkdir()
+shutil.copy(away / "build.py", proj / "docs" / "build.py")
+r = subprocess.run([sys.executable, "build.py", "out.drawio"], cwd=proj / "docs", env=bare, capture_output=True, text=True)
+check("copied example finds .agents/skills in a parent folder", r.returncode == 0)
+
+r = subprocess.run([sys.executable, "build.py", "out.drawio"], cwd=away, env=bare, capture_output=True, text=True)
+check("copied example says how to fix a missing archdiagram.py", r.returncode != 0 and "ARCHDIAGRAM_DIR" in r.stderr)
+
 sys.exit(0 if ok else 1)

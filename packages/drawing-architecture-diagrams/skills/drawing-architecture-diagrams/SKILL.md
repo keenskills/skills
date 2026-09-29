@@ -29,8 +29,9 @@ Estimates of text width are always wrong somewhere.
    it when everything fits at font 10. **Slack rule:** on the chosen page, keep bands tight and park any leftover
    height in ONE band directly above the footer (lint allows it); never spread it as gaps between bands.
    Sketch the bands (below). Count items per row and check `pitch ≥ widest label + 8`.
-3. **Write the build script** in the working folder: copy `examples/event_driven_platform_a4.py` (its import falls back
-   to `~/.claude/skills/drawing-architecture-diagrams/scripts`, so a copy runs anywhere). Create scripts with the
+3. **Write the build script** in the working folder: copy `examples/event_driven_platform_a4.py` (a copy finds `scripts/`
+   in `.claude/skills` or `.agents/skills` of the project or a parent folder, or in `~/.claude/skills`; otherwise set
+   `ARCHDIAGRAM_DIR=<this skill's folder>/scripts`). Create scripts with the
    Write tool and change them with Edit or a patch-script file; never inline code in shell heredocs (quotes break them).
 4. **Loop:** `d.save()` → `lint_file()` → `render()` → **Read the PNG** → fix → repeat. Two or three passes is normal.
    Lint reports overlaps **and whitespace** (boxes holding only a title, boxes under 15% filled, one-sided gaps,
