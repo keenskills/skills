@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { SKILLS, agentTargets, buildContent, firstSentence, renderMarkdown, rewriteHref, splitSections } from '../scripts/build-content.mjs'
+import { SKILLS, agentTargets, buildContent, buildPrompt, firstSentence, promptGallery, renderMarkdown, rewriteHref, splitSections, weeklyDownloads } from '../scripts/build-content.mjs'
 
 const ctx = { pkg: 'p', slug: 'p', sections: [] }
 
@@ -83,5 +83,52 @@ describe('buildContent', () => {
     const agents = agentTargets()
     assert.equal(agents.length, 7)
     assert.deepEqual(agents.find((a) => a.id === 'claude'), { id: 'claude', label: 'Claude Code', path: '.claude/skills/<skill>/SKILL.md' })
+  })
+})
+
+describe('buildPrompt', () => {
+  const skillMd = '---\nname: x\n---\n\n# Read a web page as data\n\n`x` reads a page. Use it when you check UI.\n\nIt needs Node 22+.\n\n## Read a screen\n\n```sh\nnpx x read http://localhost:3000 --launch\n```\n\n## Check\n\n```sh\nnpx x check http://localhost:3000 --launch\n```\n\n```sh\nnot included\n```\n'
+  const p = buildPrompt({ title: 'x', pkg: 'x', install: 'npx x init', skillMd })
+
+  it('starts with the install line and the plugin alternative', () => {
+    assert.match(p, /^Install the x agent skill in this project: npx x init\n/)
+    assert.match(p, /\/plugin install x@keenskills/)
+  })
+  it('says what it is for from the skill file, as plain text', () => {
+    assert.match(p, /x reads a page\. Use it when you check UI\./)
+    assert.doesNotMatch(p, /`/)
+  })
+  it('carries the first two command blocks and no more', () => {
+    assert.match(p, /npx x read http:\/\/localhost:3000 --launch/)
+    assert.match(p, /npx x check http:\/\/localhost:3000 --launch/)
+    assert.doesNotMatch(p, /not included/)
+  })
+  it('takes the purpose from text that follows a heading with no blank line between', () => {
+    const q = buildPrompt({ title: 'y', pkg: 'y', install: 'npx y init', skillMd: '# Title\n\n## Overview\nGenerate the diagram from a script.\n\n**Core principle:** look.\n' })
+    assert.match(q, /What it is for: Generate the diagram from a script\./)
+  })
+  it('leaves out the commands heading when the skill file has no command blocks', () => {
+    const q = buildPrompt({ title: 'y', pkg: 'y', install: 'npx y init', skillMd: '# T\n\nDoes things.\n' })
+    assert.doesNotMatch(q, /Key commands/)
+  })
+})
+
+describe('promptGallery', () => {
+  const use = '## Use\n\nIntro.\n\n### From a live cloud environment\nClaude inventories first.\n\n- `Diagram rg-a.`\n- `Draw the hub,\n  spokes and peering.`\n\n### Tips for good results\n- Give it facts, not just names.\n\nOr use the library directly:\n'
+  it('groups the backticked prompts under their situation', () => {
+    assert.deepEqual(promptGallery(use), [
+      { title: 'From a live cloud environment', note: 'Claude inventories first.', prompts: ['Diagram rg-a.', 'Draw the hub, spokes and peering.'] },
+    ])
+  })
+  it('is empty for a README without example prompts', () => assert.deepEqual(promptGallery('## Use it\n\n### 1. Pick a Chrome\n\n```sh\nx\n```\n'), []))
+})
+
+describe('weeklyDownloads', () => {
+  it('reads the npm count', async () => {
+    assert.equal(await weeklyDownloads('x', async () => ({ ok: true, json: async () => ({ downloads: 1234 }) })), 1234)
+  })
+  it('gives null rather than failing the build when npm is unreachable', async () => {
+    assert.equal(await weeklyDownloads('x', async () => { throw new Error('offline') }), null)
+    assert.equal(await weeklyDownloads('x', async () => ({ ok: false })), null)
   })
 })

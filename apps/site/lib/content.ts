@@ -2,6 +2,7 @@
 import data from '../.generated/content.json'
 
 export type Section = { heading: string; slug: string; html: string }
+export type Gallery = { title: string; note: string; prompts: string[] }
 export type Skill = {
   pkg: string
   slug: string
@@ -17,9 +18,13 @@ export type Skill = {
   sections: Section[]
   changelog: string
   skill: string
+  prompt: string
+  gallery: Gallery[]
+  downloads: number | null
 }
 export type Agent = { id: string; label: string; path: string }
 
-export const skills = data.skills as Skill[]
-export const agents = data.agents as Agent[]
+// Typed assignment, not `as`: a field missing from the JSON is a type error here.
+export const skills: Skill[] = data.skills
+export const agents: Agent[] = data.agents
 export const getSkill = (slug: string) => skills.find((s) => s.slug === slug)

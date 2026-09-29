@@ -131,12 +131,60 @@ export const firstSentence = (text) => {
   return i === -1 ? text : text.slice(0, i + 1)
 }
 
+const stripMd = (s) => s.replace(/`([^`]*)`/g, '$1').replace(/\*\*?([^*]+)\*\*?/g, '$1').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+
+/** The one-paste prompt: install, what it is for, the key commands — all from the skill's own file. */
+export function buildPrompt({ title, pkg, install, skillMd }) {
+  const body = skillMd.replace(/\r\n/g, '\n').replace(/^---\n[\s\S]*?\n---\n/, '')
+  // A heading can sit directly on its first line of text; the text is still the paragraph.
+  const paras = body.split(/\n{2,}/).map((p) => p.replace(/^(#{1,6} .*\n?)+/, '').trim())
+  const purpose = stripMd(paras.find((p) => p && !p.startsWith('#') && !p.startsWith('```')) ?? '').replace(/\s*\n\s*/g, ' ')
+  const blocks = [...body.matchAll(/```(?:sh|bash|shell)?\n([\s\S]*?)```/g)].slice(0, 2).map((m) => m[1].trimEnd())
+  return [
+    `Install the ${title} agent skill in this project: ${install}`,
+    `(In Claude Code you can instead run /plugin marketplace add keenskills/skills, then /plugin install ${pkg}@keenskills.)`,
+    '',
+    `What it is for: ${purpose}`,
+    '',
+    ...(blocks.length ? ['Key commands:', ...blocks.map((b) => b.split('\n').map((l) => `  ${l}`).join('\n')), ''] : []),
+    'Then read the installed skill file and use it for the work in this project.',
+  ].join('\n')
+}
+
+/** The README's example prompts, grouped by the ### situation they sit under. */
+export function promptGallery(md) {
+  const groups = []
+  for (const part of md.replace(/\r\n/g, '\n').split(/^### /m).slice(1)) {
+    const [title, ...rest] = part.split('\n')
+    const text = rest.join('\n')
+    const prompts = [...text.matchAll(/^- `([\s\S]*?)`/gm)].map((m) => m[1].replace(/\s*\n\s*/g, ' ').trim())
+    if (!prompts.length) continue
+    const note = stripMd(text.split(/^- /m)[0].trim().split('\n\n')[0]).replace(/\s*\n\s*/g, ' ')
+    groups.push({ title: title.trim(), note, prompts })
+  }
+  return groups
+}
+
+/** Last week's npm downloads, or null: a slow or offline registry must not fail the build. */
+export async function weeklyDownloads(name, fetchImpl = fetch) {
+  try {
+    const res = await fetchImpl(`https://api.npmjs.org/downloads/point/last-week/${name}`, { signal: AbortSignal.timeout(3000) })
+    if (!res.ok) return null
+    const { downloads } = await res.json()
+    return Number.isFinite(downloads) ? downloads : null
+  } catch {
+    return null
+  }
+}
+
 async function buildSkill(s) {
   const dir = new URL(`packages/${s.pkg}/`, root)
   const read = (f) => readFileSync(new URL(f, dir), 'utf8')
   const pkg = JSON.parse(read('package.json'))
   const readme = splitSections(read('README.md'))
   const ctx = { pkg: s.pkg, slug: s.slug, sections: readme.sections.map((x) => x.slug) }
+  const useSection = readme.sections.find((x) => /^use\b/i.test(x.heading))
+  const skillMd = read(s.skillFile)
   return {
     pkg: s.pkg,
     slug: s.slug,
@@ -151,7 +199,10 @@ async function buildSkill(s) {
     intro: await renderMarkdown(readme.intro, ctx),
     sections: await Promise.all(readme.sections.map(async (x) => ({ heading: x.heading, slug: x.slug, html: await renderMarkdown(x.markdown, ctx) }))),
     changelog: await renderMarkdown(read('CHANGELOG.md').replace(/^# .*\n/, ''), ctx),
-    skill: await renderMarkdown(read(s.skillFile).replace(/^---\n[\s\S]*?\n---\n/, '').replace(/^\s*# .*\n/, ''), ctx),
+    skill: await renderMarkdown(skillMd.replace(/^---\n[\s\S]*?\n---\n/, '').replace(/^\s*# .*\n/, ''), ctx),
+    prompt: buildPrompt({ title: s.title, pkg: s.pkg, install: `npx ${pkg.name} init`, skillMd }),
+    gallery: useSection ? promptGallery(`## ${useSection.heading}\n${useSection.markdown}`) : [],
+    downloads: await weeklyDownloads(pkg.name),
   }
 }
 
