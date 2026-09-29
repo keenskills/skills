@@ -71,3 +71,22 @@ describe('publish workflow', () => {
     assert.match(yml, /tags: \['\*\*'\]/)
   })
 })
+
+describe('skills', () => {
+  // The skills stay separate products: one plugin each, never a bundle.
+  it('lists each skill as its own plugin', () => {
+    const m = json('.claude-plugin/marketplace.json')
+    assert.deepEqual(m.plugins.map((p) => [p.name, p.source]), [
+      ['page-as-data', './packages/page-as-data'],
+      ['drawing-architecture-diagrams', './packages/drawing-architecture-diagrams'],
+    ])
+  })
+
+  it('tests every package in CI', () => {
+    const yml = readFileSync(new URL('.github/workflows/test.yml', root), 'utf8')
+    for (const name of ['page-as-data', 'drawing-architecture-diagrams']) {
+      assert.match(yml, new RegExp(`working-directory: packages/${name}\\n`), name)
+    }
+    assert.match(yml, /drawing-architecture-diagrams:[\s\S]*setup-node[\s\S]*setup-python[\s\S]*run: npm test/)
+  })
+})

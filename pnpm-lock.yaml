@@ -7,3 +7,7 @@ settings:
 importers:
 
   .: {}
+
+  packages/drawing-architecture-diagrams: {}
+
+  packages/page-as-data: {}

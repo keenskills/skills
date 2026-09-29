@@ -41,8 +41,11 @@ jobs:
         working-directory: packages/drawing-architecture-diagrams
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      # Lint only: rendering needs draw.io desktop, which CI does not have.
-      - run: python tests/selftest.py
+      # Rendering needs draw.io desktop, which CI does not have; lint and install run.
+      - run: npm test

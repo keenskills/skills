@@ -9,6 +9,11 @@
       "name": "page-as-data",
       "source": "./packages/page-as-data",
       "description": "Read a web page as data instead of a screenshot: what is on screen, what broke behind it, and layout defects at phone and desktop widths."
+    },
+    {
+      "name": "drawing-architecture-diagrams",
+      "source": "./packages/drawing-architecture-diagrams",
+      "description": "Professional, print-ready architecture diagrams (Azure, AWS, GCP, network topology) as editable draw.io files plus PNG and PDF."
     }
   ]
 }

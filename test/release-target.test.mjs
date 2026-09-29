@@ -1,18 +1,25 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { pathToFileURL } from 'node:url'
-import { describe, it } from 'node:test'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { after, describe, it } from 'node:test'
 import { releaseTarget } from '../scripts/release-target.mjs'
+
+const made = []
 
 function fakeRepo(version) {
   const dir = mkdtempSync(join(tmpdir(), 'release-'))
+  made.push(dir)
   mkdirSync(join(dir, 'packages/page-as-data'), { recursive: true })
   writeFileSync(join(dir, 'packages/page-as-data/package.json'), JSON.stringify({ name: '@keenskills/page-as-data', version }))
   return pathToFileURL(`${dir}/`)
 }
+
+after(() => {
+  for (const d of made) rmSync(d, { recursive: true, force: true })
+})
 
 describe('releaseTarget', () => {
   it('maps a package tag to its folder and version', () => {
@@ -38,7 +45,7 @@ describe('releaseTarget', () => {
   })
 
   it('fails the workflow step with exit code 1', () => {
-    const script = new URL('../scripts/release-target.mjs', import.meta.url).pathname
+    const script = fileURLToPath(new URL('../scripts/release-target.mjs', import.meta.url))
     assert.throws(() => execFileSync('node', [script, 'v0.2.0'], { stdio: 'pipe' }), (e) => e.status === 1)
   })
 })

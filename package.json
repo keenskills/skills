@@ -7,9 +7,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "pnpm test:repo && pnpm -r test && pnpm test:diagrams",
+    "test": "pnpm test:repo && pnpm -r test",
     "test:repo": "node --test \"test/*.test.mjs\"",
-    "test:diagrams": "python3 packages/drawing-architecture-diagrams/tests/selftest.py",
+    "test:diagrams": "pnpm --filter @keenskills/drawing-architecture-diagrams test",
     "sync": "node scripts/sync-shared.mjs"
   },
   "license": "MIT"
