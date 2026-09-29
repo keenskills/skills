@@ -3,6 +3,7 @@ import { Geist_Mono, Inter } from 'next/font/google'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import './globals.css'
+import './motion.css'
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })

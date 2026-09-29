@@ -6,7 +6,7 @@
     "content": "node scripts/build-content.mjs",
     "dev": "node scripts/build-content.mjs && next dev",
     "build": "node scripts/build-content.mjs && next build",
-    "test": "node --test \"tests/content.test.mjs\" \"tests/self-check.test.mjs\" \"tests/tokens.test.mjs\"",
+    "test": "node --test \"tests/content.test.mjs\" \"tests/self-check.test.mjs\" \"tests/tokens.test.mjs\" \"tests/motion.test.mjs\"",
     "test:pages": "node --test \"tests/pages.test.mjs\"",
     "self-check": "node scripts/self-check.mjs"
   },
