@@ -9,7 +9,8 @@
   "scripts": {
     "test": "pnpm test:repo && pnpm -r test && pnpm test:diagrams",
     "test:repo": "node --test \"test/*.test.mjs\"",
-    "test:diagrams": "python3 packages/drawing-architecture-diagrams/tests/selftest.py"
+    "test:diagrams": "python3 packages/drawing-architecture-diagrams/tests/selftest.py",
+    "sync": "node scripts/sync-shared.mjs"
   },
   "license": "MIT"
 }
