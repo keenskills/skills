@@ -91,6 +91,11 @@ describe('doctor', () => {
     assert.deepEqual(d, { python: 'python3', pythonVersion: '3.12.1', pythonOk: true, drawio: '/Applications/draw.io.app/Contents/MacOS/draw.io' })
   })
 
+  // Python on Windows writes \r\n to a pipe; a bare "\r" must not read as a draw.io path.
+  it('reads Windows line endings from the probe', () => {
+    assert.deepEqual(doctor({ run: () => '3.12.1\r\n\r\n' }), { python: 'python3', pythonVersion: '3.12.1', pythonOk: true, drawio: null })
+  })
+
   it('rejects Python older than 3.9', () => {
     assert.equal(doctor({ run: () => '3.8.10\n\n' }).pythonOk, false)
   })

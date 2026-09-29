@@ -87,7 +87,7 @@ export function doctor({ run = exec } = {}) {
     } catch {
       continue
     }
-    const [version, drawio] = text.split('\n')
+    const [version, drawio] = text.split(/\r?\n/).map((s) => s.trim())
     const [major, minor] = version.split('.').map(Number)
     return { python, pythonVersion: version, pythonOk: major > 3 || (major === 3 && minor >= 9), drawio: drawio || null }
   }

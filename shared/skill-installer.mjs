@@ -182,7 +182,14 @@ export function createInstaller({ name, pkg, source, description, body, files = 
       return [skill, ...supportFiles(dir, skill, base, force)]
     }
     const skill = { ...ownedFile(b, isFile(path) ? readFileSync(path, 'utf8') : null, renderSkill(), force), prune: dir }
-    return [skill, ...supportFiles(dir, skill, base, force)]
+    const support = supportFiles(dir, skill, base, force)
+    // A new SKILL.md would make the folder look like ours: the next init would then
+    // overwrite the user's file and uninstall would delete it. Take nothing instead.
+    if (skill.action === 'create' && support.some((f) => f.action === 'skip')) {
+      const refused = { ...b, action: 'skip', reason: `the folder already has files init would write; pass --force to replace them` }
+      return [refused, ...supportFiles(dir, refused, base, force)]
+    }
+    return [skill, ...support]
   }
 
   const needsFolder = (ids) => files.length > 0 && ids.some((id) => id !== 'claude')
@@ -219,6 +226,17 @@ export function createInstaller({ name, pkg, source, description, body, files = 
   const removeSupport = (dir, base) =>
     files.map(({ rel }) => join(dir, ...rel.split('/'))).filter(isFile).map((path) => ({ ...base, path, action: 'remove', prune: dir }))
 
+  // Single-file agents left out of this uninstall still name the skill-files folder.
+  function stillPointed(root, ids) {
+    return AGENTS.some((a) => {
+      if (a.id === 'claude' || ids.includes(a.id)) return false
+      const { path, shared } = a.target(root, { global: false, home: root })
+      if (!isFile(path)) return false
+      const text = readFileSync(path, 'utf8')
+      return shared ? findBlock(text) !== null : text.includes(MANAGED)
+    })
+  }
+
   function removeFolder(dir, base) {
     const path = join(dir, 'SKILL.md')
     if (!isFile(path)) return []
@@ -248,7 +266,7 @@ export function createInstaller({ name, pkg, source, description, body, files = 
       } else if (text.includes(MANAGED)) actions.push({ ...base, path, action: 'remove' })
       else actions.push({ ...base, path, action: 'skip', reason: `was not written by ${name}` })
     }
-    if (needsFolder(ids)) actions.push(...removeFolder(join(root, folder), { agent: 'folder', label: 'skill files' }))
+    if (needsFolder(ids) && !stillPointed(root, ids)) actions.push(...removeFolder(join(root, folder), { agent: 'folder', label: 'skill files' }))
     return { ids, actions }
   }
 

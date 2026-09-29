@@ -78,7 +78,20 @@ describe('a skill with files', () => {
     const root = tmp()
     mkdirSync(join(skillDir(root), 'scripts'), { recursive: true })
     writeFileSync(join(skillDir(root), 'scripts', 'tool.py'), 'mine\n')
-    assert.deepEqual(actions(demo().planInstall({ root, agents: ['claude'], home: tmp() })), ['create', 'skip', 'create'])
+    assert.deepEqual(actions(demo().planInstall({ root, agents: ['claude'], home: tmp() })), ['skip', 'skip', 'skip'])
+  })
+
+  // If init took the folder over, the next init would overwrite the user's file and uninstall would delete it.
+  it('never takes over a folder that holds a file of the same name, across init and uninstall', () => {
+    const root = tmp()
+    mkdirSync(join(skillDir(root), 'scripts'), { recursive: true })
+    writeFileSync(join(skillDir(root), 'scripts', 'tool.py'), 'mine\n')
+    const i = demo()
+    i.applyPlan(i.planInstall({ root, agents: ['claude'], home: tmp() }).actions)
+    i.applyPlan(i.planInstall({ root, agents: ['claude'], home: tmp() }).actions)
+    i.applyPlan(i.planUninstall({ root, home: tmp() }).actions)
+    assert.equal(readFileSync(join(skillDir(root), 'scripts', 'tool.py'), 'utf8'), 'mine\n')
+    assert.equal(existsSync(join(skillDir(root), 'SKILL.md')), false)
   })
 })
 
@@ -102,6 +115,17 @@ describe('uninstalling a skill with files', () => {
     i.applyPlan(i.planUninstall({ root, home: tmp() }).actions)
     assert.deepEqual(readdirSync(skillDir(root)), ['scripts'])
     assert.deepEqual(readdirSync(join(skillDir(root), 'scripts')), ['mine.py'])
+  })
+
+  it('keeps the skill-files folder while another agent still points to it', () => {
+    const root = tmp()
+    const i = demo()
+    i.applyPlan(i.planInstall({ root, agents: ['cursor', 'gemini'], home: tmp() }).actions)
+    i.applyPlan(i.planUninstall({ root, agents: ['agents'], home: tmp() }).actions)
+    i.applyPlan(i.planUninstall({ root, agents: ['gemini'], home: tmp() }).actions)
+    assert.ok(existsSync(join(root, '.agents', 'skills', 'demo', 'scripts', 'tool.py')))
+    i.applyPlan(i.planUninstall({ root, agents: ['cursor'], home: tmp() }).actions)
+    assert.equal(existsSync(join(root, '.agents', 'skills', 'demo')), false)
   })
 
   it('touches nothing in a folder whose SKILL.md it did not write', () => {
