@@ -5,7 +5,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent / "skills" / "drawing-architecture-diagrams"
 sys.path.insert(0, str(ROOT / "scripts"))
 from archdiagram import Diagram, lint_file  # noqa: E402
 

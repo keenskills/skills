@@ -9,7 +9,9 @@ import os
 import sys
 from pathlib import Path
 
-for cand in (os.environ.get("ARCHDIAGRAM_DIR"), Path.home() / ".claude" / "skills" / "drawing-architecture-diagrams" / "scripts"):
+# In this monorepo the diagram skill sits next to this package; elsewhere, use the installed skill.
+_SIBLING = Path(__file__).resolve().parents[3] / "drawing-architecture-diagrams" / "skills" / "drawing-architecture-diagrams" / "scripts"
+for cand in (os.environ.get("ARCHDIAGRAM_DIR"), _SIBLING, Path.home() / ".claude" / "skills" / "drawing-architecture-diagrams" / "scripts"):
     if cand and (Path(cand) / "archdiagram.py").exists():
         sys.path.insert(0, str(cand))
         break
