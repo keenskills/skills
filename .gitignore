@@ -6,3 +6,5 @@ __pycache__/
 .next/
 .vercel/
 out/
+apps/site/.generated/
+next-env.d.ts
