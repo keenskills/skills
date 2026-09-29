@@ -1,0 +1,34 @@
+import Link from 'next/link'
+import { skills } from '@/lib/content'
+
+export function SiteFooter() {
+  return (
+    <footer className="mt-24 border-t border-border">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 text-sm text-muted sm:flex-row sm:justify-between sm:px-6">
+        <div>
+          <p className="font-semibold text-text">Keen Skills</p>
+          <p className="mt-1">MIT licensed. Made by rajaaltus and gjohnpaull.</p>
+        </div>
+        <ul className="flex flex-wrap gap-x-5 gap-y-2">
+          {skills.map((s) => (
+            <li key={s.slug}>
+              <Link href={`/${s.slug}`} className="hover:text-text">
+                {s.title}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link href="/how-to-use" className="hover:text-text">
+              How to use
+            </Link>
+          </li>
+          <li>
+            <a href="https://github.com/keenskills/skills" className="hover:text-text">
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+    </footer>
+  )
+}
