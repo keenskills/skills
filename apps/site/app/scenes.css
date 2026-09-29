@@ -1,0 +1,34 @@
+/* Illustration motion. Every animated piece has class .sc and a final state equal
+   to its plain style, so an unarmed scene (no JS, reduced motion, server HTML)
+   shows the finished picture. Armed: frame 0 held. Playing: runs once. */
+.scene .sc { transform-box: fill-box; transform-origin: center; }
+.scene[data-armed] .sc { animation-play-state: paused; animation-fill-mode: both; animation-delay: var(--d, 0ms); }
+.scene[data-armed][data-play] .sc { animation-play-state: running; }
+
+.scene[data-armed] .sc-rise  { animation-name: sc-rise;  animation-duration: 500ms; animation-timing-function: var(--ease-out); }
+.scene[data-armed] .sc-pop   { animation-name: sc-pop;   animation-duration: 320ms; animation-timing-function: var(--ease-out); }
+.scene[data-armed] .sc-draw  { stroke-dasharray: 1; animation-name: sc-draw; animation-duration: 600ms; animation-timing-function: var(--ease-out); }
+.scene[data-armed] .sc-beam  { animation-name: sc-beam;  animation-duration: 1600ms; animation-timing-function: var(--ease-in-out); }
+/* A ping starts visible, so it must not hold its first frame before its delay. */
+.scene[data-armed] .sc-ping  { animation-name: sc-ping;  animation-duration: 700ms; animation-timing-function: var(--ease-out); animation-fill-mode: forwards; }
+.scene[data-armed] .sc-flash { animation-name: sc-flash; animation-duration: 1100ms; animation-timing-function: ease; }
+.scene[data-armed] .sc-fix   { animation-name: sc-fix;   animation-duration: 400ms; animation-timing-function: var(--ease-in-out); }
+.scene[data-armed] .sc-nudge { animation-name: sc-nudge; animation-duration: 400ms; animation-timing-function: var(--ease-in-out); }
+.scene[data-armed] .sc-flow  { stroke-dasharray: 0.08 1; animation-name: sc-flow; animation-duration: 1400ms; animation-timing-function: linear; }
+
+@keyframes sc-rise  { from { opacity: 0; transform: translateY(8px); } }
+@keyframes sc-pop   { from { opacity: 0; transform: scale(0.95); } }
+@keyframes sc-draw  { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+/* Beam, ping, flash and flow end invisible: their plain style is opacity 0. */
+@keyframes sc-beam  { 0% { opacity: 0; transform: translateY(0); } 10%, 85% { opacity: 1; } 100% { opacity: 0; transform: translateY(220px); } }
+@keyframes sc-ping  { from { opacity: 0.6; transform: scale(1); } to { opacity: 0; transform: scale(2.2); } }
+@keyframes sc-flash { 0% { opacity: 0; } 15%, 80% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes sc-fix   { from { transform: scale(1.55); } }
+@keyframes sc-nudge { from { transform: translate(14px, -9px); } }
+@keyframes sc-flow  { 0% { opacity: 1; stroke-dashoffset: 0.08; } 95% { opacity: 1; } 100% { opacity: 0; stroke-dashoffset: -1; } }
+
+.scene .sc-beam, .scene .sc-ping, .scene .sc-flash, .scene .sc-flow { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene .sc { animation: none !important; }
+}

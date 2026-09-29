@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/site-header'
 import { THEME_SCRIPT } from '@/lib/theme-script.mjs'
 import './globals.css'
 import './motion.css'
+import './scenes.css'
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })

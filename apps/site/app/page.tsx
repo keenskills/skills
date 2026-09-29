@@ -1,4 +1,9 @@
 import Link from 'next/link'
+import { DiagramDraw } from '@/components/illustrations/diagram-draw'
+import { PageScan } from '@/components/illustrations/page-scan'
+import diagrams from '@/content/showcase/architecture-diagrams.json'
+import pad from '@/content/showcase/page-as-data.json'
+import { problemLines } from '@/lib/terminal.mjs'
 import { SkillCard } from '@/components/skill-card'
 import { agents, skills } from '@/lib/content'
 
@@ -21,6 +26,12 @@ const FAQS = [
   { q: 'How do I remove one?', a: 'Run the same package with uninstall. It removes what init wrote and nothing else.' },
   { q: 'Are they free?', a: 'Yes. Both are MIT licensed and open source on GitHub.' },
 ]
+
+// The four PROBLEMS lines the page-scan illustration numbers, in marker order.
+const PICK = [/cut off/, /^broken image/, /wide in a/, /^uncaught exception/]
+const problems = problemLines(pad.read['390'].output)
+const scanLines = PICK.map((re) => problems.find((l) => re.test(l.replace(/^layout: /, ''))) ?? '')
+if (scanLines.some((l) => !l)) throw new Error('page-scan: a picked PROBLEMS line is missing from the showcase output')
 
 export default function Home() {
   return (
@@ -49,6 +60,30 @@ export default function Home() {
           {skills.map((s) => (
             <SkillCard key={s.slug} skill={s} />
           ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="see-pad" className="border-t border-border py-16">
+        <h2 id="see-pad" className="text-xl font-semibold tracking-tight">
+          Reads the page, not the pixels
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted text-pretty">
+          page-as-data opens the page in Chrome, waits until it has settled, and reports what is on screen and what broke behind it.
+        </p>
+        <div className="mt-8">
+          <PageScan problems={scanLines} summary={`${problems.length} problems · exit ${pad.read['390'].exit}`} />
+        </div>
+      </section>
+
+      <section aria-labelledby="see-diagrams" className="border-t border-border py-16">
+        <h2 id="see-diagrams" className="text-xl font-semibold tracking-tight">
+          Draws, checks and fixes its own diagrams
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted text-pretty">
+          The diagram skill writes a build script, lints the result for overlaps and wasted space, fixes what it finds and renders print-ready files.
+        </p>
+        <div className="mt-8">
+          <DiagramDraw findings={diagrams.draft.lint.output.split('\n').length} fixes={diagrams.fixes.length} />
         </div>
       </section>
 

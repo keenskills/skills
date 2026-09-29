@@ -98,6 +98,24 @@ describe('diagram showcase', () => {
   })
 })
 
+describe('illustrations', () => {
+  it('home carries both scenes, each described for screen readers', () => {
+    const html = page('index.html')
+    assert.equal(html.match(/class="scene[ "]/g)?.length, 2)
+    assert.match(html, /<svg[^>]*role="img"[^>]*aria-labelledby="scan-title"/)
+    assert.match(html, /<svg[^>]*role="img"[^>]*aria-labelledby="draw-title"/)
+  })
+  it('renders the final frame in HTML: nothing armed before scripts run', () => {
+    assert.doesNotMatch(page('index.html'), /data-armed/)
+  })
+  it('lists four real PROBLEMS lines from the page-as-data showcase', () => {
+    const html = page('index.html')
+    const shown = [...html.matchAll(/data-scan-line=""[^>]*>([^<]+)</g)].map((m) => m[1])
+    assert.equal(shown.length, 4)
+    for (const l of shown) assert.ok(escape(pad.read['390'].output).includes(l), l)
+  })
+})
+
 describe('how to use', () => {
   it('lists where init writes for every agent', () => {
     const html = page('how-to-use.html')
