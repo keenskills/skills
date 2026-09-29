@@ -25,7 +25,9 @@ pnpm --filter @keenskills/page-as-data test
 pnpm test:diagrams
 pnpm sync                 # after editing shared/
 pnpm site:dev
-pnpm site:check           # build, page tests, page-as-data on every page
+pnpm site:check           # build, page tests, interaction tests, page-as-data on every page
+pnpm --filter @keenskills/site test:showcases   # showcase output still matches the real tools (Chrome, python3)
+pnpm --filter @keenskills/site showcases        # regenerate showcases locally (Chrome + draw.io desktop), then commit
 ```
 
 ## Release
