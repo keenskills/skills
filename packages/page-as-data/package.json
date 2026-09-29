@@ -1,6 +1,6 @@
 {
   "name": "@keenskills/page-as-data",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Read a web page as data instead of a screenshot: what is on screen, what broke behind it, and layout defects at phone and desktop widths. For developers and AI coding agents; installs itself as a skill for Claude Code, Codex, Gemini CLI, Cursor, Windsurf, Cline and Copilot.",
   "type": "module",
   "bin": {

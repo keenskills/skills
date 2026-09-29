@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- `init` / `uninstall` now run on the installer shared by every Keen Skills package. No change in what they write.
+
 ## 0.2.0
 
 - Moved to the Keen Skills monorepo and published as `@keenskills/page-as-data` (was `@rajaaltus/page-as-data`, now deprecated).
