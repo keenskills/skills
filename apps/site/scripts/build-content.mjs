@@ -1,9 +1,9 @@
 // Builds the site's docs from the packages themselves, so the site cannot say
 // anything the READMEs, skill files and changelogs do not. Runs before
 // next dev / next build and writes .generated/content.json (not committed).
-import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join, relative } from 'node:path'
+import { join, posix, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import rehypeShiki from '@shikijs/rehype'
 import GithubSlugger from 'github-slugger'
@@ -36,10 +36,11 @@ export function splitSections(md) {
   let title = ''
   let fence = null
   for (const line of md.replace(/\r\n/g, '\n').split('\n')) {
-    const f = /^ {0,3}(`{3,}|~{3,})/.exec(line)
+    const f = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line)
     if (f) {
+      // CommonMark: only a bare fence closes; a "```sh" line inside a block is content.
       if (!fence) fence = f[1]
-      else if (f[1][0] === fence[0] && f[1].length >= fence.length) fence = null
+      else if (f[1][0] === fence[0] && f[1].length >= fence.length && !f[2].trim()) fence = null
     }
     const h = fence || f ? null : /^(#{1,2})\s+(.+?)\s*#*\s*$/.exec(line)
     if (h && h[1] === '#' && !title && !sections.length) {
@@ -50,6 +51,7 @@ export function splitSections(md) {
       const heading = plain(h[2])
       let slug = slugger.slug(heading)
       if (RESERVED.has(slug)) slug = slugger.slug(`${heading} section`)
+      if (!slug) slug = `section-${sections.length + 1}`
       sections.push({ heading, slug, lines: [] })
       continue
     }
@@ -64,31 +66,72 @@ export function splitSections(md) {
 
 const clean = (p) => p.replace(/^\.\//, '')
 const isAbsolute = (href) => /^[a-z][a-z0-9+.-]*:/i.test(href)
+const ALLOWED = /^(https?:|mailto:)/i
 
-/** Makes a README link work on the site: sections become site pages, repo paths become GitHub URLs. */
-export function rewriteHref(href, { pkg, slug, known }) {
-  if (isAbsolute(href)) return href
-  if (href.startsWith('#')) return known.has(href.slice(1)) ? `/${slug}/${href.slice(1)}` : href
+/** Heading ids below ## in each section, mapped to the section page they live on. */
+export function anchorMap(sections) {
+  const map = new Map()
+  for (const s of sections) {
+    const slugger = new GithubSlugger()
+    for (const m of s.markdown.matchAll(/^#{3,6}\s+(.+?)\s*#*\s*$/gm)) map.set(slugger.slug(plain(m[1])), s.slug)
+  }
+  return map
+}
+
+/**
+ * Makes a package markdown link work on the site: sections become site pages,
+ * an anchor in another section goes to that page, repo paths become GitHub URLs
+ * resolved from the file's own folder (`base`). Returns null for a scheme that is
+ * not http, https or mailto, so the link is dropped.
+ */
+export function rewriteHref(href, { pkg, slug, known, anchors = new Map(), base = '' }) {
+  if (isAbsolute(href)) return ALLOWED.test(href) ? href : null
+  if (href.startsWith('#')) {
+    const id = href.slice(1)
+    if (known.has(id)) return `/${slug}/${id}`
+    if (anchors.has(id)) return `/${slug}/${anchors.get(id)}#doc-${id}`
+    return `#doc-${id}`
+  }
   if (href.startsWith('/')) return `${REPO}/blob/main${href}`
   const [path, hash] = href.split('#')
-  return `${REPO}/blob/main/packages/${pkg}/${clean(path)}${hash ? `#${hash}` : ''}`
+  const inPkg = posix.normalize(posix.join(base, clean(path)))
+  return `${REPO}/blob/main/packages/${pkg}/${inPkg}${hash ? `#${hash}` : ''}`
+}
+
+const publicDocs = new URL('../public/docs/', import.meta.url)
+/** Copies a package image into public/ so the site serves the version it was built from, not GitHub's main. */
+export function copyImage(pkg, path) {
+  const from = new URL(`packages/${pkg}/${path}`, root)
+  if (!existsSync(from)) throw new Error(`image not found: packages/${pkg}/${path}`)
+  const to = new URL(`${pkg}/${path}`, publicDocs)
+  mkdirSync(new URL('./', to), { recursive: true })
+  copyFileSync(from, to)
+  return `/docs/${pkg}/${path}`
 }
 
 // Rewrites links and images, and wraps tables in a scroller so a wide options
 // table scrolls inside the page instead of pushing the page sideways on a phone.
-function rehypeSiteLinks({ pkg, slug, sections }) {
+function rehypeSiteLinks({ pkg, slug, sections, anchors, base = '' }) {
   const known = new Set(sections)
   const visit = (node) => {
     if (!node.children) return
     node.children = node.children.map((child) => {
       if (child.type === 'element') {
         const p = child.properties
-        if (child.tagName === 'a' && typeof p.href === 'string') p.href = rewriteHref(p.href, { pkg, slug, known })
-        if (child.tagName === 'img' && typeof p.src === 'string' && !isAbsolute(p.src)) p.src = `${RAW}/packages/${pkg}/${clean(p.src)}`
+        if (child.tagName === 'a' && typeof p.href === 'string') {
+          const href = rewriteHref(p.href, { pkg, slug, known, anchors, base })
+          if (href === null) delete p.href
+          else p.href = href
+        }
+        if (child.tagName === 'img' && typeof p.src === 'string') {
+          const own = p.src.startsWith(`${RAW}/packages/`) ? p.src.slice(RAW.length + '/packages/'.length).split('/') : null
+          if (own) p.src = copyImage(own[0], own.slice(1).join('/'))
+          else if (!isAbsolute(p.src)) p.src = p.src.startsWith('/') ? `${RAW}${p.src}` : copyImage(pkg, posix.normalize(posix.join(base, clean(p.src))))
+        }
       }
       visit(child)
       if (child.type === 'element' && child.tagName === 'table') {
-        return { type: 'element', tagName: 'div', properties: { className: ['table-scroll'] }, children: [child] }
+        return { type: 'element', tagName: 'div', properties: { className: ['table-scroll'], tabIndex: 0 }, children: [child] }
       }
       return child
     })
@@ -118,9 +161,13 @@ export async function renderMarkdown(md, ctx) {
     .use(remarkGfm)
     .use(remarkRehype)
     .use(rehypeShiftHeadings)
-    .use(rehypeSlug)
+    // Prefixed so a docs heading can never take an id the page itself uses (main, skills-title).
+    .use(rehypeSlug, { prefix: 'doc-' })
     .use(rehypeSiteLinks(ctx))
-    .use(rehypeShiki, { themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: false, defaultLanguage: 'text', fallbackLanguage: 'text' })
+    .use(rehypeShiki, { themes: { light: 'github-light', dark: 'github-dark' },
+      // github-light's comment grey is 4.49:1 on our code background; one step darker passes.
+      colorReplacements: { 'github-light': { '#6a737d': '#57606a' } },
+      defaultColor: false, defaultLanguage: 'text', fallbackLanguage: 'text' })
     .use(rehypeStringify)
     .process(md)
   return String(file)
@@ -182,7 +229,7 @@ async function buildSkill(s) {
   const read = (f) => readFileSync(new URL(f, dir), 'utf8')
   const pkg = JSON.parse(read('package.json'))
   const readme = splitSections(read('README.md'))
-  const ctx = { pkg: s.pkg, slug: s.slug, sections: readme.sections.map((x) => x.slug) }
+  const ctx = { pkg: s.pkg, slug: s.slug, sections: readme.sections.map((x) => x.slug), anchors: anchorMap(readme.sections), base: '' }
   const useSection = readme.sections.find((x) => /^use\b/i.test(x.heading))
   const skillMd = read(s.skillFile)
   return {
@@ -199,7 +246,7 @@ async function buildSkill(s) {
     intro: await renderMarkdown(readme.intro, ctx),
     sections: await Promise.all(readme.sections.map(async (x) => ({ heading: x.heading, slug: x.slug, html: await renderMarkdown(x.markdown, ctx) }))),
     changelog: await renderMarkdown(read('CHANGELOG.md').replace(/^# .*\n/, ''), ctx),
-    skill: await renderMarkdown(skillMd.replace(/^---\n[\s\S]*?\n---\n/, '').replace(/^\s*# .*\n/, ''), ctx),
+    skill: await renderMarkdown(skillMd.replace(/^---\n[\s\S]*?\n---\n/, '').replace(/^\s*# .*\n/, ''), { ...ctx, base: posix.dirname(s.skillFile) }),
     prompt: buildPrompt({ title: s.title, pkg: s.pkg, install: `npx ${pkg.name} init`, skillMd }),
     gallery: useSection ? promptGallery(`## ${useSection.heading}\n${useSection.markdown}`) : [],
     downloads: await weeklyDownloads(pkg.name),

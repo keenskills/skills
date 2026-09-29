@@ -39,7 +39,7 @@ describe('rewriteHref', () => {
   })
 
   it('keeps a link to a heading on the same page', () => {
-    assert.equal(rewriteHref('#deeper', c), '#deeper')
+    assert.equal(rewriteHref('#deeper', c), '#doc-deeper')
   })
 
   it('sends repo paths to GitHub', () => {
@@ -49,10 +49,16 @@ describe('rewriteHref', () => {
 
 describe('renderMarkdown', () => {
   it('highlights code, wraps tables so they scroll, and fixes relative images', async () => {
-    const html = await renderMarkdown('```sh\nnpx x\n```\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\n![alt](docs/a.png)', ctx)
+    const d = { ...ctx, pkg: 'drawing-architecture-diagrams' }
+    const html = await renderMarkdown('```sh\nnpx x\n```\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\n![alt](docs/sample-a4.png)', d)
     assert.match(html, /class="shiki/)
-    assert.match(html, /<div class="table-scroll"><table>/)
-    assert.match(html, /src="https:\/\/raw\.githubusercontent\.com\/keenskills\/skills\/main\/packages\/p\/docs\/a\.png"/)
+    assert.match(html, /<div class="table-scroll" tabindex="0"><table>/)
+    assert.match(html, /src="\/docs\/drawing-architecture-diagrams\/docs\/sample-a4\.png"/)
+  })
+
+  it('serves this repo\'s own raw.githubusercontent images from the site, not from main', async () => {
+    const html = await renderMarkdown('![x](https://raw.githubusercontent.com/keenskills/skills/main/packages/page-as-data/docs/diagram/how-it-helps.png)', { ...ctx, pkg: 'page-as-data' })
+    assert.match(html, /src="\/docs\/page-as-data\/docs\/diagram\/how-it-helps\.png"/)
   })
 
   it('does not fail on a code block in an unknown language', async () => {
@@ -130,5 +136,42 @@ describe('weeklyDownloads', () => {
   it('gives null rather than failing the build when npm is unreachable', async () => {
     assert.equal(await weeklyDownloads('x', async () => { throw new Error('offline') }), null)
     assert.equal(await weeklyDownloads('x', async () => ({ ok: false })), null)
+  })
+})
+
+describe('phase 3 deferred fixes', () => {
+  const rctx = { ...ctx, anchors: new Map(), base: '' }
+  it('a ```lang line does not close a fence', () => {
+    const r = splitSections('# T\n\n## A\n\n```sh\ncode\n```sh\n## not a section\n```\n\n## B\n')
+    assert.deepEqual(r.sections.map((s) => s.heading), ['A', 'B'])
+  })
+  it('a heading with no letters still gets a route', () => {
+    assert.equal(splitSections('# T\n\n## 🚀\n\nx').sections[0].slug, 'section-1')
+  })
+  const c = { pkg: 'page-as-data', slug: 'page-as-data', known: new Set(['install']), anchors: new Map([['pick-a-chrome', 'use-it']]), base: '' }
+  it('sends an h3 anchor in another section to that section page', () => {
+    assert.equal(rewriteHref('#pick-a-chrome', c), '/page-as-data/use-it#doc-pick-a-chrome')
+  })
+  it('keeps an unknown in-page anchor on the page, prefixed', () => assert.equal(rewriteHref('#nowhere', c), '#doc-nowhere'))
+  it('resolves links from the skill file relative to its own folder', () => {
+    assert.equal(rewriteHref('../README.md', { ...c, base: 'skill' }), 'https://github.com/keenskills/skills/blob/main/packages/page-as-data/README.md')
+  })
+  it('only lets http, https and mailto links through', () => {
+    assert.equal(rewriteHref('javascript:alert(1)', c), null)
+    assert.equal(rewriteHref('data:text/html,x', c), null)
+    assert.equal(rewriteHref('mailto:a@b.co', c), 'mailto:a@b.co')
+  })
+  it('drops an unsafe link instead of rendering it', async () => {
+    const html = await renderMarkdown('[x](javascript:alert(1))', rctx)
+    assert.doesNotMatch(html, /javascript:/)
+  })
+  it('prefixes heading ids so docs cannot collide with page ids', async () => {
+    assert.match(await renderMarkdown('## Main\n\ntext', rctx), /id="doc-main"/)
+  })
+  it('wraps tables in a focusable scroller', async () => {
+    assert.match(await renderMarkdown('| a |\n| - |\n| b |', rctx), /<div class="table-scroll" tabindex="0"/)
+  })
+  it('gives github-light comments at least 4.5:1 on the code background', async () => {
+    assert.doesNotMatch(await renderMarkdown('```js\n// note\n```', rctx), /--shiki-light:#6A737D/i)
   })
 })

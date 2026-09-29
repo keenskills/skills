@@ -7,4 +7,5 @@ __pycache__/
 .vercel/
 out/
 apps/site/.generated/
+apps/site/public/docs/
 next-env.d.ts
