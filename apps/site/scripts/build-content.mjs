@@ -96,11 +96,28 @@ function rehypeSiteLinks({ pkg, slug, sections }) {
   return () => (tree) => visit(tree)
 }
 
+// Page templates own the h1, so the markdown's own headings start at h2 and
+// keep their relative order: screen readers navigate by heading level.
+function rehypeShiftHeadings() {
+  return (tree) => {
+    const headings = []
+    const find = (node) => {
+      if (node.type === 'element' && /^h[1-6]$/.test(node.tagName)) headings.push(node)
+      node.children?.forEach(find)
+    }
+    find(tree)
+    if (!headings.length) return
+    const shift = 2 - Math.min(...headings.map((h) => Number(h.tagName[1])))
+    for (const h of headings) h.tagName = `h${Math.min(6, Number(h.tagName[1]) + shift)}`
+  }
+}
+
 export async function renderMarkdown(md, ctx) {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype)
+    .use(rehypeShiftHeadings)
     .use(rehypeSlug)
     .use(rehypeSiteLinks(ctx))
     .use(rehypeShiki, { themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: false, defaultLanguage: 'text', fallbackLanguage: 'text' })
@@ -134,7 +151,7 @@ async function buildSkill(s) {
     intro: await renderMarkdown(readme.intro, ctx),
     sections: await Promise.all(readme.sections.map(async (x) => ({ heading: x.heading, slug: x.slug, html: await renderMarkdown(x.markdown, ctx) }))),
     changelog: await renderMarkdown(read('CHANGELOG.md').replace(/^# .*\n/, ''), ctx),
-    skill: await renderMarkdown(read(s.skillFile).replace(/^---\n[\s\S]*?\n---\n/, ''), ctx),
+    skill: await renderMarkdown(read(s.skillFile).replace(/^---\n[\s\S]*?\n---\n/, '').replace(/^\s*# .*\n/, ''), ctx),
   }
 }
 

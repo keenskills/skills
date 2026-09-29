@@ -1,6 +1,6 @@
 // Checks the built export (run after pnpm build).
 import assert from 'node:assert/strict'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { describe, it } from 'node:test'
 import content from '../.generated/content.json' with { type: 'json' }
 
@@ -54,4 +54,17 @@ describe('how to use', () => {
     const html = page('how-to-use.html')
     for (const a of content.agents) assert.ok(html.includes(escape(a.path)), a.path)
   })
+})
+
+describe('headings', () => {
+  const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? (e.name === '_next' ? [] : walk(new URL(`${e.name}/`, dir))) : e.name.endsWith('.html') ? [new URL(e.name, dir)] : []))
+  // Screen readers navigate by heading: one h1 per page, and no skipped levels below it.
+  for (const file of walk(out)) {
+    const name = file.pathname.slice(out.pathname.length)
+    it(`${name} has one h1 and no skipped heading levels`, () => {
+      const levels = [...readFileSync(file, 'utf8').matchAll(/<h([1-6])[\s>]/g)].map((m) => Number(m[1]))
+      assert.equal(levels.filter((l) => l === 1).length, 1, `h1 count in ${name}`)
+      for (let i = 1; i < levels.length; i++) assert.ok(levels[i] <= levels[i - 1] + 1, `h${levels[i - 1]} → h${levels[i]} in ${name}`)
+    })
+  }
 })
