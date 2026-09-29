@@ -1,0 +1,65 @@
+{
+  "name": "@rajaaltus/page-as-data",
+  "version": "0.1.1",
+  "description": "Read a web page as data instead of a screenshot: what is on screen, what broke behind it, and layout defects at phone and desktop widths. For developers and AI coding agents; installs itself as a skill for Claude Code, Codex, Gemini CLI, Cursor, Windsurf, Cline and Copilot.",
+  "type": "module",
+  "bin": {
+    "page-as-data": "cli.mjs"
+  },
+  "exports": {
+    ".": "./cli.mjs",
+    "./in-page": "./page-as-data.js",
+    "./install": "./install.mjs"
+  },
+  "files": [
+    "cli.mjs",
+    "page-as-data.js",
+    "install.mjs",
+    "tui.mjs",
+    "wizard.mjs",
+    "skill/"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "build:skill": "node scripts/build-plugin.mjs",
+    "version": "node scripts/build-plugin.mjs && git add .claude-plugin/plugin.json skills/page-as-data/SKILL.md"
+  },
+  "keywords": [
+    "debugging",
+    "screenshot",
+    "chrome-devtools-protocol",
+    "layout",
+    "responsive",
+    "accessibility",
+    "wcag",
+    "ai-agent",
+    "llm",
+    "agent-skill",
+    "claude-code",
+    "codex",
+    "cursor",
+    "copilot",
+    "nextjs",
+    "react"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajaaltus/page-as-data.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rajaaltus/page-as-data/issues"
+  },
+  "homepage": "https://github.com/rajaaltus/page-as-data#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "license": "MIT",
+  "author": "rajaaltus",
+  "contributors": [
+    "gjohnpaull"
+  ]
+}

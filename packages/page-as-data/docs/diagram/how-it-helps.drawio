@@ -1,0 +1,265 @@
+<mxfile host="Electron">
+  <diagram name="How page-as-data helps" id="how-page-as-data-helps">
+    <mxGraphModel dx="1169" dy="827" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#FFFFFF" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="frame" value="" style="rounded=0;fillColor=#FFFFFF;strokeColor=#C8C6C4;" vertex="1" parent="1">
+          <mxGeometry x="10" y="10" width="1149" height="807" as="geometry" />
+        </mxCell>
+        <mxCell id="chrome" value="&lt;b&gt;Chrome&lt;/b&gt;  &lt;font color=&quot;#605E5C&quot;&gt;your signed-in debug Chrome (--port 9222) or headless (--launch)&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;dashed=1;dashPattern=4 2;strokeColor=#0078D4;strokeWidth=1.2;fillColor=#F7FBFE;verticalAlign=top;align=left;spacingLeft=6;spacingRight=6;spacingTop=0;spacingBottom=0;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="452" y="214" width="474" height="222" as="geometry" />
+        </mxCell>
+        <mxCell id="flows" value="HOW IT WORKS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="70" width="560" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="misses" value="WHAT A SCREENSHOT MISSES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="592" y="70" width="553" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="try" value="TRY IT" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="554" width="580" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="runs" value="WHERE IT RUNS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="612" y="554" width="533" height="112" as="geometry" />
+        </mxCell>
+        <mxCell id="inpage" value="&lt;b&gt;Inside the page&lt;/b&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;dashed=1;dashPattern=3 2;strokeColor=#C8C6C4;strokeWidth=1;fillColor=#FFFFFF;verticalAlign=top;align=left;spacingLeft=6;spacingRight=6;spacingTop=0;spacingBottom=0;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="690" y="238" width="222" height="184" as="geometry" />
+        </mxCell>
+        <mxCell id="inspectPanel" value="INSPECT AND CHECK" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="580" y="452" width="290" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="readPanel" value="READ — WHAT IS ON SCREEN" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="452" width="270" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="behindPanel" value="BEHIND THE PAGE" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="302" y="452" width="270" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="found" value="CAUGHT ON A REAL APP" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="878" y="452" width="267" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="LEGEND" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D2D0CE;verticalAlign=top;align=left;spacingLeft=8;spacingTop=3;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="314" width="188" height="122" as="geometry" />
+        </mxCell>
+        <mxCell id="app" value="&lt;b&gt;Your web app&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;unchanged · nothing installed&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C8C6C4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="472" y="244" width="196" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="probe" value="&lt;b&gt;page-as-data.js&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;injected before the app's scripts&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C8C6C4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="472" y="360" width="196" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="report" value="&lt;b&gt;The screen as data&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;text or JSON · exit 0 / 1 / 2&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C8C6C4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="972" y="244" width="173" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="shot" value="&lt;b&gt;Screenshot&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;--screenshot · images, charts, polish&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C8C6C4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="972" y="344" width="173" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="cli" value="&lt;b&gt;page-as-data CLI&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;cli.mjs · read · check&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C8C6C4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="236" y="244" width="168" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="you" value="&lt;b&gt;You · AI agent · CI&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;runs one command&lt;/font&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#C8C6C4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;spacingLeft=8;" vertex="1" parent="1">
+          <mxGeometry x="24" y="244" width="158" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="try_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="554" width="580" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="rule" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="53" width="1121" height="1.5" as="geometry" />
+        </mxCell>
+        <mxCell id="flows_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="70" width="560" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="misses_bar" value="" style="rounded=0;fillColor=#A4262C;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="592" y="70" width="553" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="envchip" value="v0.1" style="rounded=1;arcSize=50;html=1;fillColor=#FFF4CE;strokeColor=#E3B400;fontFamily=Segoe UI;fontSize=10;fontStyle=1;fontColor=#7A5B00;" vertex="1" parent="1">
+          <mxGeometry x="1065" y="20" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="runs_bar" value="" style="rounded=0;fillColor=#243A5E;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="612" y="554" width="533" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="inspectPanel_bar" value="" style="rounded=0;fillColor=#008575;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="580" y="452" width="290" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="readPanel_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="452" width="270" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="behindPanel_bar" value="" style="rounded=0;fillColor=#CA5010;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="302" y="452" width="270" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="found_bar" value="" style="rounded=0;fillColor=#A4262C;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="878" y="452" width="267" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_bar" value="" style="rounded=0;fillColor=#0078D4;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="24" y="314" width="188" height="3" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="&lt;font style=&quot;font-size:16px&quot;&gt;&lt;b&gt;page-as-data — read the screen as data, not as a screenshot&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;How a developer or an AI coding agent checks a web page while fixing a bug · zero dependencies · Chrome DevTools Protocol&lt;/font&gt;" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="24" y="11" width="818.3" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN0" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="93.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT0" value="You (or an AI agent, or CI) run  page-as-data read &lt;url&gt;  or  check &lt;url&gt;" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="48" y="92" width="536" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN1" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="109.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT1" value="The CLI opens a tab and injects page-as-data.js before the app's own scripts" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="48" y="108" width="536" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN2" value="3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="125.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT2" value="The script waits until the screen has really finished, then reads it" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="48" y="124" width="536" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN3" value="4" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="141.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT3" value="Chrome reports what broke behind the page: exceptions, console, requests" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="48" y="140" width="536" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN4" value="5" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="157.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT4" value="You get the screen as text or JSON, with exit code 1 when something is wrong" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="48" y="156" width="536" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsN5" value="6" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="30" y="173.0" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="flowsT5" value="Fix, run again. A screenshot only for what data cannot answer" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="48" y="172" width="536" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="missesText" value="&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; A button cut off by its container just looks absent&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; A hidden element looks the same as one that does not exist&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; Console errors, uncaught exceptions and failed requests are invisible&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; Colour and contrast are guessed from compressed pixels&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; A background tab shows a half-loaded page, which reads as a bug&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; Every look costs a large image in an AI agent's context" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="600" y="86" width="542" height="102" as="geometry" />
+        </mxCell>
+        <mxCell id="legend0t" value="You run a command" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="336" width="147" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend1t" value="Injected over DevTools Protocol" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="351" width="147" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend2t" value="Reads the rendered page" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="366" width="147" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend3t" value="Browser events (errors, requests)" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="381" width="147" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend4t" value="Answer as data" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="396" width="147" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend5t" value="Last resort only" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="63" y="411" width="147" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="inpageText" value="&lt;b&gt;settle&lt;/b&gt; — waits for router requests, React streams, skeletons, animations&lt;br&gt;&lt;b&gt;read&lt;/b&gt; — headings, text, dialogs, alerts, tables, form fields and their errors, buttons and their state&lt;br&gt;&lt;b&gt;inspect&lt;/b&gt; — visible? cut off by what? colour, contrast&lt;br&gt;&lt;b&gt;click / fill&lt;/b&gt; — reproduce the bug&lt;br&gt;&lt;b&gt;check&lt;/b&gt; — overflow, cut-off controls, broken sticky, WCAG touch targets" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="698" y="256" width="208" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="readPanelText" value="&lt;font color=&quot;#0078D4&quot;&gt;•&lt;/font&gt; Headings, main text, open dialogs&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;•&lt;/font&gt; Alerts and status messages&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;•&lt;/font&gt; Tables as rows, with links&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;•&lt;/font&gt; Form fields, values, validation errors&lt;br&gt;&lt;font color=&quot;#0078D4&quot;&gt;•&lt;/font&gt; Buttons and links, disabled or expanded" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="32" y="468" width="259" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="behindPanelText" value="&lt;font color=&quot;#CA5010&quot;&gt;•&lt;/font&gt; Uncaught exceptions&lt;br&gt;&lt;font color=&quot;#CA5010&quot;&gt;•&lt;/font&gt; console.error and warnings&lt;br&gt;&lt;font color=&quot;#CA5010&quot;&gt;•&lt;/font&gt; Failed requests (4xx, 5xx, network)&lt;br&gt;&lt;font color=&quot;#CA5010&quot;&gt;•&lt;/font&gt; Broken images&lt;br&gt;&lt;font color=&quot;#CA5010&quot;&gt;•&lt;/font&gt; Pages that never finish loading, and why" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="310" y="468" width="259" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="inspectPanelText" value="&lt;font color=&quot;#008575&quot;&gt;•&lt;/font&gt; Visible? Hidden by what? Cut off by what?&lt;br&gt;&lt;font color=&quot;#008575&quot;&gt;•&lt;/font&gt; Colour and WCAG contrast, incl. oklch and gradients&lt;br&gt;&lt;font color=&quot;#008575&quot;&gt;•&lt;/font&gt; Page wider than the phone screen&lt;br&gt;&lt;font color=&quot;#008575&quot;&gt;•&lt;/font&gt; Controls cut off where nothing scrolls to them&lt;br&gt;&lt;font color=&quot;#008575&quot;&gt;•&lt;/font&gt; Sticky headers that can never stick" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="588" y="468" width="279" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="foundText" value="&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; 'New product' and 'New user' cut off at 390px&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; Table header 48px down, over the first row&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; Primary button text at 4.02:1 contrast&lt;br&gt;&lt;font color=&quot;#A4262C&quot;&gt;▲&lt;/font&gt; A page read as 'settled' before it switched" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="886" y="468" width="256" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="tryText" value="&lt;font face=&quot;Consolas&quot;&gt;npx page-as-data read http://localhost:3000/orders --width 390&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;what is on the orders screen on a phone, and what went wrong behind it&lt;/font&gt;&lt;br&gt;&lt;font face=&quot;Consolas&quot;&gt;npx page-as-data read …/orders --click &quot;New order&quot; --fill &quot;Email=a@b.co&quot;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;reproduce a bug step by step, then read the result&lt;/font&gt;&lt;br&gt;&lt;font face=&quot;Consolas&quot;&gt;npx page-as-data check …/ …/orders --widths 390,1440&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#605E5C&quot;&gt;CI gate: exit code 1 when a page has a defect&lt;/font&gt;" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="32" y="572" width="566" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="runsText" value="&lt;font color=&quot;#243A5E&quot;&gt;•&lt;/font&gt; Node 22 or newer, and Chrome, Chromium or Edge. Nothing else to install&lt;br&gt;&lt;font color=&quot;#243A5E&quot;&gt;•&lt;/font&gt; Pages behind a sign-in: start Chrome with --remote-debugging-port=9222, sign in once, pass --port 9222&lt;br&gt;&lt;font color=&quot;#243A5E&quot;&gt;•&lt;/font&gt; Public pages and CI: --launch starts its own headless Chrome&lt;br&gt;&lt;font color=&quot;#243A5E&quot;&gt;•&lt;/font&gt; Any framework. settle also knows React 19 streaming and the Next.js App Router&lt;br&gt;&lt;font color=&quot;#243A5E&quot;&gt;•&lt;/font&gt; From Playwright or Chrome DevTools MCP: inject page-as-data.js and call window.__pageAsData" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=top;fontColor=#323130;" vertex="1" parent="1">
+          <mxGeometry x="620" y="570" width="522" height="94" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="page-as-data v0.1 · MIT · github.com/gjohnpaull/page-as-data · diagram built with drawing-architecture-diagrams" style="text;html=1;whiteSpace=wrap;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;align=left;verticalAlign=middle;fontColor=#8A8886;" vertex="1" parent="1">
+          <mxGeometry x="24" y="799" width="1121" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="legend0" style="html=1;endArrow=blockThin;endFill=1;endSize=4;strokeColor=#243A5E;strokeWidth=1.3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="344" as="sourcePoint" />
+            <mxPoint x="58" y="344" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend1" style="html=1;endArrow=blockThin;endFill=1;endSize=4;dashed=1;dashPattern=6 3;strokeColor=#8661C5;strokeWidth=1.3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="359" as="sourcePoint" />
+            <mxPoint x="58" y="359" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend2" style="html=1;endArrow=blockThin;endFill=1;endSize=4;strokeColor=#008575;strokeWidth=1.3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="374" as="sourcePoint" />
+            <mxPoint x="58" y="374" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend3" style="html=1;endArrow=blockThin;endFill=1;endSize=4;dashed=1;dashPattern=2 2;strokeColor=#CA5010;strokeWidth=1.3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="389" as="sourcePoint" />
+            <mxPoint x="58" y="389" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend4" style="html=1;endArrow=blockThin;endFill=1;endSize=4;strokeColor=#0078D4;strokeWidth=1.3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="404" as="sourcePoint" />
+            <mxPoint x="58" y="404" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend5" style="html=1;endArrow=blockThin;endFill=1;endSize=4;dashed=1;dashPattern=4 4;strokeColor=#8A8886;strokeWidth=1.1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="32" y="419" as="sourcePoint" />
+            <mxPoint x="58" y="419" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#243A5E;strokeWidth=1.3;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="you" target="cli">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=6 3;strokeColor=#8661C5;strokeWidth=1.3;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="cli" target="probe">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="389" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#008575;strokeWidth=1.3;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="probe" target="app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=2 2;strokeColor=#CA5010;strokeWidth=1.3;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="app" target="cli">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#0078D4;strokeWidth=1.3;exitX=1;exitY=0.1902;entryX=0;entryY=0.5;" edge="1" parent="1" source="inpage" target="report">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;strokeColor=#243A5E;strokeWidth=1.3;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="report" target="you">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1058" y="202" />
+              <mxPoint x="103" y="202" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eShot" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=4;html=1;endArrow=blockThin;endFill=1;endSize=4;fontFamily=Segoe UI;fontSize=10;fontColor=#323130;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 4;strokeColor=#8A8886;strokeWidth=1.1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="report" target="shot">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="badge1" value="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="202" y="256" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge2" value="2" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="326" y="330" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge3" value="3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="576" y="322" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge4" value="4" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="430" y="256" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge5" value="5" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="940" y="256" width="14" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="badge6" value="6" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#0078D4;strokeColor=#FFFFFF;strokeWidth=1;fontColor=#FFFFFF;fontStyle=1;fontFamily=Segoe UI;fontSize=9;spacing=0;" vertex="1" parent="1">
+          <mxGeometry x="600" y="195" width="14" height="14" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

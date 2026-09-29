@@ -1,0 +1,10 @@
+{
+  "name": "page-as-data",
+  "version": "0.1.1",
+  "description": "Read a web page as data instead of a screenshot: what is on screen, what broke behind it, and layout defects at phone and desktop widths.",
+  "author": {
+    "name": "rajaaltus"
+  },
+  "repository": "https://github.com/rajaaltus/page-as-data",
+  "license": "MIT"
+}

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: planted bugs</title>
+    <style>
+      body { margin: 0; font: 16px/1.4 system-ui, sans-serif; }
+      main { padding: 16px; }
+      button { font: inherit; }
+
+      /* BUG page-overflow at 390px: a fixed 600px banner. Fits at 1440. */
+      .wide-banner { width: 600px; height: 20px; background: #eee; }
+
+      /* BUG clipped-control: the bar clips and cannot scroll. */
+      .clipping-bar { width: 300px; overflow: hidden; white-space: nowrap; border: 1px solid #ccc; }
+      .clipping-bar button { width: 140px; height: 32px; }
+
+      /* NOT a bug: the same row, but its box scrolls. */
+      .scrolling-bar { width: 300px; overflow-x: auto; white-space: nowrap; border: 1px solid #ccc; }
+      .scrolling-bar button { width: 140px; height: 32px; }
+
+      /* BUG sticky-displaced: sticky header inside a box that only scrolls sideways. */
+      .table-box { overflow-x: auto; }
+      .table-box th { position: sticky; top: 48px; background: #ddd; }
+
+      /* BUG small-target: two 16px buttons touching. NOT a bug: one alone with room around it. */
+      .tiny { width: 16px; height: 16px; padding: 0; }
+      .spaced { margin: 40px; }
+
+      .faint { color: #cccccc; }
+      .secret { display: none; }
+
+      /* Modern colour spaces (Tailwind v4 computes to lab/oklch). */
+      .modern-faint { color: oklch(0.9 0 0); }
+      .gradient-button { color: #fff; background-image: linear-gradient(oklch(0.45 0.15 240), oklch(0.35 0.15 240)); border: 0; padding: 8px 12px; }
+      .on-photo { color: #fff; background-image: url('/hero.jpg'); padding: 8px; }
+      .modern-primary { color: #fff; background: oklch(0.45 0.2 260); border: 0; padding: 8px 12px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Planted bugs</h1>
+      <div class="wide-banner"></div>
+
+      <div class="clipping-bar">
+        <button>First action</button><button>Second action</button><button>Hidden action</button>
+      </div>
+      <div class="scrolling-bar">
+        <button>One</button><button>Two</button><button>Scrollable action</button>
+      </div>
+
+      <div class="table-box">
+        <table id="people">
+          <thead><tr><th>Name</th><th>Role</th></tr></thead>
+          <tbody><tr><td>Grace</td><td>Admin</td></tr></tbody>
+        </table>
+      </div>
+
+      <button class="tiny" aria-label="Crowded A">a</button><button class="tiny" aria-label="Crowded B">b</button>
+      <div class="spaced"><button class="tiny" aria-label="Lonely">c</button></div>
+
+      <p class="faint">Faint note</p>
+      <p class="secret">Secret</p>
+      <p class="modern-faint">Modern faint</p>
+      <button class="modern-primary">Primary action</button>
+      <button class="gradient-button">Gradient action</button>
+      <p class="on-photo">Caption on photo</p>
+
+      <form>
+        <label for="name">Name</label>
+        <input id="name" name="name" />
+        <label for="email">Email</label>
+        <input id="email" name="email" aria-invalid="true" aria-describedby="email-error" value="not-an-email" />
+        <p id="email-error">Enter a valid email address</p>
+      </form>
+      <button type="button" id="add">Add row</button>
+      <p id="greeting"></p>
+
+      <!-- Timed screen change: fade out, then swap on a 1.5s timer (staggered reveal / route-transition pattern). -->
+      <button type="button" id="next" style="transition: opacity 400ms">Next step</button>
+      <p id="step">Step one</p>
+      <!-- Only a trusted key press counts, like a real keyboard shortcut handler. -->
+      <p id="shortcut"></p>
+      <!-- A long job whose progress text keeps changing, so the DOM is never quiet. -->
+      <button type="button" id="job">Start job</button>
+      <p id="job-status"></p>
+      <!-- A price formatted by Intl.NumberFormat: a no-break space between code and amount, in the name and on screen. -->
+      <button type="button" id="buy" aria-label="Buy print, AED&#160;20">Buy</button>
+      <p id="paid"></p>
+      <!-- Faded out by a wrapper, not by itself: still invisible. -->
+      <div class="faded-wrapper" style="opacity: 0"><button type="button">Faded action</button></div>
+
+      <div role="alert">Saving failed: the server did not answer</div>
+      <img src="/missing-image.png" alt="Logo" />
+
+      <dialog open>
+        <h2>Confirm delete</h2>
+        <p>This removes the venue.</p>
+      </dialog>
+    </main>
+
+    <script>
+      document.getElementById('name').addEventListener('input', (e) => {
+        document.getElementById('greeting').textContent = `Hello ${e.target.value}`
+      })
+      document.getElementById('add').addEventListener('click', () => {
+        const row = document.createElement('tr')
+        row.innerHTML = `<td>${document.getElementById('name').value || 'New'}</td><td>User</td>`
+        document.querySelector('#people tbody').append(row)
+      })
+      document.getElementById('next').addEventListener('click', (e) => {
+        e.target.style.opacity = '0'
+        setTimeout(() => (document.getElementById('step').textContent = 'Step two'), 1500)
+      })
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'F9' && e.isTrusted) document.getElementById('shortcut').textContent = 'Shortcut pressed'
+      })
+      document.getElementById('buy').addEventListener('click', () => {
+        document.getElementById('paid').textContent = 'Paid AED 20'
+      })
+      document.getElementById('job').addEventListener('click', () => {
+        const started = Date.now()
+        const tick = setInterval(() => {
+          const pct = Math.min(100, Math.round(((Date.now() - started) / 1500) * 100))
+          document.getElementById('job-status').textContent = pct < 100 ? `Working ${pct}%` : 'Job done'
+          if (pct >= 100) clearInterval(tick)
+        }, 50)
+      })
+      // Pollers that never stop: a self-rescheduling timer and an awaited sleep
+      // loop. A reading must not wait for either.
+      ;(function poll() {
+        setTimeout(poll, 300)
+      })()
+      ;(async () => {
+        for (;;) await new Promise((r) => setTimeout(r, 400))
+      })()
+      console.error('Fixture console error')
+      fetch('/api/missing')
+      setTimeout(() => {
+        throw new Error('Fixture uncaught error')
+      })
+    </script>
+  </body>
+</html>
