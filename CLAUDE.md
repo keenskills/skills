@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`keenskills/skills` is the monorepo for the Keen Skills agent skills. Each package under `packages/` is a separate product with its own version, changelog, tests and `CLAUDE.md`; read the package's `CLAUDE.md` before changing it. The design for the repo and the upcoming site is `docs/superpowers/specs/2026-09-29-skills-monorepo-and-site-design.md`.
+`keenskills/skills` is the monorepo for the Keen Skills agent skills. Each package under `packages/` is a separate product with its own version, changelog, tests and `CLAUDE.md`; read the package's `CLAUDE.md` before changing it. The design for the repo and the upcoming site is `docs/superpowers/specs/2026-09-29-skills-monorepo-and-site-design.md`. Current state, next steps and deferred issues: `docs/superpowers/progress.md` (read it first when resuming).
 
 | Path | What |
 | --- | --- |
