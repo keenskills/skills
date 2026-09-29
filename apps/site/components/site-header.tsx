@@ -11,18 +11,18 @@ export function SiteHeader() {
         <ul className="flex items-center gap-4 text-muted">
           {skills.map((s) => (
             <li key={s.slug} className="hidden sm:block">
-              <Link href={`/${s.slug}`} className="hover:text-text">
+              <Link href={`/${s.slug}`} className="inline-flex min-h-6 items-center hover:text-text">
                 {s.title}
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/how-to-use" className="hover:text-text">
+            <Link href="/how-to-use" className="inline-flex min-h-6 items-center hover:text-text">
               How to use
             </Link>
           </li>
         </ul>
-        <a href="https://github.com/keenskills/skills" className="ml-auto text-muted hover:text-text">
+        <a href="https://github.com/keenskills/skills" className="ml-auto inline-flex min-h-6 items-center text-muted hover:text-text">
           GitHub
         </a>
       </nav>

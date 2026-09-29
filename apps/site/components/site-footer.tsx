@@ -12,18 +12,18 @@ export function SiteFooter() {
         <ul className="flex flex-wrap gap-x-5 gap-y-2">
           {skills.map((s) => (
             <li key={s.slug}>
-              <Link href={`/${s.slug}`} className="hover:text-text">
+              <Link href={`/${s.slug}`} className="inline-flex min-h-6 items-center hover:text-text">
                 {s.title}
               </Link>
             </li>
           ))}
           <li>
-            <Link href="/how-to-use" className="hover:text-text">
+            <Link href="/how-to-use" className="inline-flex min-h-6 items-center hover:text-text">
               How to use
             </Link>
           </li>
           <li>
-            <a href="https://github.com/keenskills/skills" className="hover:text-text">
+            <a href="https://github.com/keenskills/skills" className="inline-flex min-h-6 items-center hover:text-text">
               GitHub
             </a>
           </li>
