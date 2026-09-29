@@ -7,8 +7,10 @@ import { PmCommand } from '@/components/pm-command'
 import { PromptGallery } from '@/components/prompt-gallery'
 import { Prose } from '@/components/prose'
 import { SkillHeader } from '@/components/skill-header'
+import { ShowcaseDiagrams } from '@/components/showcase-diagrams'
 import { ShowcasePageAsData } from '@/components/showcase-page-as-data'
 import { SkillTabs } from '@/components/skill-tabs'
+import diagrams from '@/content/showcase/architecture-diagrams.json'
 import pad from '@/content/showcase/page-as-data.json'
 import { getSkill, skills } from '@/lib/content'
 
@@ -32,8 +34,8 @@ export default async function SkillPage({ params }: Props) {
         panels={{
           preview: (
             <>
-              {skill.slug === 'page-as-data' ? <ShowcasePageAsData data={pad} /> : null}
-              <div className={skill.slug === 'page-as-data' ? 'mt-12' : ''}>
+              {skill.slug === 'page-as-data' ? <ShowcasePageAsData data={pad} /> : <ShowcaseDiagrams data={diagrams} />}
+              <div className="mt-12">
                 <Prose html={skill.intro} />
               </div>
             </>

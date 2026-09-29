@@ -1,0 +1,42 @@
+'use client'
+type Img = { src: string; width: number; height: number; alt: string }
+
+// Two renders stacked; the top one is clipped with clip-path: inset(), so the
+// comparison needs no extra DOM and stays on the compositor. Step buttons move
+// it with a short ease-in-out; dragging follows the pointer with no easing.
+export function CompareSlider({ before, after, value, onChange, animate }: { before: Img; after: Img; value: number; onChange: (v: number) => void; animate: boolean }) {
+  const ease = animate ? 'clip-path 250ms var(--ease-in-out), transform 250ms var(--ease-in-out)' : 'none'
+  return (
+    <div className="relative select-none overflow-hidden rounded-xl border border-border bg-white">
+      <img src={after.src} width={after.width} height={after.height} alt={after.alt} className="block h-auto w-full" />
+      <img
+        src={before.src}
+        width={before.width}
+        height={before.height}
+        alt={before.alt}
+        className="absolute inset-0 block h-auto w-full"
+        style={{ clipPath: `inset(0 ${100 - value}% 0 0)`, transition: ease }}
+      />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ transform: `translateX(${value}%)`, transition: ease }}>
+        <div className="absolute inset-y-0 left-0 w-px -translate-x-1/2 bg-neutral-900/50" />
+        <div className="absolute left-0 top-1/2 grid size-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-neutral-600 shadow-[0_1px_4px_rgb(0_0_0/0.25)]">
+          <svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <path d="M6 4 2 8l4 4M10 4l4 4-4 4" />
+          </svg>
+        </div>
+      </div>
+      <span style={{ opacity: value > 8 ? 1 : 0, transition: 'opacity 150ms ease' }} className="pointer-events-none absolute left-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-[#8a5a00] shadow-[0_1px_3px_rgb(0_0_0/0.15)]">Draft</span>
+      <span style={{ opacity: value < 92 ? 1 : 0, transition: 'opacity 150ms ease' }} className="pointer-events-none absolute right-3 top-3 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-[#1b6b3a] shadow-[0_1px_3px_rgb(0_0_0/0.15)]">Final</span>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        aria-label="Compare the draft and the final diagram"
+        aria-valuetext={`${value}% draft`}
+        className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0"
+      />
+    </div>
+  )
+}

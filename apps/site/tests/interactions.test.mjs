@@ -71,3 +71,20 @@ describe('page-as-data showcase', { skip }, () => {
     assert.deepEqual(r.problems.layout.errors, [])
   })
 })
+
+describe('diagram showcase', { skip }, () => {
+  it('walks from the linted draft to the clean final', async () => {
+    const r = await read('/architecture-diagrams', { steps: [{ click: 'Final' }], inspect: ['[data-lint-output]'] })
+    ok(r)
+    assert.match(first(r).text, /no overlaps or whitespace findings/)
+  })
+  it('has a labelled slider a keyboard can reach', async () => {
+    const r = await read('/architecture-diagrams', { inspect: ['input[type="range"][aria-label]'] })
+    assert.equal(r.inspected[0].found, 1)
+  })
+  it('fits a phone at 390 px', async () => {
+    const r = await read('/architecture-diagrams', { width: 390, steps: [{ click: 'Fix' }] })
+    ok(r)
+    assert.deepEqual(r.problems.layout.errors, [])
+  })
+})
