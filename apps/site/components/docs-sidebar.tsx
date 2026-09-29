@@ -25,7 +25,7 @@ export function DocsSidebar({ skill, active }: { skill: Skill; active: string })
   )
   return (
     <>
-      <details className="rounded-lg border border-border bg-surface md:hidden">
+      <details className="card md:hidden">
         <summary className="cursor-pointer px-3 py-2 text-sm font-medium">{skill.title} docs</summary>
         <nav aria-label={`${skill.title} docs`} className="border-t border-border p-2">
           {list}

@@ -84,7 +84,7 @@ export default function Home() {
         <h2 id="faq-title" className="text-xl font-semibold tracking-tight">
           Questions
         </h2>
-        <div className="mt-6 divide-y divide-border rounded-xl border border-border bg-surface">
+        <div className="card mt-6 divide-y divide-border">
           {FAQS.map((f) => (
             <details key={f.q} className="group px-5 py-4">
               <summary className="cursor-pointer font-medium">{f.q}</summary>

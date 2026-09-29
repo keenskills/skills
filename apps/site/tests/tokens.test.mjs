@@ -31,13 +31,28 @@ const contrast = (x, y) => {
 for (const [theme, t] of [['light', tokens(block(':root'))], ['dark', tokens(block(':root[data-theme="dark"]'))]]) {
   describe(`${theme} tokens`, () => {
     const on = (fg, bg) => contrast(over(t[fg], t[bg]), srgb(t[bg]))
-    for (const [fg, bg] of [['text', 'bg'], ['muted', 'bg'], ['muted', 'surface'], ['accent', 'bg'], ['accent', 'surface'], ['muted', 'code']]) {
+    for (const [fg, bg] of [
+      ['text', 'bg'], ['text', 'surface'], ['muted', 'bg'], ['muted', 'surface'], ['muted', 'code'],
+      ['accent', 'bg'], ['accent', 'surface'],
+      ['danger', 'bg'], ['danger', 'code'], ['warn', 'bg'], ['warn', 'code'], ['ok', 'bg'], ['ok', 'code'],
+    ]) {
       it(`${fg} on ${bg} is at least 4.5:1`, () => assert.ok(on(fg, bg) >= 4.5, on(fg, bg).toFixed(2)))
     }
     it('accent text on the accent-soft tint is at least 4.5:1', () => {
       const tint = over(t['accent-soft'], t.bg)
       const ratio = contrast(srgb(t.accent), tint)
       assert.ok(ratio >= 4.5, ratio.toFixed(2))
+    })
+    for (const s of ['danger', 'warn', 'ok']) {
+      it(`${s} text on its own soft tint is at least 4.5:1`, () => {
+        const ratio = contrast(srgb(t[s]), over(t[`${s}-soft`], t.surface))
+        assert.ok(ratio >= 4.5, ratio.toFixed(2))
+      })
+    }
+    it('the page and card surfaces match the reference palette', () => {
+      const hex = (k) => srgb(t[k]).map((c) => Math.round(c * 255))
+      const want = theme === 'light' ? { bg: [253, 253, 253], surface: [255, 255, 255] } : { bg: [15, 15, 15], surface: [24, 24, 24] }
+      for (const [k, rgb] of Object.entries(want)) hex(k).forEach((c, i) => assert.ok(Math.abs(c - rgb[i]) <= 1, `${k} ${hex(k)}`))
     })
   })
 }

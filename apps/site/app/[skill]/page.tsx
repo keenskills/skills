@@ -29,7 +29,7 @@ export default async function SkillPage({ params }: Props) {
       <ul className="mt-4 grid gap-3 sm:grid-cols-2">
         {skill.sections.map((s) => (
           <li key={s.slug}>
-            <Link href={`/${skill.slug}/${s.slug}`} className="block rounded-lg border border-border bg-surface px-4 py-3 text-sm font-medium hover:bg-accent-soft">
+            <Link href={`/${skill.slug}/${s.slug}`} className="card card-hover block px-4 py-3 text-sm font-medium">
               {s.heading}
             </Link>
           </li>

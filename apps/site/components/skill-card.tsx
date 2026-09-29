@@ -4,7 +4,7 @@ import { CodeCommand } from './code-command'
 
 export function SkillCard({ skill }: { skill: Skill }) {
   return (
-    <article className="flex min-w-0 flex-col gap-4 rounded-xl border border-border bg-surface p-5 shadow-[var(--shadow)]">
+    <article className="card flex min-w-0 flex-col gap-4 p-5">
       <div>
         <h3 className="text-lg font-semibold tracking-tight">{skill.title}</h3>
         <p className="mt-1.5 text-sm text-muted text-pretty">{skill.summary}</p>
