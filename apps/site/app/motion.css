@@ -94,6 +94,8 @@
   /* The spec times the width switcher at 250 ms on --ease-in-out (movement on screen). */
   --resize-dur: 250ms;
   --resize-ease: var(--ease-in-out);
+  /* Spec: hero done under 600 ms: 2 x 40 ms stagger + 520 ms. */
+  --stagger-dur: 520ms;
 }
 
 /* ---- transitions.dev 01-card-resize.md ---- */
@@ -471,6 +473,8 @@
 }
 
 /* ---- Site additions ---- */
+
+.t-stagger-line--3 { transition-delay: calc(var(--stagger-stagger) * 2); }
 
 /* Tooltips near the right edge of the header open below and hug the trigger's
    right edge; a centred tooltip there would widen the page at 390 px. */

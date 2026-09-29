@@ -20,6 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <noscript>
+          <style>{'.t-stagger-line{opacity:1!important;transform:none!important;filter:none!important}'}</style>
+        </noscript>
       </head>
       <body className="min-h-dvh bg-bg font-sans text-text antialiased">
         <a

@@ -27,6 +27,8 @@ const FAQS = [
   { q: 'Are they free?', a: 'Yes. Both are MIT licensed and open source on GitHub.' },
 ]
 
+const HERO_SCRIPT = "requestAnimationFrame(()=>requestAnimationFrame(()=>document.getElementById('hero-copy').classList.add('is-shown')))"
+
 // The four PROBLEMS lines the page-scan illustration numbers, in marker order.
 const PICK = [/cut off/, /^broken image/, /wide in a/, /^uncaught exception/]
 const problems = problemLines(pad.read['390'].output)
@@ -37,11 +39,15 @@ export default function Home() {
   return (
     <>
       <section className="py-16 sm:py-24">
-        <p className="text-sm font-medium text-accent">Open-source agent skills</p>
-        <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">Sharper senses for your coding agent</h1>
-        <p className="mt-4 max-w-2xl text-lg text-muted text-pretty">
+        <div className="t-stagger" id="hero-copy">
+        <p className="t-stagger-line t-stagger-line--1 text-sm font-medium text-accent">Open-source agent skills</p>
+        <h1 className="t-stagger-line t-stagger-line--2 mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">Sharper senses for your coding agent</h1>
+        <p className="t-stagger-line t-stagger-line--3 mt-4 max-w-2xl text-lg text-muted text-pretty">
           Skills that let an agent read what a web page really shows, and draw architecture diagrams you can print. Each one installs with a single command.
         </p>
+        </div>
+        {/* Starts the reveal after the first paint; <noscript> in the layout shows the text without script. */}
+        <script dangerouslySetInnerHTML={{ __html: HERO_SCRIPT }} />
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="#skills" className="rounded-lg bg-text px-4 py-2 text-sm font-medium text-bg">
             Browse skills
@@ -121,8 +127,11 @@ export default function Home() {
         </h2>
         <div className="card mt-6 divide-y divide-border">
           {FAQS.map((f) => (
-            <details key={f.q} className="group px-5 py-4">
-              <summary className="cursor-pointer font-medium">{f.q}</summary>
+            <details key={f.q} className="t-accordion px-5 py-4">
+              <summary className="cursor-pointer font-medium">
+                <span>{f.q}</span>
+                <svg className="chev size-4 shrink-0 text-muted" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+              </summary>
               <p className="mt-2 text-sm text-muted text-pretty">{f.a}</p>
             </details>
           ))}

@@ -25,8 +25,11 @@ export function DocsSidebar({ skill, active }: { skill: Skill; active: string })
   )
   return (
     <>
-      <details className="card md:hidden">
-        <summary className="cursor-pointer px-3 py-2 text-sm font-medium">{skill.title} docs</summary>
+      <details className="t-accordion card md:hidden">
+        <summary className="cursor-pointer px-3 py-2 text-sm font-medium">
+          <span>{skill.title} docs</span>
+          <svg className="chev size-4 shrink-0 text-muted" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+        </summary>
         <nav aria-label={`${skill.title} docs`} className="border-t border-border p-2">
           {list}
         </nav>

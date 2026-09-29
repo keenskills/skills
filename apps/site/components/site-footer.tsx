@@ -8,6 +8,13 @@ export function SiteFooter() {
         <div>
           <p className="font-semibold text-text">Keen Skills</p>
           <p className="mt-1">MIT licensed. Made by rajaaltus and gjohnpaull.</p>
+          <p className="mt-1">
+            Every page is checked with page-as-data at 390 and 1440 px{' '}
+            <a href="https://github.com/keenskills/skills/actions/workflows/test.yml" className="text-text underline underline-offset-2">
+              on every push
+            </a>
+            .
+          </p>
         </div>
         <ul className="flex flex-wrap gap-x-5 gap-y-2">
           {skills.map((s) => (

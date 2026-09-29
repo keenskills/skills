@@ -88,3 +88,12 @@ describe('diagram showcase', { skip }, () => {
     assert.deepEqual(r.problems.layout.errors, [])
   })
 })
+
+describe('mobile skills menu', { skip }, () => {
+  it('opens at 390 px and lists both skills', async () => {
+    const r = await read('/', { width: 390, steps: [{ click: 'Skills' }], inspect: ['#skills-menu a'] })
+    ok(r)
+    assert.equal(r.inspected[0].found, 2)
+    assert.ok(r.inspected[0].elements.every((e) => e.visible))
+  })
+})

@@ -27,6 +27,20 @@ describe('home', () => {
     assert.match(html, /<main id="main"/)
   })
 
+  it('reveals the hero with a script, and shows it without one', () => {
+    const html = page('index.html')
+    assert.match(html, /class="t-stagger"/)
+    assert.match(html, /<noscript><style>[^<]*\.t-stagger-line/)
+  })
+
+  it('links the CI run that checks this site with page-as-data', () => {
+    assert.match(page('index.html'), /href="https:\/\/github\.com\/keenskills\/skills\/actions\/workflows\/test\.yml"/)
+  })
+
+  it('animates the FAQ height only through the accordion class', () => {
+    assert.equal(page('index.html').match(/<details class="t-accordion/g)?.length, 5)
+  })
+
   it('sets a stored theme in <head>, before any stylesheet paints', () => {
     const html = page('index.html')
     const script = html.indexOf("localStorage.getItem('theme')")

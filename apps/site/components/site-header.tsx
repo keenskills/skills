@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { skills } from '@/lib/content'
+import { SkillsMenu } from './skills-menu'
 import { ThemeToggle } from './theme-toggle'
 
 export function SiteHeader() {
@@ -17,6 +18,9 @@ export function SiteHeader() {
               </Link>
             </li>
           ))}
+          <li className="sm:hidden">
+            <SkillsMenu skills={skills.map(({ slug, title }) => ({ slug, title }))} />
+          </li>
           <li>
             <Link href="/how-to-use" className="inline-flex min-h-6 items-center hover:text-text">
               How to use
