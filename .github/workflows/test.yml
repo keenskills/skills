@@ -63,5 +63,6 @@ jobs:
       - run: pnpm --filter @keenskills/site test
       - run: pnpm --filter @keenskills/site build
       - run: pnpm --filter @keenskills/site test:pages
+      - run: pnpm --filter @keenskills/site test:interactions
       # ubuntu-latest ships Google Chrome at /usr/bin/google-chrome.
       - run: pnpm --filter @keenskills/site self-check

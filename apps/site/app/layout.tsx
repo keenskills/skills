@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist_Mono, Inter } from 'next/font/google'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
+import { THEME_SCRIPT } from '@/lib/theme-script.mjs'
 import './globals.css'
 import './motion.css'
 
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh bg-bg font-sans text-text antialiased">
         <a
           href="#main"

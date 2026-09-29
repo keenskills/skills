@@ -23,6 +23,12 @@ describe('home', () => {
     assert.match(html, /href="#main"/)
     assert.match(html, /<main id="main"/)
   })
+
+  it('sets a stored theme in <head>, before any stylesheet paints', () => {
+    const html = page('index.html')
+    const script = html.indexOf("localStorage.getItem('theme')")
+    assert.ok(script > 0 && script < html.indexOf('</head>'))
+  })
 })
 
 describe('docs', () => {

@@ -13,7 +13,7 @@
     "sync": "node scripts/sync-shared.mjs",
     "site:dev": "pnpm --filter @keenskills/site dev",
     "site:build": "pnpm --filter @keenskills/site build",
-    "site:check": "pnpm --filter @keenskills/site build && pnpm --filter @keenskills/site test:pages && pnpm --filter @keenskills/site self-check"
+    "site:check": "pnpm --filter @keenskills/site build && pnpm --filter @keenskills/site test:pages && pnpm --filter @keenskills/site test:interactions && pnpm --filter @keenskills/site self-check"
   },
   "license": "MIT"
 }

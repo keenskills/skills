@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { skills } from '@/lib/content'
+import { ThemeToggle } from './theme-toggle'
 
 export function SiteHeader() {
   return (
@@ -22,9 +23,12 @@ export function SiteHeader() {
             </Link>
           </li>
         </ul>
-        <a href="https://github.com/keenskills/skills" className="ml-auto inline-flex min-h-6 items-center text-muted hover:text-text">
-          GitHub
-        </a>
+        <div className="ml-auto flex items-center gap-3">
+          <a href="https://github.com/keenskills/skills" className="inline-flex min-h-6 items-center text-muted hover:text-text">
+            GitHub
+          </a>
+          <ThemeToggle />
+        </div>
       </nav>
     </header>
   )
