@@ -61,6 +61,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @keenskills/site test
+      - run: pnpm --filter @keenskills/site test:showcases
       - run: pnpm --filter @keenskills/site build
       - run: pnpm --filter @keenskills/site test:pages
       - run: pnpm --filter @keenskills/site test:interactions

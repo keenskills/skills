@@ -9,6 +9,8 @@
     "test": "node --test \"tests/content.test.mjs\" \"tests/self-check.test.mjs\" \"tests/tokens.test.mjs\" \"tests/motion.test.mjs\" \"tests/lib.test.mjs\"",
     "test:pages": "node --test \"tests/pages.test.mjs\"",
     "test:interactions": "node --test \"tests/interactions.test.mjs\"",
+    "test:showcases": "node --test \"tests/showcases.test.mjs\"",
+    "showcases": "node scripts/build-showcases.mjs",
     "self-check": "node scripts/self-check.mjs"
   },
   "dependencies": {
