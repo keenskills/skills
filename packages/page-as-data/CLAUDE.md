@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`page-as-data` reads a rendered web page as text/JSON instead of a screenshot: what is on screen, what broke behind it (exceptions, failed requests, broken images), and layout defects at phone and desktop widths. It is a CLI plus an injectable in-page script, published as `@keenskills/page-as-data` (a fork of `gjohnpaull/page-as-data`). `init` installs it as a skill for coding agents, and the repo is also a Claude Code plugin marketplace. Zero runtime dependencies, Node 22+, and a Chrome-family browser (Chrome DevTools Protocol only).
+`page-as-data` reads a rendered web page as text/JSON instead of a screenshot: what is on screen, what broke behind it (exceptions, failed requests, broken images), and layout defects at phone and desktop widths. It is a CLI plus an injectable in-page script, published as `@keenskills/page-as-data` (a fork of `gjohnpaull/page-as-data`). `init` installs it as a skill for coding agents, and it is listed in the monorepo's Claude Code marketplace. Zero runtime dependencies, Node 22+, and a Chrome-family browser (Chrome DevTools Protocol only).
 
 ## Commands
 
@@ -18,7 +18,7 @@ npm run build:skill                                   # regenerate skills/page-a
 ```
 
 - Tests need a Chrome. Set `CHROME_PATH` if it is not at a standard path; without one, the Chrome suites are skipped (not failed).
-- There is no build step, linter or formatter config. CI (`.github/workflows/test.yml`) runs `npm test` on Node 22 and 24.
+- There is no build step, linter or formatter config. CI (root `.github/workflows/test.yml`) runs `npm test` here on Node 22 and 24.
 - Exit codes: `0` nothing found, `1` problems found, `2` could not run (no Chrome, bad URL, a step could not find its control).
 
 ## Architecture
@@ -46,7 +46,7 @@ In a terminal, `init` runs `wizard.mjs` instead (`wantsWizard()` in `cli.mjs` de
 
 ### Release
 
-`npm version <patch|minor|major>` (its `version` script regenerates the plugin files), then `git push --follow-tags`. `.github/workflows/publish.yml` runs on `v*` tags: tests, checks that the tag matches `package.json`, then runs `npm publish` with provenance (needs the `NPM_TOKEN` secret). `provenance: true` means a local `npm publish` fails; publish from CI.
+From this folder: `npm version <patch|minor|major> --no-git-tag-version` (its `version` script regenerates the plugin files), commit, then tag `page-as-data@v<version>` and `git push --follow-tags` from the repo root. The root `.github/workflows/publish.yml` runs this package's tests, checks the tag against `package.json`, then publishes with provenance (needs the `NPM_TOKEN` secret). `provenance: true` means a local `npm publish` fails; publish from CI.
 
 ## Tests
 
