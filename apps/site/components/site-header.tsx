@@ -6,7 +6,7 @@ import { ThemeToggle } from './theme-toggle'
 export function SiteHeader() {
   return (
     <header className="border-b border-border">
-      <nav aria-label="Main" className="mx-auto flex h-14 max-w-6xl items-center gap-5 px-4 text-sm sm:px-6">
+      <nav aria-label="Main" className="mx-auto flex h-14 max-w-(--site-max) items-center gap-5 px-4 text-sm sm:px-6">
         <Link href="/" className="font-semibold tracking-tight">
           Keen Skills
         </Link>

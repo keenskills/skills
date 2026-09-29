@@ -4,7 +4,8 @@ import { useLayoutEffect, useRef, type KeyboardEvent, type MouseEvent } from 're
 export type TabOption = { id: string; label: string }
 
 // transitions.dev "Tabs sliding". The pill glides on a pointer click; arrow keys
-// move it instantly (keyboard actions are never animated).
+// move it instantly (keyboard actions are never animated). onChange says which
+// it was, so whatever the tabs control can follow the same rule.
 export function SlidingTabs({
   label,
   options,
@@ -17,7 +18,7 @@ export function SlidingTabs({
   label: string
   options: TabOption[]
   value: string
-  onChange: (id: string) => void
+  onChange: (id: string, animated: boolean) => void
   idPrefix?: string
   panelId?: (id: string) => string
   size?: 'sm' | 'md'
@@ -54,7 +55,7 @@ export function SlidingTabs({
 
   const pick = (id: string, e: MouseEvent | KeyboardEvent) => {
     animate.current = e.type === 'click' && (e as MouseEvent).detail > 0
-    onChange(id)
+    onChange(id, animate.current)
   }
   const onKey = (e: KeyboardEvent) => {
     const i = options.findIndex((o) => o.id === value)

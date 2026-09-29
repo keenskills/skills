@@ -522,3 +522,13 @@ details.t-accordion[open] > summary .chev { transform: rotate(180deg); }
 .cmp-glide { transition: clip-path 250ms var(--ease-in-out), transform 250ms var(--ease-in-out); }
 .cmp-chip { transition: opacity 150ms ease; }
 @media (prefers-reduced-motion: reduce) { .cmp-glide { transition: none; } }
+
+/* Read output: a line only one viewport width prints opens and closes in place
+   (spec: Card resize). Arrow keys switch the width with data-instant: no motion. */
+.read-line { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 250ms var(--ease-in-out), opacity 200ms ease; }
+.read-line > span { min-height: 0; overflow: hidden; }
+.read-line[data-off] { grid-template-rows: 0fr; opacity: 0; }
+/* The two screenshots share one frame and crossfade while it resizes. */
+.shot { transition: opacity 200ms ease; }
+[data-instant] .read-line, [data-instant] .shot, [data-instant] .t-resize { transition: none; }
+@media (prefers-reduced-motion: reduce) { .read-line, .shot { transition: none; } }

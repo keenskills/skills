@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { replaySchedule } from '@/lib/terminal.mjs'
+import { hangIndent, replaySchedule } from '@/lib/terminal.mjs'
 
 const TONE: Record<string, string> = {
   error: 'text-danger',
@@ -16,6 +16,16 @@ const TONE: Record<string, string> = {
   blank: '',
 }
 const SETTLE_MS = 1100
+
+// A command wraps between its words, never inside a flag such as --launch.
+export function Command({ text }: { text: string }) {
+  return text.split(' ').map((word, i) => (
+    <span key={i}>
+      {i ? ' ' : ''}
+      <span className="whitespace-nowrap">{word}</span>
+    </span>
+  ))
+}
 
 // A replay of a real `check` run: the command, a shimmering "settling" line while
 // it "runs", then the real output line by line. Plays once when scrolled into
@@ -79,17 +89,25 @@ export function TerminalReplay({ command, output, name }: { command: string; out
           Replay
         </button>
       </div>
-      <pre tabIndex={0} data-check-output={name} className="max-h-[28rem] overflow-auto p-4 font-mono text-[12.5px] leading-6">
-        <span className="text-faint">$ </span>
-        <span className="text-text">{command}</span>
-        {'\n'}
+      <pre tabIndex={0} data-check-output={name} className="max-h-[28rem] overflow-y-auto whitespace-pre-wrap p-4 font-mono text-[12.5px] leading-6 [overflow-wrap:anywhere]">
+        <span className="block pl-[2ch] -indent-[2ch]">
+          <span className="text-faint">$ </span>
+          <span className="text-text">
+            <Command text={command} />
+          </span>
+        </span>
         {phase === 'settling' ? (
           <span className="t-shimmer" data-text="Settling each page…">
             Settling each page…
           </span>
         ) : null}
         {plan.slice(0, shown).map((l, i) => (
-          <span key={i} data-kind={l.kind} className={`block ${TONE[l.kind]} ${phase === 'printing' ? 'term-line' : ''}`}>
+          <span
+            key={i}
+            data-kind={l.kind}
+            className={`block ${TONE[l.kind]} ${phase === 'printing' ? 'term-line' : ''}`}
+            style={{ paddingLeft: `${hangIndent(l.text)}ch`, textIndent: `-${hangIndent(l.text)}ch` }}
+          >
             {l.text || ' '}
           </span>
         ))}

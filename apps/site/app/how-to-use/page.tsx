@@ -7,9 +7,9 @@ export const metadata: Metadata = { title: 'How to use', description: 'Install a
 
 export default function HowToUse() {
   return (
-    <div className="max-w-3xl py-12">
+    <div className="py-12">
       <h1 className="text-3xl font-semibold tracking-tight">How to use</h1>
-      <p className="mt-3 text-muted text-pretty">
+      <p className="mt-3 max-w-2xl text-muted text-pretty">
         Each skill is its own npm package. Run init in your project: it finds the agents you use and installs the skill in each one’s format. Nothing else changes.
       </p>
 

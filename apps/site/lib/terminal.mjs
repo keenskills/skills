@@ -29,6 +29,30 @@ export function problemLines(output) {
   return out
 }
 
+/** How many characters a wrapped line hangs by: it continues under its own text, not under its bullet or label. */
+export function hangIndent(line) {
+  return line.match(/^\s*(?:• |· |(?:error|warning)\s+)?/)[0].length
+}
+
+/**
+ * Two runs of the same page, as one list: each line says which run printed it.
+ * The runs differ by a line or two, so a walk with two pointers is enough.
+ */
+export function mergeLines(a, b) {
+  const out = []
+  let i = 0
+  let j = 0
+  while (i < a.length || j < b.length) {
+    if (i < a.length && j < b.length && a[i] === b[j]) {
+      out.push({ text: a[i], a: true, b: true })
+      i++
+      j++
+    } else if (i < a.length && !b.includes(a[i], j)) out.push({ text: a[i++], a: true, b: false })
+    else out.push({ text: b[j++], a: false, b: true })
+  }
+  return out
+}
+
 /** When each line appears in a replay: in order, blanks for free, capped so a long run never drags. */
 export function replaySchedule(lines, { reduced = false, step = 40, max = 1200 } = {}) {
   let t = 0

@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <SiteHeader />
-        <main id="main" className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <main id="main" className="mx-auto w-full max-w-(--site-max) px-4 sm:px-6">
           {children}
         </main>
         <SiteFooter />

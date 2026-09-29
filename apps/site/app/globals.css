@@ -121,8 +121,9 @@
 .press:active { transform: scale(0.97); }
 @media (prefers-reduced-motion: reduce) { .press:active { transform: none; } }
 
-
+/* Header, main and footer share one width so their edges line up. */
 body {
+  --site-max: 56rem;
   background: var(--bg);
   color: var(--text);
 }

@@ -4,7 +4,7 @@ import vm from 'node:vm'
 import { THEME_KEY, THEME_SCRIPT, nextTheme } from '../lib/theme-script.mjs'
 import { copyText } from '../lib/copy.mjs'
 import { PMS, commandFor } from '../lib/commands.mjs'
-import { lineKind, problemLines, replaySchedule } from '../lib/terminal.mjs'
+import { lineKind, mergeLines, problemLines, replaySchedule } from '../lib/terminal.mjs'
 import pad from '../content/showcase/page-as-data.json' with { type: 'json' }
 
 describe('theme head script', () => {
@@ -83,6 +83,25 @@ describe('terminal lines', () => {
     const p = problemLines(pad.read['390'].output)
     assert.ok(p.length >= 10)
     assert.ok(p.every((l) => !l.startsWith('•')))
+  })
+})
+
+describe('mergeLines', () => {
+  it('keeps shared lines once and marks the rest by run', () => {
+    assert.deepEqual(mergeLines(['t 390', '', 'x', 'only a', 'y'], ['t 1440', '', 'x', 'y']), [
+      { text: 't 390', a: true, b: false },
+      { text: 't 1440', a: false, b: true },
+      { text: '', a: true, b: true },
+      { text: 'x', a: true, b: true },
+      { text: 'only a', a: true, b: false },
+      { text: 'y', a: true, b: true },
+    ])
+  })
+  it('gives back each run of the showcase unchanged', () => {
+    const [a, b] = ['390', '1440'].map((w) => pad.read[w].output.split('\n'))
+    const m = mergeLines(a, b)
+    assert.deepEqual(m.filter((l) => l.a).map((l) => l.text), a)
+    assert.deepEqual(m.filter((l) => l.b).map((l) => l.text), b)
   })
 })
 
