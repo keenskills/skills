@@ -34,6 +34,16 @@ const problems = problemLines(pad.read['390'].output)
 const scanLines = PICK.map((re) => problems.find((l) => re.test(l.replace(/^layout: /, ''))) ?? '')
 if (scanLines.some((l) => !l)) throw new Error('page-scan: a picked PROBLEMS line is missing from the showcase output')
 
+// The lint findings and fixes the diagram illustration draws, in the order it numbers them.
+const FOUND = [/^users: icon is/, /^entra \/ cosmos: labels overlap/, /^afd \/ evh: .*common baseline/, /^whitespace: /]
+const FIXED = [/^users: icon back/, /^afd: moved/, /^entra: moved back/]
+const lintLines = diagrams.draft.lint.output.split('\n')
+const findings = FOUND.map((re) => lintLines.find((l) => re.test(l)) ?? '')
+const fixes = FIXED.map((re) => diagrams.fixes.find((l) => re.test(l)) ?? '')
+if (lintLines.length !== FOUND.length || diagrams.fixes.length !== FIXED.length || [...findings, ...fixes].some((l) => !l)) {
+  throw new Error('diagram-draw: the showcase lint output no longer matches the faults the illustration draws')
+}
+
 export default function Home() {
   return (
     <>
@@ -74,7 +84,7 @@ export default function Home() {
           page-as-data opens the page in Chrome, waits until it has settled, and reports what is on screen and what broke behind it.
         </p>
         <div className="mt-8">
-          <PageScan problems={scanLines} summary={`${problems.length} problems · exit ${pad.read['390'].exit}`} />
+          <PageScan command={pad.read['390'].command} problems={scanLines} summary={`${problems.length} problems · exit ${pad.read['390'].exit}`} />
         </div>
       </section>
 
@@ -86,7 +96,7 @@ export default function Home() {
           The diagram skill writes a build script, lints the result for overlaps and wasted space, fixes what it finds and renders print-ready files.
         </p>
         <div className="mt-8">
-          <DiagramDraw findings={diagrams.draft.lint.output.split('\n').length} fixes={diagrams.fixes.length} />
+          <DiagramDraw draft={diagrams.draft.lint} findings={findings} fixes={fixes} final={diagrams.final.lint} files={diagrams.downloads.map((f) => f.href.split('/').pop() ?? f.ext)} />
         </div>
       </section>
 

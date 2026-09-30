@@ -2,19 +2,38 @@
    to its plain style, so an unarmed scene (no JS, reduced motion, server HTML)
    shows the finished picture. Armed: frame 0 held. Playing: runs once. */
 .scene .sc { transform-box: fill-box; transform-origin: center; }
+.scene .sc-load { transform-origin: left center; }
+.scene .sc-cover { transform-origin: right center; }
 .scene[data-armed] .sc { animation-play-state: paused; animation-fill-mode: both; animation-delay: var(--d, 0ms); }
 .scene[data-armed][data-play] .sc { animation-play-state: running; }
 
 .scene[data-armed] .sc-rise  { animation-name: sc-rise;  animation-duration: 500ms; animation-timing-function: var(--ease-out); }
 .scene[data-armed] .sc-pop   { animation-name: sc-pop;   animation-duration: 320ms; animation-timing-function: var(--ease-out); }
 .scene[data-armed] .sc-draw  { stroke-dasharray: 1; animation-name: sc-draw; animation-duration: 600ms; animation-timing-function: var(--ease-out); }
-.scene[data-armed] .sc-beam  { animation-name: sc-beam;  animation-duration: 1600ms; animation-timing-function: var(--ease-in-out); }
+/* A scan is constant motion, and the pins are timed against it: linear. */
+.scene[data-armed] .sc-beam  { animation-name: sc-beam;  animation-duration: 1600ms; animation-timing-function: linear; }
 /* A ping starts visible, so it must not hold its first frame before its delay. */
 .scene[data-armed] .sc-ping  { animation-name: sc-ping;  animation-duration: 700ms; animation-timing-function: var(--ease-out); animation-fill-mode: forwards; }
-.scene[data-armed] .sc-flash { animation-name: sc-flash; animation-duration: 1100ms; animation-timing-function: ease; }
+.scene[data-armed] .sc-flash { animation-name: sc-flash; animation-duration: var(--dur, 1100ms); animation-timing-function: ease; }
 .scene[data-armed] .sc-fix   { animation-name: sc-fix;   animation-duration: 400ms; animation-timing-function: var(--ease-in-out); }
-.scene[data-armed] .sc-nudge { animation-name: sc-nudge; animation-duration: 400ms; animation-timing-function: var(--ease-in-out); }
+/* A piece drawn out of place by --tx, --ty moves home. */
+.scene[data-armed] .sc-nudge { animation-name: sc-nudge; animation-duration: var(--dur, 400ms); animation-timing-function: var(--ease-in-out); }
+/* A lint pin: in, held for --dur until its fix, then out. */
+.scene[data-armed] .sc-mark  { animation-name: sc-mark;  animation-duration: var(--dur, 1200ms); animation-timing-function: var(--ease-out); }
 .scene[data-armed] .sc-flow  { stroke-dasharray: 0.08 1; animation-name: sc-flow; animation-duration: 1400ms; animation-timing-function: linear; }
+.scene[data-armed] .sc-load  { animation-name: sc-load;  animation-duration: 800ms; animation-timing-function: var(--ease-out); }
+/* A cover slides off typed text one character at a time; its steps() is set inline from the text length. */
+.scene[data-armed] .sc-cover { animation-name: sc-cover; animation-duration: 500ms; }
+.scene[data-armed] .sc-spin  { animation-name: sc-spin;  animation-duration: 1000ms; animation-timing-function: linear; }
+/* After transitions.dev "Text states swap": a status enters; one that is replaced leaves from inside it. */
+.scene[data-armed] .sc-enter { animation-name: sc-enter; animation-duration: var(--text-swap-dur); animation-timing-function: var(--text-swap-ease); }
+.scene[data-armed] .sc-leave { animation-name: sc-leave; animation-duration: var(--text-swap-dur); animation-timing-function: var(--text-swap-ease); }
+/* After transitions.dev "Icon swap": a finding's number gives way to a tick. */
+.scene[data-armed] .sc-swap-in  { animation-name: sc-swap-in;  animation-duration: var(--icon-swap-dur); animation-timing-function: var(--icon-swap-ease); }
+.scene[data-armed] .sc-swap-out { animation-name: sc-swap-out; animation-duration: var(--icon-swap-dur); animation-timing-function: var(--icon-swap-ease); }
+/* After transitions.dev "Texts reveal": a line of output arriving. */
+.scene[data-armed] .sc-line  { animation-name: sc-line;  animation-duration: var(--stagger-dur); animation-timing-function: var(--stagger-ease); }
+.scene[data-armed] .sc-char  { animation-name: sc-char;  animation-duration: 1ms; animation-timing-function: step-end; }
 
 @keyframes sc-rise  { from { opacity: 0; transform: translateY(8px); } }
 @keyframes sc-pop   { from { opacity: 0; transform: scale(0.95); } }
@@ -23,12 +42,44 @@
 @keyframes sc-beam  { 0% { opacity: 0; transform: translateY(0); } 10%, 85% { opacity: 1; } 100% { opacity: 0; transform: translateY(220px); } }
 @keyframes sc-ping  { from { opacity: 0.6; transform: scale(1); } to { opacity: 0; transform: scale(2.2); } }
 @keyframes sc-flash { 0% { opacity: 0; } 15%, 80% { opacity: 1; } 100% { opacity: 0; } }
-@keyframes sc-fix   { from { transform: scale(1.55); } }
-@keyframes sc-nudge { from { transform: translate(14px, -9px); } }
+@keyframes sc-fix   { from { transform: scale(var(--grow, 1.55)); } }
+@keyframes sc-nudge { from { transform: translate(var(--tx, 14px), var(--ty, -9px)); } }
+@keyframes sc-mark  { 0% { opacity: 0; transform: scale(0.95); } 12%, 88% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.95); } }
 @keyframes sc-flow  { 0% { opacity: 1; stroke-dashoffset: 0.08; } 95% { opacity: 1; } 100% { opacity: 0; stroke-dashoffset: -1; } }
+/* Load bar, cover, spinner, lint pins, replaced statuses and swapped-out numbers also end invisible. */
+@keyframes sc-load  { 0% { opacity: 0; transform: scaleX(0.02); } 5% { opacity: 1; } 80% { opacity: 1; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(1); } }
+@keyframes sc-cover { from { opacity: 1; transform: scaleX(1); } to { opacity: 1; transform: scaleX(0.001); } }
+@keyframes sc-spin  { 0% { opacity: 0; transform: rotate(0deg); } 10%, 85% { opacity: 1; } 100% { opacity: 0; transform: rotate(900deg); } }
+@keyframes sc-enter { from { opacity: 0; transform: translateY(var(--text-swap-translate-y)); filter: blur(var(--text-swap-blur)); } }
+@keyframes sc-leave {
+  from { opacity: 1; transform: translateY(0); filter: blur(0); }
+  to { opacity: 0; transform: translateY(calc(var(--text-swap-translate-y) * -1)); filter: blur(var(--text-swap-blur)); }
+}
+@keyframes sc-swap-in  { from { opacity: 0; transform: scale(var(--icon-swap-start-scale)); filter: blur(var(--icon-swap-blur)); } }
+@keyframes sc-swap-out {
+  from { opacity: 1; transform: scale(1); filter: blur(0); }
+  to { opacity: 0; transform: scale(var(--icon-swap-start-scale)); filter: blur(var(--icon-swap-blur)); }
+}
+@keyframes sc-line  { from { opacity: 0; transform: translateY(var(--stagger-distance)); filter: blur(var(--stagger-blur)); } }
+@keyframes sc-char  { from { opacity: 0; } }
 
-.scene .sc-beam, .scene .sc-ping, .scene .sc-flash, .scene .sc-flow { opacity: 0; }
+.scene .sc-beam, .scene .sc-ping, .scene .sc-flash, .scene .sc-flow,
+.scene .sc-load, .scene .sc-cover, .scene .sc-spin, .scene .sc-mark, .scene .sc-leave, .scene .sc-swap-out { opacity: 0; }
+
+/* Page scan: pointing at a pin or its line brings that pair forward. */
+.scan-pin { transform-box: fill-box; transform-origin: center; transition: opacity 160ms ease, transform 160ms var(--ease-out); }
+.scan-text { transition: opacity 160ms ease; }
+/* Diagram draw: pointing at a finding or a fix rings the node it is about. */
+.draw-ring { opacity: 0; transition: opacity 160ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .scene .draw-ring[data-hot] { opacity: 1; }
+  .scene[data-hot] .scan-pin:not([data-hot]),
+  .scene[data-hot] .scan-row:not([data-hot]) .scan-text { opacity: 0.4; }
+  .scene .scan-pin[data-hot] { transform: scale(1.15); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .scene .sc { animation: none !important; }
+  .scan-pin { transition: opacity 160ms ease; }
+  .scene .scan-pin[data-hot] { transform: none; }
 }

@@ -4,7 +4,7 @@
    something (status in the showcases). Light is the default; dark follows the
    system unless data-theme pins one (set by the head script and the toggle). */
 :root {
-  --bg: oklch(0.994 0 0);            /* #fdfdfd */
+  --bg: oklch(0.97 0.01 0);            /* #fdfdfd */
   --surface: oklch(1 0 0);            /* #ffffff */
   --text: oklch(0.3211 0 0);          /* #333 */
   --muted: oklch(0.5103 0 0);         /* #666 */
@@ -61,10 +61,10 @@
 }
 
 :root[data-theme="dark"] {
-  --bg: oklch(0.1684 0 0);            /* #0f0f0f */
-  --surface: oklch(0.209 0 0);       /* #181818 */
-  --text: oklch(0.9197 0.004 286.32); /* #e4e4e7 */
-  --muted: oklch(0.7118 0.0129 286.07); /* #a1a1aa */
+  --bg: oklch(0.21 0 0);            /* #0f0f0f */
+  --surface: oklch(0.26 0 0);       /* #181818 */
+  --text: oklch(0.96 0.004 286.32); /* #e4e4e7 */
+  --muted: oklch(0.78 0.0129 286.07); /* #a1a1aa */
   --faint: oklch(0.5517 0.0138 285.94); /* #71717a */
   --line: oklch(1 0 0 / 0.07);
   --line-strong: oklch(1 0 0 / 0.14);
