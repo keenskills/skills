@@ -373,6 +373,7 @@
   height: 30px;
   width: 0;
   background: var(--tabs-pill-bg);
+  box-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.04), inset 0 0.5px 1px 0px oklch(1 0 0 / 0.3), inset 0 -1px 0 0 oklch(0 0 0 / 0.06);
   border-radius: 48px;
   transform: translateX(0);
   transition:

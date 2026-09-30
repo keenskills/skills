@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist_Mono, Inter } from 'next/font/google'
+import { Geist_Mono, Fira_Sans } from 'next/font/google'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { THEME_SCRIPT } from '@/lib/theme-script.mjs'
@@ -7,7 +7,11 @@ import './globals.css'
 import './motion.css'
 import './scenes.css'
 
-const sans = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const sans = Fira_Sans({
+  subsets: ['latin'],
+  variable: '--font-fira-sans',
+  weight: ['300', '400', '500', '600', '700'],
+})
 const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
 
 export const metadata: Metadata = {
