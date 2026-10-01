@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/meta'
 import { notFound } from 'next/navigation'
 import { DocsShell } from '@/components/docs-shell'
 import { Prose } from '@/components/prose'
@@ -11,7 +12,7 @@ export const generateStaticParams = () => skills.map((s) => ({ skill: s.slug }))
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const skill = getSkill((await params).skill)
-  return skill ? { title: `Changelog · ${skill.title}` } : {}
+  return skill ? pageMeta({ title: `Changelog · ${skill.title}`, description: `Release notes for ${skill.title}: what changed in each version.`, path: `/${skill.slug}/changelog`, skill: skill.slug }) : {}
 }
 
 export default async function ChangelogPage({ params }: Props) {

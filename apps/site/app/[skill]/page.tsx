@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/meta'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CodeCommand } from '@/components/code-command'
+import { JsonLd } from '@/components/json-ld'
 import { DocsShell } from '@/components/docs-shell'
 import { PmCommand } from '@/components/pm-command'
 import { PromptGallery } from '@/components/prompt-gallery'
@@ -13,6 +15,7 @@ import { SkillTabs } from '@/components/skill-tabs'
 import diagrams from '@/content/showcase/architecture-diagrams.json'
 import pad from '@/content/showcase/page-as-data.json'
 import { getSkill, skills } from '@/lib/content'
+import { ogImage, SITE } from '@/lib/site.mjs'
 
 type Props = { params: Promise<{ skill: string }> }
 
@@ -21,7 +24,7 @@ export const generateStaticParams = () => skills.map((s) => ({ skill: s.slug }))
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const skill = getSkill((await params).skill)
-  return skill ? { title: skill.title, description: skill.summary } : {}
+  return skill ? pageMeta({ title: skill.title, description: skill.summary, path: `/${skill.slug}`, skill: skill.slug }) : {}
 }
 
 export default async function SkillPage({ params }: Props) {
@@ -30,6 +33,24 @@ export default async function SkillPage({ params }: Props) {
   return (
     <DocsShell skill={skill} active="">
       <SkillHeader skill={skill} />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: skill.title,
+          description: skill.description,
+          url: `${SITE.url}/${skill.slug}`,
+          image: `${SITE.url}${ogImage(skill.slug)}`,
+          applicationCategory: 'DeveloperApplication',
+          operatingSystem: 'macOS, Linux, Windows',
+          softwareVersion: skill.version,
+          downloadUrl: skill.npm,
+          codeRepository: skill.repo,
+          license: 'https://opensource.org/licenses/MIT',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+          publisher: { '@type': 'Organization', name: SITE.maker.name, url: SITE.maker.url },
+        }}
+      />
       <SkillTabs
         panels={{
           preview: (

@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/meta'
 import { CodeCommand } from '@/components/code-command'
 import { PmCommand } from '@/components/pm-command'
 import { agents, skills } from '@/lib/content'
 
-export const metadata: Metadata = { title: 'How to use', description: 'Install a Keen Skills skill for your coding agent with one command, or as a Claude Code plugin.' }
+export const metadata: Metadata = pageMeta({ title: 'How to use', description: 'Install a Keen Skills skill for your coding agent with one command, or as a Claude Code plugin.', path: '/how-to-use' })
 
 export default function HowToUse() {
   return (

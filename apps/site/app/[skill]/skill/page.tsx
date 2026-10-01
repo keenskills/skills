@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/meta'
 import { notFound } from 'next/navigation'
 import { DocsShell } from '@/components/docs-shell'
 import { Prose } from '@/components/prose'
@@ -11,7 +12,7 @@ export const generateStaticParams = () => skills.map((s) => ({ skill: s.slug }))
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const skill = getSkill((await params).skill)
-  return skill ? { title: `What your agent reads · ${skill.title}` } : {}
+  return skill ? pageMeta({ title: `What your agent reads · ${skill.title}`, description: `The skill file ${skill.title} installs for your coding agent, word for word.`, path: `/${skill.slug}/skill`, skill: skill.slug }) : {}
 }
 
 export default async function SkillFilePage({ params }: Props) {

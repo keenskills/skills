@@ -5,6 +5,9 @@ import { describe, it } from 'node:test'
 import content from '../.generated/content.json' with { type: 'json' }
 import pad from '../content/showcase/page-as-data.json' with { type: 'json' }
 import diagrams from '../content/showcase/architecture-diagrams.json' with { type: 'json' }
+import { fileURLToPath } from 'node:url'
+import { SITE } from '../lib/site.mjs'
+import { routesFrom } from '../scripts/self-check.mjs'
 
 const out = new URL('../out/', import.meta.url)
 const page = (p) => readFileSync(new URL(p, out), 'utf8')
@@ -33,7 +36,12 @@ describe('home', () => {
     assert.match(html, /<noscript><style>[^<]*\.t-stagger-line/)
   })
 
-  it('has a favicon', () => assert.match(page('index.html'), /<link rel="icon"[^>]*href="\/icon\.svg/))
+  it('has the D2 favicon, as an icon, an .ico and an Apple touch icon', () => {
+    const html = page('index.html')
+    assert.match(html, /<link rel="icon"[^>]*href="\/icon\.png/)
+    assert.match(html, /<link rel="icon"[^>]*href="\/favicon\.ico/)
+    assert.match(html, /<link rel="apple-touch-icon"[^>]*href="\/apple-icon\.png/)
+  })
 
   it('links the CI run that checks this site with page-as-data', () => {
     assert.match(page('index.html'), /href="https:\/\/github\.com\/keenskills\/skills\/actions\/workflows\/test\.yml"/)
@@ -137,6 +145,64 @@ describe('illustrations', () => {
     assert.equal(shown.length, 4)
     for (const l of shown) assert.ok(escape(pad.read['390'].output).includes(l), l)
   })
+})
+
+describe('search and sharing', () => {
+  const routes = routesFrom(fileURLToPath(out))
+  const file = (r) => (r === '/' ? 'index.html' : `${r.slice(1)}.html`)
+  const meta = (html, key) => html.match(new RegExp(`<meta (?:property|name)="${key}" content="([^"]*)"`))?.[1]
+
+  for (const r of routes) {
+    it(`${r} has a canonical URL, a description and a social card that exists`, () => {
+      const html = page(file(r))
+      assert.match(html, new RegExp(`<link rel="canonical" href="${SITE.url}${r === '/' ? '/?' : r}"`))
+      assert.ok(meta(html, 'description')?.length > 50, 'description')
+      assert.equal(meta(html, 'og:url'), `${SITE.url}${r === '/' ? '' : r}`.replace(/^$/, SITE.url))
+      assert.equal(meta(html, 'og:site_name'), SITE.name)
+      assert.equal(meta(html, 'twitter:card'), 'summary_large_image')
+      const image = meta(html, 'og:image')
+      assert.ok(image?.startsWith(`${SITE.url}/og/`), image)
+      assert.equal(meta(html, 'twitter:image'), image)
+      assert.ok(existsSync(new URL(image.slice(SITE.url.length + 1), out)), image)
+    })
+  }
+
+  it('gives each skill its own card and the rest the site card', () => {
+    for (const s of content.skills) assert.equal(meta(page(`${s.slug}.html`), 'og:image'), `${SITE.url}/og/${s.slug}.png`)
+    assert.equal(meta(page('index.html'), 'og:image'), `${SITE.url}/og/home.png`)
+  })
+
+  it('titles are unique across pages', () => {
+    const titles = routes.map((r) => page(file(r)).match(/<title>([^<]*)<\/title>/)?.[1])
+    assert.equal(new Set(titles).size, titles.length)
+  })
+
+  it('the sitemap lists every page and nothing else', () => {
+    const urls = [...page('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).sort()
+    assert.deepEqual(urls, routes.map((r) => `${SITE.url}${r === '/' ? '/' : r}`).sort())
+  })
+
+  it('robots.txt allows crawling and points at the sitemap', () => {
+    const txt = page('robots.txt')
+    assert.match(txt, /Allow: \//)
+    assert.ok(txt.includes(`Sitemap: ${SITE.url}/sitemap.xml`))
+  })
+
+  it('carries structured data: the site on every page, the FAQ on home, the software on a skill page', () => {
+    const types = (html) => [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map((m) => JSON.parse(m[1])['@type'])
+    assert.deepEqual(types(page('index.html')).sort(), ['FAQPage', 'WebSite'])
+    assert.deepEqual(types(page('how-to-use.html')), ['WebSite'])
+    for (const s of content.skills) assert.ok(types(page(`${s.slug}.html`)).includes('SoftwareApplication'), s.slug)
+  })
+
+  it('loads Google Analytics only on the live host', () => {
+    const html = page('index.html')
+    assert.ok(html.includes(SITE.analytics))
+    assert.ok(html.includes(`if (location.hostname === '${SITE.host}')`))
+    assert.doesNotMatch(html, /<script[^>]*src="https:\/\/www\.googletagmanager\.com/)
+  })
+
+  it('the 404 page is not indexed', () => assert.match(page('404.html'), /<meta name="robots" content="noindex/))
 })
 
 describe('how to use', () => {

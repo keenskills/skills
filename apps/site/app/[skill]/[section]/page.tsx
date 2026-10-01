@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/meta'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { DocsShell } from '@/components/docs-shell'
@@ -19,7 +20,9 @@ async function find(params: Props['params']) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = await find(params)
-  return found ? { title: `${found.skill.sections[found.i].heading} · ${found.skill.title}` } : {}
+  if (!found) return {}
+  const { skill, i } = found
+  return pageMeta({ title: `${skill.sections[i].heading} · ${skill.title}`, description: `${skill.sections[i].heading}: ${skill.summary}`, path: `/${skill.slug}/${skill.sections[i].slug}`, skill: skill.slug })
 }
 
 export default async function SectionPage({ params }: Props) {

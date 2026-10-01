@@ -1,12 +1,18 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { HeroReveal } from '@/components/hero-reveal'
 import { DiagramDraw } from '@/components/illustrations/diagram-draw'
 import { PageScan } from '@/components/illustrations/page-scan'
 import diagrams from '@/content/showcase/architecture-diagrams.json'
 import pad from '@/content/showcase/page-as-data.json'
+import { pageMeta } from '@/lib/meta'
+import { SITE } from '@/lib/site.mjs'
 import { problemLines } from '@/lib/terminal.mjs'
+import { JsonLd } from '@/components/json-ld'
 import { SkillCard } from '@/components/skill-card'
 import { agents, skills } from '@/lib/content'
+
+export const metadata: Metadata = pageMeta({ path: '/' })
 
 const STEPS = [
   { title: 'Install the skill', body: 'Run init in your project. It finds the agents you use and writes the skill in each one’s own format.' },
@@ -50,7 +56,7 @@ export default function Home() {
       <section className="py-16 sm:py-24">
         <HeroReveal>
         <p className="t-stagger-line t-stagger-line--1 text-sm font-medium text-accent">Open-source agent skills</p>
-        <h1 className="t-stagger-line t-stagger-line--2 mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">Sharper senses for your coding agent</h1>
+        <h1 className="t-stagger-line t-stagger-line--2 mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{SITE.tagline}</h1>
         <p className="t-stagger-line t-stagger-line--3 mt-4 max-w-2xl text-lg text-muted text-pretty">
           Skills that let an agent read what a web page really shows, and draw architecture diagrams you can print. Each one installs with a single command.
         </p>
@@ -144,6 +150,13 @@ export default function Home() {
           ))}
         </div>
       </section>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: FAQS.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+        }}
+      />
     </>
   )
 }
