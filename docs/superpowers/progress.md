@@ -1,6 +1,6 @@
 # Keen Skills — progress and handoff
 
-Last updated: 2026-09-29 (phase 4). Read this first when resuming. Spec: `docs/superpowers/specs/2026-09-29-skills-monorepo-and-site-design.md` (5 phases). Plans live in `docs/superpowers/plans/`.
+Last updated: 2026-10-03 (third skill: writing-design-documents). Read this first when resuming. Spec: `docs/superpowers/specs/2026-09-29-skills-monorepo-and-site-design.md` (5 phases). Plans live in `docs/superpowers/plans/`.
 
 ## Where things are
 
@@ -9,10 +9,11 @@ Last updated: 2026-09-29 (phase 4). Read this first when resuming. Spec: `docs/s
 | Repo | `github.com/keenskills/skills` (org `keenskills`, public), local `/Users/rajas/projects/next/skills`, branch `main` |
 | `@keenskills/page-as-data` | 0.2.1 on npm (provenance). Old `@rajaaltus/page-as-data` deprecated with a pointer |
 | `@keenskills/drawing-architecture-diagrams` | 0.1.0 on npm (provenance): `init`, `uninstall`, `doctor` |
-| Claude Code marketplace | `keenskills`: `/plugin marketplace add keenskills/skills`, then `/plugin install page-as-data@keenskills` or `drawing-architecture-diagrams@keenskills` |
+| `@keenskills/writing-design-documents` | 0.1.0 (provenance): `init`, `uninstall`, `doctor`. Imported from `keenskills/writing-design-documents` (gjohnpaull) by `git subtree add`; tests need `pip install -r requirements.txt` |
+| Claude Code marketplace | `keenskills`: `/plugin marketplace add keenskills/skills`, then `/plugin install page-as-data@keenskills`, `drawing-architecture-diagrams@keenskills` or `writing-design-documents@keenskills` |
 | Site | Live at https://keenskills.d2studio.dev (Vercel project `skills`, team `raja-altus-projects`, Root Directory `apps/site`, custom domain). Redeploys on every push to `main` |
 | CI | `.github/workflows/test.yml`: repo, page-as-data (Node 22/24), diagrams (Python 3.9/3.13), site (build + page tests + page-as-data self-check). `publish.yml` publishes on annotated tags `<package>@v<version>` using the org secret `NPM_TOKEN` |
-| Old repos | `keenskills/page-as-data` and `keenskills/drawing-architecture-diagrams` (forks of gjohnpaull's), archived with a "Moved" note |
+| Old repos | `keenskills/page-as-data` and `keenskills/drawing-architecture-diagrams` (forks of gjohnpaull's), archived with a "Moved" note. `keenskills/writing-design-documents`: not archived yet |
 
 ## Phases
 
@@ -23,6 +24,12 @@ Last updated: 2026-09-29 (phase 4). Read this first when resuming. Spec: `docs/s
    Deviations: the fixture is shown as page-as-data's own screenshot, not a live iframe (its planted errors would fail the site's self-check); the mobile docs sidebar uses the FAQ accordion tween instead of Panel reveal; terminal lines use a shortened Texts reveal.
    Regenerate showcases after changing the fixture, page-as-data's output format, the Northwind example or archdiagram lint: `pnpm --filter @keenskills/site showcases` locally (Chrome + draw.io desktop), then commit. CI runs `test:showcases` and fails on drift.
 5. Launch — domain is done (keenskills.d2studio.dev). SEO is done: per-page canonical, Open Graph and Twitter metadata (`apps/site/lib/meta.ts`), `robots.txt`, `sitemap.xml`, web manifest, JSON-LD (WebSite, FAQPage, SoftwareApplication), the D2 Studio favicon, and social cards in `apps/site/public/og` (regenerate with `pnpm --filter @keenskills/site og` after changing the tagline, a skill's summary or its install command; needs Chrome). Google Analytics uses d2studio.dev's GA4 property (`SITE.analytics` in `apps/site/lib/site.mjs`) and loads only on the live host. Still to do: README badges, submit the sitemap in Search Console.
+
+## Third skill (2026-10-03)
+
+`packages/writing-design-documents`, same shape as the diagram package: skill folder `skills/writing-design-documents/` (SKILL.md, `scripts/docbuilder.py`, `examples/example_design_doc.py`), Node `cli.mjs`/`install.mjs`, `doctor` checks Python 3.9+, python-docx, pymupdf and says when `finalize` needs Word on Windows. A copied example finds `docbuilder.py` via `DOCBUILDER_DIR`, `.claude/skills`, `.agents/skills` or `~/.claude/skills`. CI: own job with setup-python + `pip install -r requirements.txt`; `publish.yml` sets up Python and installs a package's `requirements.txt` before `npm test`.
+Site: `/design-documents` docs; "Write, check, fix" showcase (`components/showcase-design-docs.tsx`) built from real `docbuilder.py check` output on a draft made from the Contoso example by `apps/site/showcase/contoso_draft.py` (regenerate with `pnpm --filter @keenskills/site showcases --only design-documents`, needs python-docx; CI's `test:showcases` fails on drift); home illustration `components/illustrations/doc-check.tsx`; skill cards are now full-width rows; social cards regenerated.
+Known: the site job's palette test (`tests/tokens.test.mjs`, "match the reference palette") has failed on `main` since the 2026-09-30 "updated" commits changed `--bg`; either restore the colours or update the test.
 
 ## Deferred minors from earlier phases (not yet fixed)
 

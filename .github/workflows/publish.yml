@@ -19,6 +19,10 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      # The runner's system Python refuses pip installs (PEP 668); a set-up Python takes them.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
       - id: target
         run: node scripts/release-target.mjs "$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
       # A package whose tests need Python libraries lists them in requirements.txt.
