@@ -22,6 +22,7 @@ const root = new URL('../../../', import.meta.url)
 export const SKILLS = [
   { pkg: 'page-as-data', slug: 'page-as-data', title: 'page-as-data', skillFile: 'skill/page-as-data.md' },
   { pkg: 'drawing-architecture-diagrams', slug: 'architecture-diagrams', title: 'Architecture diagrams', skillFile: 'skills/drawing-architecture-diagrams/SKILL.md' },
+  { pkg: 'writing-design-documents', slug: 'design-documents', title: 'Design documents', skillFile: 'skills/writing-design-documents/SKILL.md' },
 ]
 // Pages the site owns under /<skill>/; a README section with the same slug gets another one.
 const RESERVED = new Set(['skill', 'changelog'])

@@ -5,6 +5,7 @@ import { describe, it } from 'node:test'
 import content from '../.generated/content.json' with { type: 'json' }
 import pad from '../content/showcase/page-as-data.json' with { type: 'json' }
 import diagrams from '../content/showcase/architecture-diagrams.json' with { type: 'json' }
+import docs from '../content/showcase/design-documents.json' with { type: 'json' }
 import { fileURLToPath } from 'node:url'
 import { SITE } from '../lib/site.mjs'
 import { routesFrom } from '../scripts/self-check.mjs'
@@ -129,12 +130,31 @@ describe('diagram showcase', () => {
   })
 })
 
+describe('design document showcase', () => {
+  it('says how the first draft was made', () => {
+    assert.match(page('design-documents.html'), /made by putting back five habits of generated text/)
+  })
+  it('links the real downloads, and they are in the export', () => {
+    const html = page('design-documents.html')
+    for (const d of docs.downloads) {
+      assert.ok(html.includes(`href="${d.href}"`), d.href)
+      assert.ok(existsSync(new URL(`.${d.href}`, out)), d.href)
+    }
+  })
+  it('server-renders the draft\'s real check findings, and marks each defect once in the draft', () => {
+    const html = page('design-documents.html')
+    for (const l of docs.draft.check.output.split('\n')) assert.ok(html.includes(escape(l)), l)
+    assert.equal(html.match(/class="doc-mark"/g)?.length, docs.marks.length)
+  })
+})
+
 describe('illustrations', () => {
-  it('home carries both scenes, each described for screen readers', () => {
+  it('home carries all three scenes, each described for screen readers', () => {
     const html = page('index.html')
-    assert.equal(html.match(/class="scene[ "]/g)?.length, 2)
+    assert.equal(html.match(/class="scene[ "]/g)?.length, 3)
     assert.match(html, /<svg[^>]*role="img"[^>]*aria-labelledby="scan-title"/)
     assert.match(html, /<svg[^>]*role="img"[^>]*aria-labelledby="draw-title"/)
+    assert.match(html, /<svg[^>]*role="img"[^>]*aria-labelledby="doc-title"/)
   })
   it('renders the final frame in HTML: nothing armed before scripts run', () => {
     assert.doesNotMatch(page('index.html'), /data-armed/)

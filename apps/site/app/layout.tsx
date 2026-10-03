@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: { default: SITE.name, template: `%s · ${SITE.name}` },
   description: SITE.description,
   applicationName: SITE.name,
-  keywords: ['agent skills', 'coding agents', 'Claude Code skills', 'AGENTS.md', 'Codex', 'Cursor', 'Gemini CLI', 'page-as-data', 'architecture diagrams', 'draw.io', 'web UI testing', 'open source'],
+  keywords: ['agent skills', 'coding agents', 'Claude Code skills', 'AGENTS.md', 'Codex', 'Cursor', 'Gemini CLI', 'page-as-data', 'architecture diagrams', 'draw.io', 'design documents', 'Word documents', 'web UI testing', 'open source'],
   authors: [{ name: SITE.maker.name, url: SITE.maker.url }],
   creator: SITE.maker.name,
   publisher: SITE.maker.name,

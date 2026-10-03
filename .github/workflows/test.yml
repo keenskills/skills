@@ -80,6 +80,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # The design document showcase reruns the real check, which needs python-docx.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install -r packages/writing-design-documents/requirements.txt
       - run: pnpm --filter @keenskills/site test
       - run: pnpm --filter @keenskills/site test:showcases
       - run: pnpm --filter @keenskills/site build

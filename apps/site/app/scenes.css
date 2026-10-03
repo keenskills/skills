@@ -4,6 +4,7 @@
 .scene .sc { transform-box: fill-box; transform-origin: center; }
 .scene .sc-load { transform-origin: left center; }
 .scene .sc-cover { transform-origin: right center; }
+.scene .sc-left { transform-origin: left center; }
 .scene[data-armed] .sc { animation-play-state: paused; animation-fill-mode: both; animation-delay: var(--d, 0ms); }
 .scene[data-armed][data-play] .sc { animation-play-state: running; }
 
@@ -18,6 +19,8 @@
 .scene[data-armed] .sc-fix   { animation-name: sc-fix;   animation-duration: 400ms; animation-timing-function: var(--ease-in-out); }
 /* A piece drawn out of place by --tx, --ty moves home. */
 .scene[data-armed] .sc-nudge { animation-name: sc-nudge; animation-duration: var(--dur, 400ms); animation-timing-function: var(--ease-in-out); }
+/* A line of text written longer in the draft shrinks to its fixed length (--grow). */
+.scene[data-armed] .sc-stretch { animation-name: sc-stretch; animation-duration: 400ms; animation-timing-function: var(--ease-in-out); }
 /* A lint pin: in, held for --dur until its fix, then out. */
 .scene[data-armed] .sc-mark  { animation-name: sc-mark;  animation-duration: var(--dur, 1200ms); animation-timing-function: var(--ease-out); }
 .scene[data-armed] .sc-flow  { stroke-dasharray: 0.08 1; animation-name: sc-flow; animation-duration: 1400ms; animation-timing-function: linear; }
@@ -43,6 +46,7 @@
 @keyframes sc-ping  { from { opacity: 0.6; transform: scale(1); } to { opacity: 0; transform: scale(2.2); } }
 @keyframes sc-flash { 0% { opacity: 0; } 15%, 80% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes sc-fix   { from { transform: scale(var(--grow, 1.55)); } }
+@keyframes sc-stretch { from { transform: scaleX(var(--grow, 1.5)); } }
 @keyframes sc-nudge { from { transform: translate(var(--tx, 14px), var(--ty, -9px)); } }
 @keyframes sc-mark  { 0% { opacity: 0; transform: scale(0.95); } 12%, 88% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.95); } }
 @keyframes sc-flow  { 0% { opacity: 1; stroke-dashoffset: 0.08; } 95% { opacity: 1; } 100% { opacity: 0; stroke-dashoffset: -1; } }
@@ -69,7 +73,7 @@
 /* Page scan: pointing at a pin or its line brings that pair forward. */
 .scan-pin { transform-box: fill-box; transform-origin: center; transition: opacity 160ms ease, transform 160ms var(--ease-out); }
 .scan-text { transition: opacity 160ms ease; }
-/* Diagram draw: pointing at a finding or a fix rings the node it is about. */
+/* Diagram draw and doc check: pointing at a finding or a fix rings what it is about. */
 .draw-ring { opacity: 0; transition: opacity 160ms ease; }
 @media (hover: hover) and (pointer: fine) {
   .scene .draw-ring[data-hot] { opacity: 1; }

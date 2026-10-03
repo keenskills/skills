@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, it } from 'node:test'
 import { findChrome } from '@keenskills/page-as-data'
-import { SHOWN_ORIGIN, comparable, diagramShowcase, normalizeOutput, pageAsDataShowcase, pngSize } from '../scripts/build-showcases.mjs'
+import { SHOWN_ORIGIN, comparable, designDocsShowcase, diagramShowcase, normalizeOutput, pageAsDataShowcase, pngSize } from '../scripts/build-showcases.mjs'
 
 describe('normalizeOutput', () => {
   it('shows the fixture at localhost:3000 whatever port served it', () => {
@@ -83,5 +83,28 @@ describe('diagram showcase', { skip: hasPython ? false : 'no python3' }, () => {
     for (const img of [c.draft.image, c.final.image]) {
       assert.deepEqual(pngSize(readFileSync(new URL(`../public${img.src}`, import.meta.url))), { width: img.width, height: img.height })
     }
+  })
+})
+
+const hasDocx = spawnSync('python3', ['-c', 'import docx']).status === 0
+
+describe('design document showcase', { skip: hasDocx ? false : 'no python3 with python-docx' }, () => {
+  const committed = () => JSON.parse(readFileSync(new URL('../content/showcase/design-documents.json', import.meta.url), 'utf8'))
+
+  it('matches a fresh run of the example, the draft script and the real check', async () => {
+    const fresh = await designDocsShowcase({ publicDir: mkdtempSync(join(tmpdir(), 'docs-')) })
+    const c = committed()
+    for (const k of ['fixes', 'marks', 'owner']) assert.deepEqual(fresh[k], c[k], `${k} changed: run pnpm --filter @keenskills/site showcases`)
+    assert.deepEqual(fresh.draft, c.draft)
+    assert.deepEqual(fresh.final, c.final)
+  })
+
+  it('shows a draft with findings for every defect and a clean final', () => {
+    const c = committed()
+    assert.equal(c.draft.check.exit, 1)
+    assert.equal(c.final.check.output, 'check: clean')
+    assert.equal(c.final.check.exit, 0)
+    assert.equal(c.fixes.length, c.marks.length)
+    assert.deepEqual([...new Set(c.owner)].sort(), c.fixes.map((_, i) => i))
   })
 })

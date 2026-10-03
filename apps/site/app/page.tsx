@@ -2,8 +2,10 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { HeroReveal } from '@/components/hero-reveal'
 import { DiagramDraw } from '@/components/illustrations/diagram-draw'
+import { DocCheck } from '@/components/illustrations/doc-check'
 import { PageScan } from '@/components/illustrations/page-scan'
 import diagrams from '@/content/showcase/architecture-diagrams.json'
+import docs from '@/content/showcase/design-documents.json'
 import pad from '@/content/showcase/page-as-data.json'
 import { pageMeta } from '@/lib/meta'
 import { SITE } from '@/lib/site.mjs'
@@ -16,8 +18,8 @@ export const metadata: Metadata = pageMeta({ path: '/' })
 
 const STEPS = [
   { title: 'Install the skill', body: 'Run init in your project. It finds the agents you use and writes the skill in each one’s own format.' },
-  { title: 'Ask your agent', body: 'Say what you need in plain words: check this page on a phone, or draw this system on one A4 page.' },
-  { title: 'Get real output', body: 'Your agent reads the page as data, or builds a draw.io file with PNG and PDF, and fixes what it finds.' },
+  { title: 'Ask your agent', body: 'Say what you need in plain words: check this page on a phone, draw this system on one A4 page, or write the design document on our template.' },
+  { title: 'Get real output', body: 'Your agent reads the page as data, builds a draw.io file with PNG and PDF, or writes a Word document, and fixes what its checks find.' },
 ]
 
 const FAQS = [
@@ -27,11 +29,11 @@ const FAQS = [
   },
   {
     q: 'What do they need?',
-    a: 'Node 22 or newer to install. page-as-data also needs Chrome, Chromium or Edge. The diagram skill needs Python 3.9 or newer, and draw.io desktop for PNG and PDF export.',
+    a: 'Node 22 or newer to install. page-as-data also needs Chrome, Chromium or Edge. The diagram skill needs Python 3.9 or newer, and draw.io desktop for PNG and PDF export. The design document skill needs Python 3.9 or newer with python-docx, and Microsoft Word on Windows to refresh the table of contents and export the PDF.',
   },
   { q: 'Can I install only one?', a: 'Yes. Each skill is its own npm package and its own Claude Code plugin, with its own version and changelog.' },
   { q: 'How do I remove one?', a: 'Run the same package with uninstall. It removes what init wrote and nothing else.' },
-  { q: 'Are they free?', a: 'Yes. Both are MIT licensed and open source on GitHub.' },
+  { q: 'Are they free?', a: 'Yes. All of them are MIT licensed and open source on GitHub.' },
 ]
 
 // The four PROBLEMS lines the page-scan illustration numbers, in marker order.
@@ -50,6 +52,14 @@ if (lintLines.length !== FOUND.length || diagrams.fixes.length !== FIXED.length 
   throw new Error('diagram-draw: the showcase lint output no longer matches the faults the illustration draws')
 }
 
+// The design document illustration shows each defect's first check line, cut to its first clause.
+const docLines = docs.draft.check.output.split('\n')
+const docFindings = docs.fixes.map((_, i) => {
+  const line = docLines[docs.owner.indexOf(i)]
+  if (!line) throw new Error(`doc-check: defect ${i + 1} has no line in the showcase check output`)
+  return line.length > 40 ? line.slice(0, line.indexOf(': ')) : line
+})
+
 export default function Home() {
   return (
     <>
@@ -58,7 +68,7 @@ export default function Home() {
         <p className="t-stagger-line t-stagger-line--1 text-sm font-medium text-accent">Open-source agent skills</p>
         <h1 className="t-stagger-line t-stagger-line--2 mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{SITE.tagline}</h1>
         <p className="t-stagger-line t-stagger-line--3 mt-4 max-w-2xl text-lg text-muted text-pretty">
-          Skills that let an agent read what a web page really shows, and draw architecture diagrams you can print. Each one installs with a single command.
+          Skills that let an agent read what a web page really shows, draw architecture diagrams you can print, and write design documents that read as written by a consultant. Each one installs with a single command.
         </p>
         </HeroReveal>
         <div className="mt-8 flex flex-wrap gap-3">
@@ -75,7 +85,7 @@ export default function Home() {
         <h2 id="skills-title" className="text-xl font-semibold tracking-tight">
           Skills
         </h2>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mt-6 grid gap-4">
           {skills.map((s) => (
             <SkillCard key={s.slug} skill={s} />
           ))}
@@ -103,6 +113,18 @@ export default function Home() {
         </p>
         <div className="mt-8">
           <DiagramDraw draft={diagrams.draft.lint} findings={findings} fixes={fixes} final={diagrams.final.lint} files={diagrams.downloads.map((f) => f.href.split('/').pop() ?? f.ext)} />
+        </div>
+      </section>
+
+      <section aria-labelledby="see-docs" className="border-t border-border py-16">
+        <h2 id="see-docs" className="text-xl font-semibold tracking-tight">
+          Writes the document, then checks how it reads
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm text-muted text-pretty">
+          The design document skill builds the Word file on the client&rsquo;s own template, checks it for what makes text read as generated or reveals how the facts were collected, and fixes what it finds.
+        </p>
+        <div className="mt-8">
+          <DocCheck draft={docs.draft.check} findings={docFindings} fixes={docs.fixes} final={docs.final.check} files={docs.downloads.map((f) => f.href.split('/').pop() ?? f.ext)} />
         </div>
       </section>
 

@@ -5,7 +5,7 @@ export const SITE = {
   host: 'keenskills.d2studio.dev',
   name: 'Keen Skills',
   tagline: 'Sharper senses for your coding agent',
-  description: 'Open-source skills that let coding agents read web pages as data and draw print-ready architecture diagrams. One command to install.',
+  description: 'Open-source skills that let coding agents read web pages as data, draw print-ready architecture diagrams and write client design documents in Word. One command to install.',
   repo: 'https://github.com/keenskills/skills',
   maker: { name: 'D2 Studio', url: 'https://d2studio.dev' },
   twitter: '@rajaaltus',

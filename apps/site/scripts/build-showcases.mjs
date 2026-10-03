@@ -1,7 +1,8 @@
 // Runs the real tools on the showcase inputs and commits what they print, so the
 // site never shows output nobody could reproduce. Needs Chrome for page-as-data,
-// python3 for the diagram lint and draw.io desktop for the diagram renders.
-// Run locally: pnpm --filter @keenskills/site showcases [--only page-as-data|architecture-diagrams]
+// python3 for the diagram lint and draw.io desktop for the diagram renders, and
+// python3 with python-docx for the design document check.
+// Run locally: pnpm --filter @keenskills/site showcases [--only page-as-data|architecture-diagrams|design-documents]
 // CI cannot render with draw.io, so tests/showcases.test.mjs regenerates only
 // what it can and compares.
 import { spawn } from 'node:child_process'
@@ -160,6 +161,46 @@ export async function diagramShowcase({ publicDir = join(site, 'public/showcase/
   }
 }
 
+export const DOCS_DIR = join(repo, 'packages/writing-design-documents')
+const DOCS_SKILL = join(DOCS_DIR, 'skills/writing-design-documents')
+const DOCB = join(DOCS_SKILL, 'scripts/docbuilder.py')
+const docsPython = (args, opts = {}) => run('python3', args, { env: { ...process.env, DOCBUILDER_DIR: join(DOCS_SKILL, 'scripts') }, ...opts })
+
+async function docCheck(file, shown) {
+  const r = await docsPython([DOCB, 'check', file])
+  if (r.code === 2 || r.err.trim()) throw new Error(`check could not run: ${r.err || r.out}`)
+  return { command: `python scripts/docbuilder.py check ${shown}`, output: r.out.trimEnd(), exit: r.code }
+}
+
+/** The design document loop: the worked example as the final, a checked first draft of it, the fixes between. */
+export async function designDocsShowcase({ publicDir = join(site, 'public/showcase/design-documents') } = {}) {
+  mkdirSync(publicDir, { recursive: true })
+  const tmp = mkdtempSync(join(tmpdir(), 'contoso-'))
+  const made = await docsPython([join(DOCS_SKILL, 'examples/example_design_doc.py')], { cwd: tmp })
+  if (made.code !== 0) throw new Error(`example failed: ${made.err || made.out}`)
+  const final = join(tmp, 'example-design.docx')
+  const draft = join(tmp, 'contoso-draft.docx')
+  const d = await docsPython([join(site, 'showcase/contoso_draft.py'), final, draft])
+  if (d.code !== 0) throw new Error(`draft failed: ${d.err || d.out}`)
+  const { fixes, marks, owner, draft: draftDoc, final: finalDoc } = JSON.parse(d.out)
+  copyFileSync(final, join(publicDir, 'contoso-design.docx'))
+  // Word export needs Windows; the PDF is the package's own sample, the same example exported by Word.
+  copyFileSync(join(DOCS_DIR, 'docs/sample.pdf'), join(publicDir, 'contoso-design.pdf'))
+  const pub = (name) => `/showcase/design-documents/${name}`
+  return {
+    example: 'https://github.com/keenskills/skills/blob/main/packages/writing-design-documents/skills/writing-design-documents/examples/example_design_doc.py',
+    draft: { check: await docCheck(draft, 'contoso-draft.docx'), doc: draftDoc },
+    fixes,
+    marks,
+    owner,
+    final: { check: await docCheck(final, 'contoso-design.docx'), doc: finalDoc },
+    downloads: [
+      { label: 'Word document', href: pub('contoso-design.docx'), ext: '.docx' },
+      { label: 'PDF, exported by Word', href: pub('contoso-design.pdf'), ext: '.pdf' },
+    ],
+  }
+}
+
 const write = (name, data) => {
   const dir = join(site, 'content/showcase')
   mkdirSync(dir, { recursive: true })
@@ -171,6 +212,7 @@ async function main() {
   const only = process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null
   if (!only || only === 'page-as-data') write('page-as-data.json', await pageAsDataShowcase())
   if (!only || only === 'architecture-diagrams') write('architecture-diagrams.json', await diagramShowcase())
+  if (!only || only === 'design-documents') write('design-documents.json', await designDocsShowcase())
 }
 
 if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) await main()

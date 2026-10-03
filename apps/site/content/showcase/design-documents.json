@@ -1,0 +1,387 @@
+{
+  "example": "https://github.com/keenskills/skills/blob/main/packages/writing-design-documents/skills/writing-design-documents/examples/example_design_doc.py",
+  "draft": {
+    "check": {
+      "command": "python scripts/docbuilder.py check contoso-draft.docx",
+      "output": "punctuation: 1 x em dash\nsemicolon in prose: 'Internet traffic enters through an Application Gateway with WAF. We re'\ninline bold or bold lead-in: 'Note. The cloud team applies each change in an agreed change window.'\nprovenance/banned wording: 'azure cli'\nprovenance/banned wording: 'cli'\nprovenance/banned wording: 'read-only'\nAI-sounding word: 'leverages'\nAI-sounding word: 'robust'",
+      "exit": 1
+    },
+    "doc": [
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Purpose"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "This document describes the proposed network security design for the Contoso pre-production web applications — the current configuration as of 24-Sep-2026, the target design and the changes needed to implement it."
+          }
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Scope"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "In scope",
+            "bold": true
+          }
+        ]
+      },
+      {
+        "kind": "li",
+        "runs": [
+          {
+            "text": "The three web applications and their private endpoints."
+          }
+        ]
+      },
+      {
+        "kind": "li",
+        "runs": [
+          {
+            "text": "Network security groups and application security groups in the spoke VNet."
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "Out of scope",
+            "bold": true
+          }
+        ]
+      },
+      {
+        "kind": "li",
+        "runs": [
+          {
+            "text": "Hub network resources, which are managed by the hub team."
+          }
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Current State"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "This section summarises the configuration of the pre-production subscription, captured with read-only Azure CLI commands."
+          }
+        ]
+      },
+      {
+        "kind": "table",
+        "title": null,
+        "head": [
+          "Resource",
+          "Public access",
+          "Private endpoint"
+        ],
+        "rows": [
+          [
+            "app-contoso-portal, Web app",
+            "Disabled",
+            "10.20.1.4"
+          ],
+          [
+            "sql-contoso-data, Azure SQL",
+            "Enabled",
+            "10.20.1.5"
+          ]
+        ]
+      },
+      {
+        "kind": "table",
+        "title": "Table 1: Findings",
+        "head": [
+          "#",
+          "Finding",
+          "Impact"
+        ],
+        "rows": [
+          [
+            "1",
+            "sql-contoso-data allows public access with the ‘Allow Azure services’ rule.",
+            "Any Azure resource can reach the public endpoint, regardless of subscription."
+          ]
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Proposed Architecture"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "Internet traffic enters through an Application Gateway with WAF. We recommend a robust approach that leverages private endpoints throughout; the database stays private once the application teams confirm their dependencies."
+          }
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Implementation Plan"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "Note.",
+            "bold": true
+          },
+          {
+            "text": " The cloud team applies each change in an agreed change window."
+          }
+        ]
+      },
+      {
+        "kind": "table",
+        "title": null,
+        "head": [
+          "#",
+          "Activity",
+          "Owner"
+        ],
+        "rows": [
+          [
+            "1",
+            "Disable public access on sql-contoso-data and remove the ‘Allow Azure services’ rule",
+            "Cloud team"
+          ]
+        ]
+      }
+    ]
+  },
+  "fixes": [
+    "Purpose: the em dash became a plain sentence",
+    "Current State: how the facts were collected became “as of 24-Sep-2026”",
+    "Proposed Architecture: “a robust approach that leverages” became a plain recommendation",
+    "Proposed Architecture: the semicolon split into two sentences",
+    "Implementation Plan: the bold lead-in “Note.” was removed"
+  ],
+  "marks": [
+    "—",
+    "captured with read-only Azure CLI commands",
+    "robust approach that leverages",
+    ";",
+    "Note."
+  ],
+  "owner": [
+    0,
+    3,
+    4,
+    1,
+    1,
+    1,
+    2,
+    2
+  ],
+  "final": {
+    "check": {
+      "command": "python scripts/docbuilder.py check contoso-design.docx",
+      "output": "check: clean",
+      "exit": 0
+    },
+    "doc": [
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Purpose"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "This document describes the proposed network security design for the Contoso pre-production web applications. It records the current configuration as of 24-Sep-2026, the target design and the changes needed to implement it."
+          }
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Scope"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "In scope",
+            "bold": true
+          }
+        ]
+      },
+      {
+        "kind": "li",
+        "runs": [
+          {
+            "text": "The three web applications and their private endpoints."
+          }
+        ]
+      },
+      {
+        "kind": "li",
+        "runs": [
+          {
+            "text": "Network security groups and application security groups in the spoke VNet."
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "Out of scope",
+            "bold": true
+          }
+        ]
+      },
+      {
+        "kind": "li",
+        "runs": [
+          {
+            "text": "Hub network resources, which are managed by the hub team."
+          }
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Current State"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "This section summarises the configuration of the pre-production subscription as of 24-Sep-2026."
+          }
+        ]
+      },
+      {
+        "kind": "table",
+        "title": null,
+        "head": [
+          "Resource",
+          "Public access",
+          "Private endpoint"
+        ],
+        "rows": [
+          [
+            "app-contoso-portal, Web app",
+            "Disabled",
+            "10.20.1.4"
+          ],
+          [
+            "sql-contoso-data, Azure SQL",
+            "Enabled",
+            "10.20.1.5"
+          ]
+        ]
+      },
+      {
+        "kind": "table",
+        "title": "Table 1: Findings",
+        "head": [
+          "#",
+          "Finding",
+          "Impact"
+        ],
+        "rows": [
+          [
+            "1",
+            "sql-contoso-data allows public access with the ‘Allow Azure services’ rule.",
+            "Any Azure resource can reach the public endpoint, regardless of subscription."
+          ]
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Proposed Architecture"
+          }
+        ]
+      },
+      {
+        "kind": "p",
+        "runs": [
+          {
+            "text": "Internet traffic enters through an Application Gateway with WAF. We recommend keeping the database private and removing the public firewall rules once the application teams confirm their dependencies."
+          }
+        ]
+      },
+      {
+        "kind": "h1",
+        "runs": [
+          {
+            "text": "Implementation Plan"
+          }
+        ]
+      },
+      {
+        "kind": "table",
+        "title": null,
+        "head": [
+          "#",
+          "Activity",
+          "Owner"
+        ],
+        "rows": [
+          [
+            "1",
+            "Disable public access on sql-contoso-data and remove the ‘Allow Azure services’ rule",
+            "Cloud team"
+          ]
+        ]
+      }
+    ]
+  },
+  "downloads": [
+    {
+      "label": "Word document",
+      "href": "/showcase/design-documents/contoso-design.docx",
+      "ext": ".docx"
+    },
+    {
+      "label": "PDF, exported by Word",
+      "href": "/showcase/design-documents/contoso-design.pdf",
+      "ext": ".pdf"
+    }
+  ]
+}

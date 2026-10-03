@@ -7,6 +7,7 @@ import { extname, join, resolve, sep } from 'node:path'
 export const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.txt': 'text/plain', '.pdf': 'application/pdf', '.drawio': 'application/xml',
+  '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 }
 
 /** The file a static host would serve for a URL path, or null. Never outside outDir. */

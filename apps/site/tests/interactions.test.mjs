@@ -89,11 +89,31 @@ describe('diagram showcase', { skip }, () => {
   })
 })
 
+describe('design document showcase', { skip }, () => {
+  it('walks from the checked draft to the clean final', async () => {
+    const r = await read('/design-documents', { steps: [{ click: 'Final' }], inspect: ['[data-check-output]', '[data-doc="final"]'] })
+    ok(r)
+    assert.match(first(r).text, /check: clean/)
+    assert.ok(first(r, 1).visible)
+  })
+  it('lists the fixes and strikes each marked defect', async () => {
+    const r = await read('/design-documents', { steps: [{ click: 'Fix' }], inspect: ['[data-check-output="fix"] li', '.doc-mark[data-fixed]'] })
+    ok(r)
+    assert.equal(r.inspected[0].found, 5)
+    assert.equal(r.inspected[1].found, 5)
+  })
+  it('fits a phone at 390 px', async () => {
+    const r = await read('/design-documents', { width: 390, steps: [{ click: 'Fix' }] })
+    ok(r)
+    assert.deepEqual(r.problems.layout.errors, [])
+  })
+})
+
 describe('mobile skills menu', { skip }, () => {
-  it('opens at 390 px and lists both skills', async () => {
+  it('opens at 390 px and lists every skill', async () => {
     const r = await read('/', { width: 390, steps: [{ click: 'Skills' }], inspect: ['#skills-menu a'] })
     ok(r)
-    assert.equal(r.inspected[0].found, 2)
+    assert.equal(r.inspected[0].found, 3)
     assert.ok(r.inspected[0].elements.every((e) => e.visible))
   })
 })

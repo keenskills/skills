@@ -533,3 +533,22 @@ details.t-accordion[open] > summary .chev { transform: rotate(180deg); }
 .shot { transition: opacity 200ms ease; }
 [data-instant] .read-line, [data-instant] .shot, [data-instant] .t-resize { transition: none; }
 @media (prefers-reduced-motion: reduce) { .read-line, .shot { transition: none; } }
+
+/* Design document showcase: the draft and the final page share one cell. A click
+   cross-fades them with a little blur, so the eye reads one page changing, not two
+   pages swapping; arrow keys swap them at once. */
+.doc-layer { transition: opacity 200ms ease, filter 200ms ease, visibility 0s linear 0s; }
+.doc-layer[data-hidden] { opacity: 0; visibility: hidden; filter: blur(2px); transition: opacity 200ms ease, filter 200ms ease, visibility 0s linear 200ms; }
+.doc-layer:not([data-animate]) { transition: none; }
+/* A finding in the draft: marked where check found it, numbered like its output lines. */
+.doc-mark { color: inherit; background: var(--warn-soft); border-radius: 3px; padding: 0 2px; box-shadow: inset 0 -1.5px 0 var(--warn); transition: background-color 200ms ease, box-shadow 200ms ease; }
+.doc-pin { display: inline-grid; place-items: center; min-width: 14px; height: 14px; margin-left: 3px; padding: 0 3px; border-radius: 999px; background: var(--warn); color: var(--surface); font-size: 9px; font-weight: 600; line-height: 1; vertical-align: 2px; transition: background-color 200ms ease; }
+.doc-mark[data-fixed] { background: var(--ok-soft); box-shadow: inset 0 -1.5px 0 var(--ok); text-decoration: line-through; text-decoration-color: var(--ok); }
+.doc-mark[data-fixed] .doc-pin { background: var(--ok); }
+@media (hover: hover) and (pointer: fine) {
+  .doc-mark[data-hot] { box-shadow: inset 0 -1.5px 0 var(--warn), 0 0 0 2px var(--warn); }
+  .doc-mark[data-fixed][data-hot] { box-shadow: inset 0 -1.5px 0 var(--ok), 0 0 0 2px var(--ok); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-layer, .doc-layer[data-hidden], .doc-mark, .doc-pin { transition: none; }
+}

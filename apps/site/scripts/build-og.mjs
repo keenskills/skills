@@ -18,7 +18,10 @@ const CHROME = [process.env.CHROME_PATH, '/Applications/Google Chrome.app/Conten
 if (!CHROME) throw new Error('build-og: Chrome not found; set CHROME_PATH')
 
 /** One card. `lead` is drawn in the D2 gradient, `rest` in white after it. */
-const card = ({ eyebrow, lead, rest, body, commands }) => `<!doctype html>
+// With more than two commands the card tightens its spacing so the last one still fits.
+const card = ({ eyebrow, lead, rest, body, commands }) => {
+  const tight = commands.length > 2
+  return `<!doctype html>
 <html><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600&family=Geist+Mono:wght@400;500&display=block" rel="stylesheet">
 <style>
@@ -34,13 +37,13 @@ const card = ({ eyebrow, lead, rest, body, commands }) => `<!doctype html>
   .brand img { width: 44px; height: 44px; border-radius: 10px; }
   .mono { font-family: 'Geist Mono', monospace; }
   .host { font-size: 19px; color: #8b8b93; }
-  .eyebrow { margin-top: 62px; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: #a1a1aa; }
-  h1 { margin-top: 18px; font-size: ${rest ? 70 : 84}px; line-height: 1.04; font-weight: 600; letter-spacing: -0.025em; max-width: 940px; text-wrap: balance; }
+  .eyebrow { margin-top: ${tight ? 34 : 62}px; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: #a1a1aa; }
+  h1 { margin-top: ${tight ? 12 : 18}px; font-size: ${rest ? (tight ? 62 : 70) : 84}px; line-height: 1.04; font-weight: 600; letter-spacing: -0.025em; max-width: 940px; text-wrap: balance; }
   h1 em { font-style: normal; background: linear-gradient(100deg, #ff9ad5 0%, #b48cff 45%, #6cb6ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .body { margin-top: 22px; font-size: 27px; line-height: 1.36; color: #b4b4bd; max-width: 900px; text-wrap: pretty; }
+  .body { margin-top: ${tight ? 16 : 22}px; font-size: ${tight ? 24 : 27}px; line-height: 1.36; color: #b4b4bd; max-width: 900px; text-wrap: pretty; }
   footer { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
-  .cmds { display: grid; gap: 10px; justify-items: start; }
-  .cmd { font-size: 20px; padding: 10px 18px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); white-space: nowrap; }
+  .cmds { display: grid; gap: ${tight ? 8 : 10}px; justify-items: start; }
+  .cmd { font-size: ${tight ? 18 : 20}px; padding: ${tight ? '8px 16px' : '10px 18px'}; border-radius: 12px; background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); white-space: nowrap; }
   .cmd b { font-weight: 400; color: #71717a; }
   .note { font-size: 19px; color: #8b8b93; white-space: nowrap; padding-bottom: 10px; }
 </style></head>
@@ -60,6 +63,7 @@ const card = ({ eyebrow, lead, rest, body, commands }) => `<!doctype html>
     </footer>
   </main>
 </body></html>`
+}
 
 // The home card splits the tagline after its first two words: "Sharper senses" | "for your coding agent".
 const [a, b, ...tail] = SITE.tagline.split(' ')
