@@ -109,12 +109,11 @@ describe('design document showcase', { skip }, () => {
   })
 })
 
-describe('mobile skills menu', { skip }, () => {
-  it('opens at 390 px and lists every skill', async () => {
-    const r = await read('/', { width: 390, steps: [{ click: 'Skills' }], inspect: ['#skills-menu a'] })
+describe('skill navigation', { skip }, () => {
+  it('goes to the next skill from the end of a skill page', async () => {
+    const r = await read('/page-as-data', { steps: [{ click: 'Next skill: Architecture diagrams' }], inspect: ['h1'] })
     ok(r)
-    assert.equal(r.inspected[0].found, 3)
-    assert.ok(r.inspected[0].elements.every((e) => e.visible))
+    assert.match(first(r).text, /Architecture diagrams/)
   })
 })
 

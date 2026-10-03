@@ -44,6 +44,16 @@ describe('home', () => {
     assert.match(html, /<link rel="apple-touch-icon"[^>]*href="\/apple-icon\.png/)
   })
 
+  it('keeps skills out of the header and lists every one in the footer', () => {
+    const html = page('index.html')
+    const header = html.match(/<header[\s\S]*?<\/header>/)[0]
+    const footer = html.match(/<footer[\s\S]*?<\/footer>/)[0]
+    for (const s of content.skills) {
+      assert.ok(!header.includes(`href="/${s.slug}"`), `header links ${s.slug}`)
+      assert.ok(footer.includes(`href="/${s.slug}"`), `footer misses ${s.slug}`)
+    }
+  })
+
   it('links the CI run that checks this site with page-as-data', () => {
     assert.match(page('index.html'), /href="https:\/\/github\.com\/keenskills\/skills\/actions\/workflows\/test\.yml"/)
   })
@@ -66,6 +76,16 @@ describe('docs', () => {
         assert.ok(existsSync(new URL(p, out)), p)
       }
     }
+  })
+
+  it('closes every docs page with the next skill, wrapping round to the first', () => {
+    content.skills.forEach((s, i) => {
+      const next = content.skills[(i + 1) % content.skills.length]
+      for (const p of [`${s.slug}.html`, `${s.slug}/skill.html`, `${s.slug}/changelog.html`, ...s.sections.map((x) => `${s.slug}/${x.slug}.html`)]) {
+        const nav = page(p).match(/<nav aria-label="Next skill"[\s\S]*?<\/nav>/)?.[0]
+        assert.ok(nav?.includes(`href="/${next.slug}"`), p)
+      }
+    })
   })
 
   it('marks the current page in the docs sidebar', () => {

@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import { skills } from '@/lib/content'
-import { SkillsMenu } from './skills-menu'
 import { ThemeToggle } from './theme-toggle'
 
 export function SiteHeader() {
@@ -11,16 +9,6 @@ export function SiteHeader() {
           Keen Skills
         </Link>
         <ul className="flex items-center gap-4 text-muted">
-          {skills.map((s) => (
-            <li key={s.slug} className="hidden sm:block">
-              <Link href={`/${s.slug}`} className="inline-flex min-h-6 items-center hover:text-text">
-                {s.title}
-              </Link>
-            </li>
-          ))}
-          <li className="sm:hidden">
-            <SkillsMenu skills={skills.map(({ slug, title }) => ({ slug, title }))} />
-          </li>
           <li>
             <Link href="/how-to-use" className="inline-flex min-h-6 items-center hover:text-text">
               How to use

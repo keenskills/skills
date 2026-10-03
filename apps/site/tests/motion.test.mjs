@@ -49,7 +49,7 @@ describe('motion rules', () => {
 
   it('keeps the reduced-motion guard of every pasted transitions.dev snippet', () => {
     const guards = reducedBlocks(motion)
-    for (const sel of ['.t-resize', '.t-digit', '.t-text-swap', '.t-dropdown', '.t-icon-swap .t-icon', '.t-success-check', '.t-shimmer::before', '.t-tabs-pill', '.t-tt', '.t-stagger-line']) {
+    for (const sel of ['.t-resize', '.t-digit', '.t-text-swap', '.t-icon-swap .t-icon', '.t-success-check', '.t-shimmer::before', '.t-tabs-pill', '.t-tt', '.t-stagger-line']) {
       assert.ok(guards.includes(sel), `no reduced-motion rule for ${sel}`)
     }
   })
