@@ -4,7 +4,7 @@
 import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-export const TARGETS = ['packages/page-as-data', 'packages/drawing-architecture-diagrams']
+export const TARGETS = ['packages/page-as-data', 'packages/drawing-architecture-diagrams', 'packages/writing-design-documents']
 const HEADER = '// Generated from shared/skill-installer.mjs by scripts/sync-shared.mjs. Edit that file, then run pnpm sync.\n'
 const root = new URL('../', import.meta.url)
 

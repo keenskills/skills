@@ -1,0 +1,61 @@
+{
+  "name": "@keenskills/writing-design-documents",
+  "version": "0.1.0",
+  "description": "Client-facing design documents in Word (architecture, network security, assessments) on the client's own template, checked so they read as written by a consultant. Installs itself as a skill for Claude Code, Codex, Gemini CLI, Cursor, Windsurf, Cline and Copilot.",
+  "type": "module",
+  "bin": {
+    "writing-design-documents": "cli.mjs"
+  },
+  "exports": {
+    ".": "./install.mjs"
+  },
+  "files": [
+    "cli.mjs",
+    "install.mjs",
+    "lib/",
+    "skills/",
+    "!**/__pycache__",
+    "!**/*.pyc",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\" && python3 tests/selftest.py",
+    "build:plugin": "node scripts/build-plugin.mjs",
+    "version": "node scripts/build-plugin.mjs && git add .claude-plugin/plugin.json"
+  },
+  "keywords": [
+    "design-document",
+    "word",
+    "docx",
+    "technical-writing",
+    "architecture",
+    "ai-agent",
+    "agent-skill",
+    "claude-code",
+    "codex",
+    "cursor",
+    "copilot"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keenskills/skills.git",
+    "directory": "packages/writing-design-documents"
+  },
+  "bugs": {
+    "url": "https://github.com/keenskills/skills/issues"
+  },
+  "homepage": "https://github.com/keenskills/skills/tree/main/packages/writing-design-documents#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "license": "MIT",
+  "author": "keenskills",
+  "contributors": [
+    "gjohnpaull",
+    "rajaaltus"
+  ]
+}

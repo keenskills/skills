@@ -1,0 +1,10 @@
+{
+  "name": "writing-design-documents",
+  "version": "0.1.0",
+  "description": "Client-facing design documents in Word on the client's own template, checked so they read as written by a consultant.",
+  "author": {
+    "name": "keenskills"
+  },
+  "repository": "https://github.com/keenskills/skills",
+  "license": "MIT"
+}

@@ -50,6 +50,26 @@ jobs:
       # Rendering needs draw.io desktop, which CI does not have; lint and install run.
       - run: npm test
 
+  writing-design-documents:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.9', '3.13']
+    defaults:
+      run:
+        working-directory: packages/writing-design-documents
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -r requirements.txt
+      # finalize needs Microsoft Word on Windows, which CI does not have; build, check and install run.
+      - run: npm test
+
   site:
     runs-on: ubuntu-latest
     steps:

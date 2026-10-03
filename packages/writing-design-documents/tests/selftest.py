@@ -6,7 +6,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "skills" / "writing-design-documents" / "scripts"))
 from docx import Document  # noqa: E402
 from docbuilder import DesignDoc, check, finalize, human  # noqa: E402
 
@@ -95,5 +95,28 @@ if os.environ.get("DOCB_WORD") == "1" and os.name == "nt":
     blank.save(tmp / "blank.docx")
     bpdf = finalize(tmp / "blank.docx")
     expect("blank page detected", any("page 2 is empty" in i for i in check(tmp / "blank.docx", bpdf)))
+
+# 5. a copy of the example made anywhere still finds docbuilder.py
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
+
+SKILL = ROOT / "skills" / "writing-design-documents"
+away = Path(tempfile.mkdtemp())
+shutil.copy(SKILL / "examples" / "example_design_doc.py", away / "build.py")
+bare = {k: v for k, v in os.environ.items() if k != "DOCBUILDER_DIR"}
+bare["HOME"] = str(away)
+
+r = subprocess.run([sys.executable, "build.py"], cwd=away, env={**bare, "DOCBUILDER_DIR": str(SKILL / "scripts")}, capture_output=True, text=True)
+expect("example builds clean from a copy using DOCBUILDER_DIR", r.returncode == 0 and "check: clean" in r.stdout)
+
+proj = Path(tempfile.mkdtemp())
+shutil.copytree(SKILL / "scripts", proj / ".agents" / "skills" / "writing-design-documents" / "scripts")
+(proj / "docs").mkdir()
+shutil.copy(away / "build.py", proj / "docs" / "build.py")
+r = subprocess.run([sys.executable, "build.py"], cwd=proj / "docs", env=bare, capture_output=True, text=True)
+expect("copied example finds .agents/skills in a parent folder", r.returncode == 0)
+
+r = subprocess.run([sys.executable, "build.py"], cwd=away, env=bare, capture_output=True, text=True)
+expect("copied example says how to fix a missing docbuilder.py", r.returncode != 0 and "DOCBUILDER_DIR" in r.stderr)
 
 sys.exit(0 if ok else 1)

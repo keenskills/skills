@@ -7,13 +7,28 @@ explanatory table after it, then Word finalize and check.
 Run:  python example_design_doc.py [template.docx] [out.docx] [--figure diagram.png]
       (no template -> python-docx's default template, handy for a dry run)
 """
+import os
 import sys
 from pathlib import Path
 
-_SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
-if not (_SCRIPTS / "docbuilder.py").exists():               # copied elsewhere: use the installed skill
-    _SCRIPTS = Path.home() / ".claude" / "skills" / "writing-design-documents" / "scripts"
-sys.path.insert(0, str(_SCRIPTS))
+
+def _find_scripts() -> Path:
+    """docbuilder.py sits next to this example in the skill folder. A copy made in a project looks where
+    `init` and Claude Code install the skill: .claude/skills or .agents/skills in this folder or a parent,
+    then ~/.claude/skills. A plugin install lives elsewhere, so DOCBUILDER_DIR wins over all of them."""
+    name = "writing-design-documents"
+    found = [Path(os.environ["DOCBUILDER_DIR"])] if os.environ.get("DOCBUILDER_DIR") else []
+    found.append(Path(__file__).resolve().parent.parent / "scripts")
+    for base in (Path.cwd(), *Path.cwd().parents):
+        found += [base / ".claude" / "skills" / name / "scripts", base / ".agents" / "skills" / name / "scripts"]
+    found.append(Path.home() / ".claude" / "skills" / name / "scripts")
+    for cand in found:
+        if (cand / "docbuilder.py").exists():
+            return cand
+    sys.exit(f"docbuilder.py not found. Set DOCBUILDER_DIR to the scripts folder of the {name} skill.")
+
+
+sys.path.insert(0, str(_find_scripts()))
 from docbuilder import DesignDoc, check, finalize  # noqa: E402
 
 args = [a for a in sys.argv[1:] if not a.startswith("--")]

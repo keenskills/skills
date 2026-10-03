@@ -17,7 +17,9 @@ what makes a document look machine-made or reveals how the facts were collected.
 1. **Facts.** Record each as current configuration. Anything unknown becomes "to be confirmed by <team>".
 2. **Figures.** Draw with the `drawing-architecture-diagrams` skill. Export figure-only images (`frame_content()`) and put
    the tables and notes in the document text, not inside the image.
-3. **Build script.** Copy `examples/example_design_doc.py` next to the outputs. `DesignDoc(template, out)`, then
+3. **Build script.** Copy `examples/example_design_doc.py` next to the outputs (a copy finds `scripts/` in
+   `.claude/skills` or `.agents/skills` of the project or a parent folder, or in `~/.claude/skills`; otherwise set
+   `DOCBUILDER_DIR=<this skill's folder>/scripts`). `DesignDoc(template, out)`, then
    `replace_text()` for the cover, `change_record()`, `clear_body()`, then content.
 4. **Finalize.** `finalize(out)` refreshes the table of contents (if the template has one) and all fields, and exports
    a PDF (Windows with Word). Don't add a table of contents the template doesn't have.

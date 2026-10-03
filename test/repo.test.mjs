@@ -79,20 +79,29 @@ describe('skills', () => {
     assert.deepEqual(m.plugins.map((p) => [p.name, p.source]), [
       ['page-as-data', './packages/page-as-data'],
       ['drawing-architecture-diagrams', './packages/drawing-architecture-diagrams'],
+      ['writing-design-documents', './packages/writing-design-documents'],
     ])
   })
 
   it('tests every package in CI', () => {
     const yml = readFileSync(new URL('.github/workflows/test.yml', root), 'utf8')
-    for (const name of ['page-as-data', 'drawing-architecture-diagrams']) {
+    for (const name of ['page-as-data', 'drawing-architecture-diagrams', 'writing-design-documents']) {
       assert.match(yml, new RegExp(`working-directory: packages/${name}\\n`), name)
     }
     assert.match(yml, /drawing-architecture-diagrams:[\s\S]*setup-node[\s\S]*setup-python[\s\S]*run: npm test/)
+    assert.match(yml, /writing-design-documents:[\s\S]*setup-python[\s\S]*pip install -r requirements\.txt[\s\S]*run: npm test/)
+  })
+
+  // A package's Python test libraries must be installed before publish.yml runs its tests.
+  it('installs requirements.txt before testing a release', () => {
+    const yml = readFileSync(new URL('.github/workflows/publish.yml', root), 'utf8')
+    assert.ok(yml.indexOf('pip install -r requirements.txt') < yml.indexOf('- run: npm test'))
+    assert.ok(existsSync(new URL('packages/writing-design-documents/requirements.txt', root)))
   })
 })
 
 describe('package docs', () => {
-  for (const name of ['page-as-data', 'drawing-architecture-diagrams']) {
+  for (const name of ['page-as-data', 'drawing-architecture-diagrams', 'writing-design-documents']) {
     it(`${name} has a README, a CLAUDE.md, and a changelog entry for its version`, () => {
       const dir = `packages/${name}/`
       for (const f of ['README.md', 'CLAUDE.md', 'CHANGELOG.md']) assert.ok(existsSync(new URL(dir + f, root)), f)

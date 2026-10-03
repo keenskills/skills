@@ -10,6 +10,7 @@
     "test": "pnpm test:repo && pnpm -r test",
     "test:repo": "node --test \"test/*.test.mjs\"",
     "test:diagrams": "pnpm --filter @keenskills/drawing-architecture-diagrams test",
+    "test:docs": "pnpm --filter @keenskills/writing-design-documents test",
     "sync": "node scripts/sync-shared.mjs",
     "site:dev": "pnpm --filter @keenskills/site dev",
     "site:build": "pnpm --filter @keenskills/site build",
