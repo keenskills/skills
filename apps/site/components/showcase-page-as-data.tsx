@@ -10,6 +10,24 @@ export type PadShowcase = { fixture: string; widths: number[]; read: Record<stri
 
 const TONE: Record<string, string> = { error: 'text-danger', warning: 'text-warn', section: 'mt-3 text-muted', title: 'text-muted' }
 
+// Each kind of problem the read lists, counted, in the order it first appears.
+const NOUN: Record<string, [string, string]> = {
+  'uncaught exception': ['uncaught exception', 'uncaught exceptions'],
+  'failed request': ['failed request', 'failed requests'],
+  'console.error': ['console error', 'console errors'],
+  'broken image': ['broken image', 'broken images'],
+  'invalid field': ['invalid field', 'invalid fields'],
+  layout: ['layout defect', 'layout defects'],
+}
+function kinds(problems: string[]) {
+  const counts = new Map<string, number>()
+  for (const p of problems) {
+    const kind = p.split(':')[0].replace(/ \(warning\)$| ".*"$/, '')
+    counts.set(kind, (counts.get(kind) ?? 0) + 1)
+  }
+  return [...counts].map(([kind, n]) => ({ kind, n, label: (NOUN[kind] ?? [kind, kind])[n === 1 ? 0 : 1] }))
+}
+
 const hang = (line: string) => ({ paddingLeft: `${hangIndent(line)}ch`, textIndent: `-${hangIndent(line)}ch` })
 
 // "A screenshot vs the data": the picture page-as-data took of its own bug
@@ -22,7 +40,9 @@ export function ShowcasePageAsData({ data }: { data: PadShowcase }) {
   const [instant, setInstant] = useState(false)
   const r = data.read[w]
   const lines = useMemo(() => mergeLines(data.read[first].output.split('\n'), data.read[second].output.split('\n')), [data, first, second])
-  const problems = problemLines(r.output).length
+  const found = problemLines(r.output)
+  const problems = found.length
+  const hidden = kinds(found)
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-6" data-instant={instant ? '' : undefined}>
       <div className="flex flex-wrap items-end justify-between gap-4 sm:flex-nowrap">
@@ -49,36 +69,61 @@ export function ShowcasePageAsData({ data }: { data: PadShowcase }) {
         </div>
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3">
-        <figure className="card overflow-hidden">
-          <div className="relative h-96 overflow-hidden bg-code px-4 pt-4">
-            <div className="t-resize relative mx-auto overflow-hidden rounded-lg border border-border bg-white" style={{ width: w === first ? 'min(100%, 232px)' : '100%' }}>
-              {[first, second].map((id) => {
-                const s = data.read[id].screenshot
-                const on = id === w
-                return (
-                  <img
-                    key={id}
-                    src={s.src}
-                    width={s.width}
-                    height={s.height}
-                    alt={`Screenshot of the fixture at ${id} px wide`}
-                    aria-hidden={!on}
-                    className={`shot block h-auto w-full ${on ? '' : 'absolute left-0 top-0 opacity-0'}`}
-                  />
-                )
-              })}
-            </div>
-            {/* The phone screenshot is taller than the stage: fade where it is cut. The desktop one fits. */}
-            <div aria-hidden="true" className={`shot pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-b from-transparent to-code ${w === first ? '' : 'opacity-0'}`} />
-          </div>
-          <figcaption className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-border px-4 py-2 text-xs text-muted">
-            <span>A screenshot at {w} px</span>
+        <figure className="overflow-hidden rounded-2xl border border-border bg-code">
+          <figcaption className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-2 text-xs text-muted">
+            <span>
+              <span className="font-medium text-text">Screenshot</span> at {w} px
+            </span>
             <span>The pixels, and nothing behind them</span>
           </figcaption>
+          {/* The window sits on a dot grid. The phone page runs off the bottom edge, cut by the frame rather than faded; the desktop one fits whole. */}
+          <div className="h-80 overflow-hidden bg-[radial-gradient(var(--ink-12)_1px,transparent_1px)] bg-size-[16px_16px] px-4 pt-6 sm:h-96 sm:px-8 sm:pt-8">
+            <div
+              className="t-resize mx-auto overflow-hidden rounded-t-xl bg-surface shadow-[0_0_0_1px_var(--line-strong),0_16px_40px_-12px_oklch(0_0_0/0.25)]"
+              style={{ width: w === first ? 'min(100%, 260px)' : 'min(100%, 500px)' }}
+            >
+              <div aria-hidden="true" className="flex h-7 items-center gap-3 border-b border-border px-3">
+                <span className="flex shrink-0 gap-1.5">
+                  <span className="size-2 rounded-full bg-(--ink-12)" />
+                  <span className="size-2 rounded-full bg-(--ink-12)" />
+                  <span className="size-2 rounded-full bg-(--ink-12)" />
+                </span>
+                <span className="min-w-0 flex-1 truncate rounded-md bg-code px-2 py-0.5 text-center font-mono text-[10px] text-muted">localhost:3000</span>
+                <span className="w-[42px] shrink-0" />
+              </div>
+              <div className="relative bg-white">
+                {[first, second].map((id) => {
+                  const s = data.read[id].screenshot
+                  const on = id === w
+                  return (
+                    <img
+                      key={id}
+                      src={s.src}
+                      width={s.width}
+                      height={s.height}
+                      alt={`Screenshot of the fixture at ${id} px wide`}
+                      aria-hidden={!on}
+                      className={`shot block h-auto w-full ${on ? '' : 'absolute left-0 top-0 opacity-0'}`}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-border px-4 py-2.5 text-xs">
+            <span className="mr-1 text-muted">Not in the pixels</span>
+            {hidden.map((h) => (
+              <span key={h.kind} className="rounded-full bg-chip px-2.5 py-0.5 text-text">
+                <span className="font-semibold text-danger">{h.n}</span> {h.label}
+              </span>
+            ))}
+          </div>
         </figure>
         <figure className="overflow-hidden rounded-2xl border border-border bg-code">
           <figcaption className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border px-4 py-2 text-xs text-muted">
-            <span>page-as-data read at {w} px</span>
+            <span>
+              <span className="font-medium text-text">page-as-data read</span> at {w} px
+            </span>
             <span className="rounded-full bg-danger-soft px-2.5 py-0.5 font-medium text-danger">
               {instant ? problems : <Count key={problems} value={problems} />} problems · exit {r.exit}
             </span>

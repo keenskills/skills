@@ -36,7 +36,9 @@
 .scene[data-armed] .sc-swap-out { animation-name: sc-swap-out; animation-duration: var(--icon-swap-dur); animation-timing-function: var(--icon-swap-ease); }
 /* After transitions.dev "Texts reveal": a line of output arriving. */
 .scene[data-armed] .sc-line  { animation-name: sc-line;  animation-duration: var(--stagger-dur); animation-timing-function: var(--stagger-ease); }
-.scene[data-armed] .sc-char  { animation-name: sc-char;  animation-duration: 1ms; animation-timing-function: step-end; }
+/* A typed character fades in over several frames. Chrome can skip the repaint of
+   an animation shorter than a frame and leave the finished character unpainted. */
+.scene[data-armed] .sc-char  { animation-name: sc-char;  animation-duration: 160ms; animation-timing-function: var(--ease-out); }
 
 @keyframes sc-rise  { from { opacity: 0; transform: translateY(8px); } }
 @keyframes sc-pop   { from { opacity: 0; transform: scale(0.95); } }

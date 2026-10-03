@@ -127,6 +127,13 @@ describe('page-as-data showcase', () => {
     const html = page('page-as-data.html')
     for (const l of pad.read['390'].output.split('\n').filter((x) => x.includes('•'))) assert.ok(html.includes(escape(l.trim())), l)
   })
+
+  it('counts what the screenshot cannot show from the real read', () => {
+    const html = page('page-as-data.html').replace(/<!-- -->/g, '')
+    const failed = pad.read['390'].output.split('\n').filter((x) => x.includes('• failed request:')).length
+    assert.match(html, /Not in the pixels/)
+    assert.match(html, new RegExp(`>${failed}</span> failed requests<`))
+  })
 })
 
 describe('diagram showcase', () => {

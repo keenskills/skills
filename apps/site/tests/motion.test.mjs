@@ -54,6 +54,12 @@ describe('motion rules', () => {
     }
   })
 
+  it('animates each typed character for longer than a frame', () => {
+    const scenes = readFileSync(new URL('scenes.css', app), 'utf8')
+    const ms = Number(scenes.match(/\.sc-char\s*\{[^}]*animation-duration:\s*(\d+)ms/)[1])
+    assert.ok(ms >= 100, `${ms}ms`)
+  })
+
   it('defines the spec easings', () => {
     assert.match(motion, /--ease-out:\s*cubic-bezier\(0\.23, 1, 0\.32, 1\)/)
     assert.match(motion, /--ease-in-out:\s*cubic-bezier\(0\.77, 0, 0\.175, 1\)/)
