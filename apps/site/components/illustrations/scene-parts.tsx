@@ -1,4 +1,6 @@
 import type { CSSProperties } from 'react'
+import { Play } from 'reicon-react'
+import { useTextSwap } from '../use-text-swap'
 
 /** When a scene piece starts (ms), plus any of its animation's variables: dur in ms, tx and ty in px, grow as a scale. */
 export const d = (ms: number, vars: { dur?: number; tx?: number; ty?: number; grow?: number } = {}) =>
@@ -45,5 +47,27 @@ export function SceneStatus({ steps, final, at }: { steps: Step[]; final: string
         {final}
       </span>
     </p>
+  )
+}
+
+/** Runs the scene again from the start. While it runs, the icon folds away and the label swaps to Playing…. */
+export function ScenePlay({ onClick, label, playing }: { onClick: () => void; label: string; playing: boolean }) {
+  const [text, ref] = useTextSwap(playing ? 'Playing…' : 'Play')
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`Play the ${label} illustration`}
+      className="press absolute bottom-3 right-3 inline-flex items-center rounded-full bg-surface py-1 pl-2 pr-2.5 text-xs font-medium text-muted shadow-[var(--card-shadow)] hover:text-text"
+    >
+      <span className="scene-play-icon" data-hidden={playing ? '' : undefined}>
+        <span>
+          <Play size={11} weight="Filled" aria-hidden="true" />
+        </span>
+      </span>
+      <span ref={ref} className="t-text-swap">
+        {text}
+      </span>
+    </button>
   )
 }

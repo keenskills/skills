@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { d, SceneStatus, Typed, TYPE, type Step } from './scene-parts'
+import { d, SceneStatus, Typed, TYPE, type Step, ScenePlay } from './scene-parts'
 import { useScene } from './use-scene'
 
 type Check = { command: string; output: string; exit: number }
@@ -73,7 +73,7 @@ function Table({ x, y, rows, title, at }: { x: number; y: number; rows: number[]
 // Contoso draft, each finding cut to its first clause; the pages are a small
 // stand-in for that document with its five defects.
 export function DocCheck({ draft, findings, fixes, final, files }: { draft: Check; findings: string[]; fixes: string[]; final: Check; files: string[] }) {
-  const { ref, replay } = useScene<HTMLDivElement>()
+  const { ref, replay, playing } = useScene<HTMLDivElement>()
   const [hot, setHot] = useState<number | null>(null)
   const count = draft.output.split('\n').length
 
@@ -85,7 +85,7 @@ export function DocCheck({ draft, findings, fixes, final, files }: { draft: Chec
 
   return (
     <div ref={ref} className="scene grid items-start gap-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-      <div className="relative rounded-2xl bg-code p-4 pb-12 sm:p-6 sm:pb-12">
+      <div className="dots relative rounded-2xl bg-code p-4 pb-12 sm:p-6 sm:pb-12">
         <svg viewBox="0 0 480 300" role="img" aria-labelledby="doc-title" className="block h-auto w-full">
           <title id="doc-title">Illustration: the design document skill builds a two-page Word document, checks it, removes an em dash, wording about how facts were collected, AI vocabulary, a semicolon and a bold lead-in, and checks it clean</title>
           {PAGES.map((x, i) => (
@@ -124,7 +124,7 @@ export function DocCheck({ draft, findings, fixes, final, files }: { draft: Chec
               <circle className="sc sc-ping" style={d(found(i))} cx={m.x + m.w} cy={m.y - 2} r="7" fill="none" stroke="var(--warn)" strokeWidth="1.5" />
               <g className="sc sc-mark" style={d(found(i), { dur: FIX[i] - found(i) + 200 })}>
                 <circle cx={m.x + m.w} cy={m.y - 2} r="7" fill="var(--warn)" />
-                <text x={m.x + m.w} y={m.y + 1.5} textAnchor="middle" fontSize="9.5" fontWeight="600" fill="var(--surface)">
+                <text x={m.x + m.w} y={m.y + 1.5} textAnchor="middle" fontSize="9.5" fontWeight="600" fill="oklch(0.25 0.03 85)">
                   {i + 1}
                 </text>
               </g>
@@ -149,14 +149,7 @@ export function DocCheck({ draft, findings, fixes, final, files }: { draft: Chec
           ))}
         </ul>
         <SceneStatus steps={status} final="Check clean. Ready for the client." at={RECHECK + 150} />
-        <button
-          type="button"
-          onClick={replay}
-          aria-label="Replay the design document illustration"
-          className="press absolute bottom-3 right-3 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-muted shadow-[var(--card-shadow)] hover:text-text"
-        >
-          Replay
-        </button>
+        <ScenePlay onClick={replay} playing={playing} label="design document" />
       </div>
       <div className="min-w-0">
         <p className="font-mono text-[12.5px] leading-5 text-muted [overflow-wrap:anywhere]">
@@ -167,7 +160,7 @@ export function DocCheck({ draft, findings, fixes, final, files }: { draft: Chec
           {findings.map((f, i) => (
             <li key={f} className="sc sc-line flex gap-3" style={d(found(i) + 80)} onPointerEnter={() => setHot(i)} onPointerLeave={() => setHot(null)}>
               <span className="mt-0.5 grid size-5 shrink-0">
-                <span className="sc sc-swap-out col-start-1 row-start-1 grid place-items-center rounded-full bg-warn-soft text-[11px] font-semibold text-warn" style={d(FIX[i] + 100)}>
+                <span className="sc sc-swap-out col-start-1 row-start-1 grid place-items-center rounded-full bg-warn-soft text-[11px] font-semibold text-warn-ink" style={d(FIX[i] + 100)}>
                   {i + 1}
                 </span>
                 <span className="sc sc-swap-in col-start-1 row-start-1 grid place-items-center rounded-full bg-ok-soft text-ok" style={d(FIX[i] + 100)}>
@@ -183,7 +176,7 @@ export function DocCheck({ draft, findings, fixes, final, files }: { draft: Chec
             </li>
           ))}
         </ol>
-        <p className="sc sc-pop mt-4 inline-flex rounded-full bg-warn-soft px-3 py-1 text-xs font-medium text-warn" style={d(found(findings.length - 1) + 300)}>
+        <p className="sc sc-pop mt-4 inline-flex rounded-full bg-warn-soft px-3 py-1 text-xs font-medium text-warn-ink" style={d(found(findings.length - 1) + 300)}>
           {count} findings · exit {draft.exit}
         </p>
         <p className="mt-4 font-mono text-[12.5px] leading-5 text-muted [overflow-wrap:anywhere]">

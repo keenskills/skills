@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Keen Skills Reel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+/* 15 s, 1920x1080. Every frame is a pure function of t: render(t) sets every
+   style, so the recorder can seek to any frame and get the same picture. */
+:root {
+  --bg: #0e1413;
+  --accent: #8fdcc6;
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
+  --faint: #71717a;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --ink-12: rgba(255, 255, 255, 0.12);
+  --ink-06: rgba(255, 255, 255, 0.06);
+  --code: #121214;
+  --surface: #18181a;
+  --danger: oklch(0.76 0.12 32);
+  --danger-soft: oklch(0.76 0.12 32 / 0.14);
+  --ok: oklch(0.86 0.09 170);
+  --ok-soft: oklch(0.86 0.09 170 / 0.14);
+  --g: var(--accent);
+  --sans: 'Fira Sans', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; overflow: hidden; }
+body { width: 100vw; height: 100vh; display: grid; place-items: center; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--sans); transform-origin: center; -webkit-font-smoothing: antialiased; }
+.abs { position: absolute; }
+.scene { position: absolute; inset: 0; will-change: transform, opacity, filter; }
+.mono { font-family: var(--mono); }
+
+/* Backdrop */
+#glow { position: absolute; inset: -200px; }
+.rail { position: absolute; top: 0; bottom: 0; width: 44px; border: solid rgba(255,255,255,0.07); background: repeating-linear-gradient(135deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 7px); }
+.rail.l { left: 0; border-width: 0 1px 0 0; } .rail.r { right: 0; border-width: 0 0 0 1px; }
+#grain { position: absolute; inset: 0; opacity: 0.07; mix-blend-mode: overlay; pointer-events: none; }
+#vignette { position: absolute; inset: 0; background: radial-gradient(130% 110% at 50% 45%, transparent 55%, rgba(0,0,0,0.55) 100%); pointer-events: none; }
+
+/* HUD */
+#hud { position: absolute; inset: 0; pointer-events: none; font-family: var(--mono); font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+#hud .tl { left: 88px; top: 46px; display: flex; gap: 14px; align-items: center; }
+#hud .tl img { width: 22px; height: 22px; border-radius: 5px; }
+#hud .tr { right: 88px; top: 46px; }
+#hud .bl { left: 88px; bottom: 44px; }
+#hud .br { right: 88px; bottom: 44px; text-transform: none; letter-spacing: 0.04em; }
+#hud .crop { width: 18px; height: 18px; border-color: rgba(255,255,255,0.22); border-style: solid; }
+#bar { position: absolute; left: 88px; right: 88px; bottom: 30px; height: 2px; background: rgba(255,255,255,0.06); }
+#barFill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--g); }
+#rec { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); margin-right: 10px; vertical-align: 1px; }
+
+/* Shared type */
+.mask { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 0.04em 0.16em; margin: 0 -0.04em -0.16em; }
+.w { display: inline-block; will-change: transform; }
+.grad .w { color: var(--accent); }
+.eyebrow { font-family: var(--mono); font-size: 18px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); display: flex; gap: 18px; align-items: center; }
+.eyebrow b { font-weight: 500; color: var(--text); }
+.eyebrow i { font-style: normal; display: inline-block; width: 46px; height: 1px; background: var(--line-strong); }
+.title { font-size: 66px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.04; }
+
+/* Terminal */
+.term { position: absolute; border-radius: 20px; background: rgba(17,17,19,0.92); box-shadow: inset 0 0 0 1px var(--line), 0 40px 80px -30px rgba(0,0,0,0.7); font-family: var(--mono); font-size: 19px; line-height: 1.55; color: var(--text); overflow: hidden; }
+.term .top { height: 48px; display: flex; align-items: center; gap: 9px; padding: 0 20px; border-bottom: 1px solid var(--line); color: var(--faint); font-size: 14px; letter-spacing: 0.06em; }
+.term .top span.d { width: 11px; height: 11px; border-radius: 50%; background: var(--ink-12); }
+.term .top em { font-style: normal; margin-left: 12px; }
+.term .body { padding: 22px 28px; }
+.cmd { color: var(--text); white-space: pre-wrap; word-break: break-all; min-height: 1.55em; }
+.cmd .p { color: var(--faint); }
+.caret { display: inline-block; width: 0.58em; height: 1.1em; background: var(--text); vertical-align: -0.18em; margin-left: 2px; }
+.lbl { margin-top: 18px; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.row { display: flex; gap: 14px; margin-top: 12px; font-size: 17.5px; line-height: 1.5; position: relative; }
+.row .n { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--danger-soft); color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 0.5px; }
+.row .x { position: relative; }
+.row .x s { position: absolute; left: 0; top: 52%; height: 2px; width: 100%; background: var(--faint); transform-origin: left; text-decoration: none; }
+.pill { display: inline-flex; align-items: center; gap: 10px; border-radius: 999px; padding: 7px 16px; font-family: var(--mono); font-size: 16px; font-weight: 500; }
+.pill.bad { background: var(--danger-soft); color: var(--danger); }
+.pill.good { background: var(--ok-soft); color: var(--ok); }
+
+/* S0 hook */
+#s0 .head { position: absolute; left: 0; right: 0; top: 380px; text-align: center; font-size: 190px; font-weight: 800; letter-spacing: -0.045em; line-height: 1; white-space: nowrap; }
+#s0 .slot { position: relative; display: inline-block; }
+#s0 .slot > .mask { display: inline-block; }
+#s0 #check { position: absolute; left: 0; top: 0; }
+#s0 #strike { position: absolute; left: -2%; top: 52%; height: 14px; width: 104%; background: var(--danger); border-radius: 7px; transform-origin: left; }
+#hookLine { position: absolute; left: 50%; top: 640px; height: 3px; width: 1000px; margin-left: -500px; background: var(--g); transform-origin: center; border-radius: 2px; }
+#dot { position: absolute; left: 951px; top: 631px; width: 18px; height: 18px; border-radius: 50%; background: var(--g); }
+#s0 .sub { position: absolute; left: 0; right: 0; top: 690px; text-align: center; font-family: var(--mono); font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+
+/* S1 */
+.hdr { position: absolute; left: 140px; top: 118px; }
+.hdr .title { margin-top: 22px; }
+#win { position: absolute; left: 130px; top: 318px; width: 800px; transform-style: preserve-3d; }
+#win svg { display: block; width: 800px; height: auto; overflow: visible; }
+.scan-svg text { font-family: var(--mono); }
+#t1 { left: 990px; top: 318px; width: 800px; height: 640px; }
+
+/* S2 */
+#canvas { position: absolute; left: 130px; top: 318px; width: 820px; height: 600px; border-radius: 22px; background-color: #0f0f11; background-image: radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1.3px); background-size: 22px 22px; box-shadow: inset 0 0 0 1px var(--line), 0 40px 80px -30px rgba(0,0,0,0.7); overflow: hidden; }
+#canvas svg { position: absolute; left: 0; top: 20px; }
+#canvas text { font-family: var(--mono); }
+#render { position: absolute; inset: 0; background: #fff; display: grid; place-items: center; }
+#render img { width: 100%; height: 100%; object-fit: contain; }
+#renderTag { position: absolute; left: 22px; bottom: 20px; }
+#files { position: absolute; right: 18px; bottom: 18px; display: flex; gap: 8px; }
+#files span { background: #111; color: #f4f4f5; font-family: var(--mono); font-size: 15px; padding: 7px 12px; border-radius: 9px; }
+#t2 { left: 1010px; top: 318px; width: 780px; height: 600px; }
+
+/* S3 */
+#pages { position: absolute; left: 150px; top: 330px; width: 660px; height: 900px; perspective: 1800px; }
+.page { position: absolute; left: 0; top: 0; width: 640px; height: 880px; border-radius: 6px; background: #fbfbf8; box-shadow: 0 50px 90px -30px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,0,0,0.05); transform-origin: 50% 100%; }
+.page.back { background: #e9e9e4; }
+#doc { padding: 46px 56px; color: #2c2c2c; font-size: 17.5px; line-height: 1.62; }
+#doc .runhead { display: flex; justify-content: space-between; font-size: 12.5px; color: #8a8a8a; border-bottom: 1px solid #e3e3df; padding-bottom: 10px; margin-bottom: 26px; letter-spacing: 0.02em; }
+#doc h4 { font-size: 21px; font-weight: 600; color: #1f4e79; margin: 20px 0 6px; }
+#doc h4 span { display: inline-block; width: 34px; }
+#doc p { margin: 0; }
+.tok { white-space: nowrap; }
+.tok .o, .tok .nw { display: inline-block; overflow: hidden; vertical-align: top; white-space: pre; background-repeat: no-repeat; background-position: 0 88%; }
+.tok .o { background-image: linear-gradient(oklch(0.76 0.12 32 / 0.3), oklch(0.76 0.12 32 / 0.3)); background-size: 0% 46%; }
+.tok .nw { background-image: linear-gradient(oklch(0.86 0.09 170 / 0.45), oklch(0.86 0.09 170 / 0.45)); background-size: 100% 46%; }
+.skel { height: 10px; border-radius: 5px; background: #e6e6e1; margin-top: 12px; }
+#t3 { left: 1000px; top: 318px; width: 790px; height: 640px; }
+
+/* S4 */
+#pills { position: absolute; left: 0; right: 0; top: 380px; height: 220px; perspective: 1400px; }
+.flip { position: absolute; top: 0; width: 330px; height: 110px; transform-style: preserve-3d; }
+.flip .face { position: absolute; inset: 0; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 16px; font-family: var(--mono); font-size: 40px; font-weight: 500; backface-visibility: hidden; }
+.flip .f1 { background: oklch(0.3 0.05 32); color: oklch(0.88 0.07 32); box-shadow: inset 0 0 0 1px oklch(0.76 0.12 32 / 0.4); }
+.flip .f2 { background: oklch(0.32 0.05 170); color: oklch(0.92 0.07 170); transform: rotateX(180deg); box-shadow: inset 0 0 0 1px oklch(0.86 0.09 170 / 0.45); }
+.flip .cap { position: absolute; top: 130px; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 18px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.ring { position: absolute; left: 50%; top: 50%; width: 330px; height: 110px; margin: -55px 0 0 -165px; border-radius: 999px; border: 2px solid var(--ok); }
+#lockup { position: absolute; left: 0; right: 0; top: 170px; display: flex; justify-content: center; align-items: center; gap: 22px; }
+#lockup img { width: 78px; height: 78px; border-radius: 18px; }
+#lockup .name { font-size: 60px; font-weight: 700; letter-spacing: -0.02em; }
+#tag { position: absolute; left: 0; right: 0; top: 320px; text-align: center; font-size: 132px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; }
+#tag .mask { padding-bottom: 0.26em; margin-bottom: -0.26em; }
+#cmds { position: absolute; left: 0; right: 0; top: 650px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+#cmds div { font-family: var(--mono); font-size: 25px; padding: 12px 22px; border-radius: 12px; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 0 1px var(--line); }
+#cmds b { font-weight: 400; color: var(--faint); }
+#url { position: absolute; left: 0; right: 0; top: 925px; text-align: center; font-family: var(--mono); font-size: 22px; color: var(--muted); letter-spacing: 0.04em; }
+#url em { font-style: normal; color: var(--text); }
+
+#streak { position: absolute; top: -100px; bottom: -100px; width: 260px; background: linear-gradient(90deg, transparent, rgba(143,220,198,0.35), rgba(236,246,242,0.4), transparent); filter: blur(30px); mix-blend-mode: screen; pointer-events: none; opacity: 0; }
+#flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; mix-blend-mode: overlay; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="glow"></div>
+  <div class="rail l"></div><div class="rail r"></div>
+
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="mb1" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mb1g" stdDeviation="0 0" /></filter>
+      <filter id="mb2" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mb2g" stdDeviation="0 0" /></filter>
+      <filter id="mb3" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mb3g" stdDeviation="0 0" /></filter>
+    </defs>
+  </svg>
+
+  <!-- S0: hook -->
+  <section class="scene" id="s0" data-start="0">
+    <div class="head"><span class="mask"><span class="w" id="wAgents">Agents</span></span>&nbsp;<span class="slot" id="slot"><span class="mask"><span class="w" id="wGuess">guess.</span></span><span id="strike"></span><span id="check" class="grad"><span class="mask"><span class="w" id="wCheck">check<span id="period">.</span></span></span></span></span></div>
+    <div id="hookLine"></div>
+    <div id="dot"></div>
+    <div class="sub" id="hookSub"><span class="mask"><span class="w">Three agent skills that check their own work</span></span></div>
+  </section>
+
+  <!-- S1: page-as-data -->
+  <section class="scene" id="s1" data-start="1.85">
+    <div class="hdr">
+      <div class="eyebrow fx" data-at="0.15" data-fx="blur"><b>01 / 03</b><i></i>page-as-data</div>
+      <div class="title split" data-at="0.2">Reads the page as data, <span class="grad">not pixels.</span></div>
+    </div>
+    <div id="win">
+      <svg class="scan-svg" viewBox="0 0 360 300">
+        <defs>
+          <linearGradient id="beamG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#8fdcc6" stop-opacity="0" />
+            <stop offset="0.6" stop-color="#8fdcc6" stop-opacity="0.32" />
+            <stop offset="0.98" stop-color="#8fdcc6" stop-opacity="0.9" />
+            <stop offset="1" stop-color="#8fdcc6" stop-opacity="0" />
+          </linearGradient>
+          <clipPath id="clipBar"><rect x="28" y="96" width="168" height="30" rx="8" /></clipPath>
+          <clipPath id="clipWin"><rect x="8" y="41" width="300" height="251" rx="0" /></clipPath>
+          <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="6" fill="oklch(0.76 0.12 32)" opacity="0.55" /></pattern>
+        </defs>
+        <g class="fx" data-at="0.0" data-fx="rise">
+          <rect x="8" y="8" width="300" height="284" rx="14" fill="#161618" stroke="rgba(255,255,255,0.14)" />
+          <path d="M8 40h300" stroke="rgba(255,255,255,0.14)" />
+          <circle cx="24" cy="24" r="3.5" fill="rgba(255,255,255,0.14)" /><circle cx="36" cy="24" r="3.5" fill="rgba(255,255,255,0.14)" /><circle cx="48" cy="24" r="3.5" fill="rgba(255,255,255,0.14)" />
+          <rect x="68" y="16" width="208" height="16" rx="8" fill="#0e0e10" />
+          <text id="host" x="80" y="27.5" font-size="9.5" fill="#a1a1aa"></text>
+        </g>
+        <rect id="loadbar" x="9" y="39" width="298" height="2" fill="#8fdcc6" />
+        <circle id="spin" cx="292" cy="24" r="4.5" fill="none" stroke="#8fdcc6" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="16 12.3" />
+        <path class="fx" data-at="1.15" data-fx="draw" pathLength="1" d="M288 24.5l3 3 5.5-6.5" fill="none" stroke="oklch(0.86 0.09 170)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+        <g class="fx" data-at="0.55" data-fx="rise"><rect x="28" y="56" width="132" height="12" rx="6" fill="rgba(255,255,255,0.14)" /><rect x="28" y="76" width="196" height="8" rx="4" fill="rgba(255,255,255,0.07)" /></g>
+        <g class="fx" data-at="0.63" data-fx="rise">
+          <rect x="28" y="96" width="168" height="30" rx="8" fill="#0e0e10" stroke="rgba(255,255,255,0.14)" />
+          <rect x="36" y="103" width="52" height="16" rx="6" fill="rgba(255,255,255,0.14)" /><rect x="94" y="103" width="52" height="16" rx="6" fill="rgba(255,255,255,0.14)" />
+          <g clip-path="url(#clipBar)"><rect x="187" y="103" width="60" height="16" rx="6" fill="#f4f4f5" /></g>
+        </g>
+        <g class="fx" data-at="0.71" data-fx="rise">
+          <rect x="28" y="140" width="120" height="76" rx="8" fill="none" stroke="rgba(255,255,255,0.18)" stroke-dasharray="4 4" />
+          <rect x="160" y="146" width="128" height="8" rx="4" fill="rgba(255,255,255,0.07)" /><rect x="160" y="162" width="100" height="8" rx="4" fill="rgba(255,255,255,0.07)" /><rect x="160" y="178" width="116" height="8" rx="4" fill="rgba(255,255,255,0.07)" />
+        </g>
+        <g class="fx" data-at="0.79" data-fx="rise"><rect x="28" y="228" width="320" height="18" rx="6" fill="rgba(255,255,255,0.14)" /></g>
+        <g class="fx" data-at="0.87" data-fx="rise">
+          <rect x="28" y="256" width="260" height="24" rx="6" fill="#0e0e10" stroke="rgba(255,255,255,0.14)" />
+          <text x="38" y="272" font-size="10" fill="#71717a">› console</text>
+        </g>
+        <g clip-path="url(#clipWin)"><rect id="beam" x="8" y="0" width="300" height="46" fill="url(#beamG)" /></g>
+
+        <rect class="fx" data-at="1.47" data-fx="draw" pathLength="1" x="187" y="103" width="60" height="16" rx="6" fill="none" stroke="oklch(0.76 0.12 32)" stroke-width="1.4" />
+        <text class="fx" data-at="1.53" data-fx="rise" x="187" y="137" font-size="8" fill="oklch(0.76 0.12 32)">15% visible</text>
+        <path class="fx" data-at="1.82" data-fx="draw" pathLength="1" d="M80 166l16 16M96 166l-16 16" fill="none" stroke="oklch(0.76 0.12 32)" stroke-width="2.2" stroke-linecap="round" />
+        <text class="fx" data-at="1.88" data-fx="rise" x="88" y="200" text-anchor="middle" font-size="8" fill="oklch(0.76 0.12 32)">missing-image.png</text>
+        <rect class="fx" data-at="2.14" data-fx="pop" x="308" y="228" width="40" height="18" fill="url(#hatch)" />
+        <path class="fx" data-at="2.14" data-fx="draw" pathLength="1" d="M309 251v4h38v-4" fill="none" stroke="oklch(0.76 0.12 32)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+        <text class="fx" data-at="2.2" data-fx="rise" x="328" y="267" text-anchor="middle" font-size="8" fill="oklch(0.76 0.12 32)">+226px</text>
+        <text class="fx" data-at="2.31" data-fx="rise" x="102" y="271.5" font-size="8.5" fill="oklch(0.76 0.12 32)">Error: Fixture uncaught error</text>
+
+        <g id="pins"></g>
+      </svg>
+    </div>
+    <div class="term" id="t1">
+      <div class="top"><span class="d"></span><span class="d"></span><span class="d"></span><em>zsh — page-as-data</em></div>
+      <div class="body">
+        <div class="cmd" data-type="npx @keenskills/page-as-data read http://localhost:3000/ --width 390 --launch" data-at="0.15" data-dur="0.75"></div>
+        <div class="lbl fx" data-at="1.3" data-fx="blur">Problems</div>
+        <div class="row fx" data-at="1.54" data-fx="line"><span class="n">1</span><span class="x">layout: button "Hidden action" is cut off (15% visible) by div.clipping-bar, and nothing scrolls to it</span></div>
+        <div class="row fx" data-at="1.9" data-fx="line"><span class="n">2</span><span class="x">broken image: http://localhost:3000/missing-image.png</span></div>
+        <div class="row fx" data-at="2.22" data-fx="line"><span class="n">3</span><span class="x">layout: Page is 616px wide in a 390px viewport, so it scrolls sideways</span></div>
+        <div class="row fx" data-at="2.39" data-fx="line"><span class="n">4</span><span class="x">uncaught exception: Error: Fixture uncaught error</span></div>
+        <div style="margin-top:22px" class="fx" data-at="2.6" data-fx="pop"><span class="pill bad">● 12 problems · exit 1</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S2: drawing-architecture-diagrams -->
+  <section class="scene" id="s2" data-start="5.2">
+    <div class="hdr">
+      <div class="eyebrow fx" data-at="0.15" data-fx="blur"><b>02 / 03</b><i></i>drawing-architecture-diagrams</div>
+      <div class="title split" data-at="0.2">Print-ready diagrams that <span class="grad">lint themselves.</span></div>
+    </div>
+    <div id="canvas">
+      <svg id="dia" width="820" height="560" viewBox="0 0 820 560"></svg>
+      <div id="render"><img src="northwind-view.png" alt=""><span id="renderTag" class="pill" style="background:#111;color:#f4f4f5">render → northwind.png · A4</span><div id="files"><span>.drawio</span><span>.png</span><span>.pdf</span></div></div>
+    </div>
+    <div class="term" id="t2">
+      <div class="top"><span class="d"></span><span class="d"></span><span class="d"></span><em>zsh — archdiagram.py</em></div>
+      <div class="body">
+        <div class="cmd" data-type="python scripts/archdiagram.py lint northwind-draft.drawio" data-at="0.3" data-dur="0.55"></div>
+        <div class="lbl fx" data-at="1.2" data-fx="blur">Lint</div>
+        <div class="row fx" data-at="1.28" data-fx="line" data-fix="1.75"><span class="n">1</span><span class="x">users: icon is 44x44 - keep icons 20-28 px<s></s></span></div>
+        <div class="row fx" data-at="1.36" data-fx="line" data-fix="2.05"><span class="n">2</span><span class="x">entra / cosmos: labels overlap<s></s></span></div>
+        <div class="row fx" data-at="1.44" data-fx="line" data-fix="1.9"><span class="n">3</span><span class="x">afd / evh: labels in one row are 7px off a common baseline<s></s></span></div>
+        <div class="row fx" data-at="1.52" data-fx="line" data-fix="2.2"><span class="n">4</span><span class="x">whitespace: empty area 128x280 at x=16,y=404<s></s></span></div>
+        <div style="margin-top:18px; height:40px; position:relative">
+          <span class="pill bad fx abs" data-at="1.62" data-fx="pop" data-out="2.35">● 4 findings · exit 1</span>
+          <span class="pill good fx abs" data-at="2.45" data-fx="pop">✓ lint: no overlaps or whitespace findings · exit 0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3: writing-design-documents -->
+  <section class="scene" id="s3" data-start="8.8">
+    <div class="hdr">
+      <div class="eyebrow fx" data-at="0.15" data-fx="blur"><b>03 / 03</b><i></i>writing-design-documents</div>
+      <div class="title split" data-at="0.2">Word documents that read like <span class="grad">a consultant wrote them.</span></div>
+    </div>
+    <div id="pages">
+      <div class="page back" id="pg3"></div>
+      <div class="page back" id="pg2" style="background:#f1f1ed"></div>
+      <div class="page" id="pg1">
+        <div id="doc">
+          <div class="runhead"><span>Contoso · Network Security Design</span><span>v1.0 · page 3</span></div>
+          <h4 class="fx" data-at="0.45" data-fx="rise"><span>1</span>Purpose</h4>
+          <p class="fx" data-at="0.5" data-fx="rise">This document describes the proposed network security design for the Contoso pre-production web <span class="tok" id="k0"><span class="o">applications — the current</span><span class="nw">applications. It covers the current</span></span> configuration, the target design and the changes needed.</p>
+          <h4 class="fx" data-at="0.56" data-fx="rise"><span>2</span>Current State</h4>
+          <p class="fx" data-at="0.6" data-fx="rise">The configuration <span class="tok" id="k1"><span class="o">was read with the Azure CLI using read-only access</span><span class="nw">is described as of 24-Sep-2026</span></span>. Three spoke VNets peer to a central hub.</p>
+          <h4 class="fx" data-at="0.66" data-fx="rise"><span>3</span>Proposed Architecture</h4>
+          <p class="fx" data-at="0.7" data-fx="rise">We recommend <span class="tok" id="k2"><span class="o">a robust approach that leverages </span><span class="nw"></span></span>Application Gateway with WAF for internet <span class="tok" id="k3"><span class="o">traffic; internal</span><span class="nw">traffic. Internal</span></span> traffic stays on private endpoints.</p>
+          <h4 class="fx" data-at="0.76" data-fx="rise"><span>4</span>Implementation Plan</h4>
+          <p class="fx" data-at="0.8" data-fx="rise"><span class="tok" id="k4"><span class="o"><b>Note.</b> </span><span class="nw"></span></span>The cloud team applies each change in an agreed change window.</p>
+          <div class="fx" data-at="0.86" data-fx="rise"><div class="skel" style="width:92%"></div><div class="skel" style="width:84%"></div><div class="skel" style="width:88%"></div><div class="skel" style="width:60%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="term" id="t3">
+      <div class="top"><span class="d"></span><span class="d"></span><span class="d"></span><em>zsh — docbuilder.py</em></div>
+      <div class="body">
+        <div class="cmd" data-type="python scripts/docbuilder.py check contoso-draft.docx" data-at="0.3" data-dur="0.5"></div>
+        <div class="lbl fx" data-at="0.92" data-fx="blur">Check</div>
+        <div class="row fx" data-at="0.98" data-fx="line" data-fix="1.65"><span class="n">1</span><span class="x">punctuation: 1 x em dash<s></s></span></div>
+        <div class="row fx" data-at="1.05" data-fx="line" data-fix="1.8"><span class="n">2</span><span class="x">provenance/banned wording: 'read-only'<s></s></span></div>
+        <div class="row fx" data-at="1.12" data-fx="line" data-fix="1.95"><span class="n">3</span><span class="x">AI-sounding word: 'leverages'<s></s></span></div>
+        <div class="row fx" data-at="1.19" data-fx="line" data-fix="1.95"><span class="n">4</span><span class="x">AI-sounding word: 'robust'<s></s></span></div>
+        <div class="row fx" data-at="1.26" data-fx="line" data-fix="2.1"><span class="n">5</span><span class="x">semicolon in prose: '…web traffic; internal…'<s></s></span></div>
+        <div class="row fx" data-at="1.33" data-fx="line" data-fix="2.25"><span class="n">6</span><span class="x">inline bold or bold lead-in: 'Note. The cloud team…'<s></s></span></div>
+        <div style="margin-top:18px; height:40px; position:relative">
+          <span class="pill bad fx abs" data-at="1.42" data-fx="pop" data-out="2.4">● 8 findings · exit 1</span>
+          <span class="pill good fx abs" data-at="2.5" data-fx="pop">✓ check: clean · exit 0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4: outro -->
+  <section class="scene" id="s4" data-start="12.2">
+    <div id="pills"></div>
+    <div id="lockup"><img src="icon.png" alt="" id="logo"><span class="name split" data-at="1.18">Keen Skills</span></div>
+    <div id="tag" class="split" data-at="1.25" data-stagger="0.06"><span class="grad">Sharper senses</span><br>for your coding agent</div>
+    <div id="cmds">
+      <div class="fx" data-at="1.6" data-fx="blur"><b>$ </b>npx @keenskills/page-as-data init</div>
+      <div class="fx" data-at="1.67" data-fx="blur"><b>$ </b>npx @keenskills/drawing-architecture-diagrams init</div>
+      <div class="fx" data-at="1.74" data-fx="blur"><b>$ </b>npx @keenskills/writing-design-documents init</div>
+    </div>
+    <div id="url" class="fx" data-at="1.85" data-fx="blur"><em>keenskills.d2studio.dev</em> · MIT · open source</div>
+  </section>
+
+  <div id="streak"></div>
+  <div id="flash"></div>
+  <canvas id="grain" width="1920" height="1080"></canvas>
+  <div id="vignette"></div>
+
+  <div id="hud">
+    <div class="abs tl"><img src="icon.png" alt="">Keen Skills</div>
+    <div class="abs tr"><span id="rec"></span><span id="tc">00:00:00</span></div>
+    <div class="abs bl" id="sceneLbl">Reel 001</div>
+    <div class="abs br">keenskills.d2studio.dev</div>
+    <div id="bar"><div id="barFill"></div></div>
+  </div>
+</div>
+
+<script>
+const DUR = 15, FPS = 60
+const $ = (s, r = document) => r.querySelector(s)
+const $$ = (s, r = document) => [...r.querySelectorAll(s)]
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const lerp = (a, b, p) => a + (b - a) * p
+const E = {
+  lin: (x) => x,
+  outExpo: (x) => (x >= 1 ? 1 : 1 - Math.pow(2, -10 * x)),
+  inExpo: (x) => (x <= 0 ? 0 : Math.pow(2, 10 * x - 10)),
+  outCubic: (x) => 1 - Math.pow(1 - x, 3),
+  inOutCubic: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  inOutExpo: (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x < 0.5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2),
+  outBack: (x) => 1 + 2.4 * Math.pow(x - 1, 3) + 1.4 * Math.pow(x - 1, 2),
+}
+const P = (t, a, b, e = E.outExpo) => e(clamp((t - a) / (b - a)))
+// Damped spring step response, mass 1. Overshoots when damping < 2*sqrt(k).
+function spring(x, k = 220, c = 18) {
+  if (x <= 0) return 0
+  const w0 = Math.sqrt(k), z = c / (2 * w0)
+  if (z < 1) {
+    const wd = w0 * Math.sqrt(1 - z * z)
+    return 1 - Math.exp(-z * w0 * x) * (Math.cos(wd * x) + ((z * w0) / wd) * Math.sin(wd * x))
+  }
+  return 1 - Math.exp(-w0 * x) * (1 + w0 * x)
+}
+const bell = (t, a, b) => { const x = clamp((t - a) / (b - a)); return Math.sin(Math.PI * x) }
+
+/* ---------- build ---------- */
+
+// Split .split text into masked words, keeping .grad spans as gradient runs.
+function split(el) {
+  const words = []
+  const walk = (node, grad) => {
+    for (const n of [...node.childNodes]) {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment()
+        n.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return
+          if (/^\s+$/.test(part)) return frag.append(document.createTextNode(' '))
+          const m = document.createElement('span'); m.className = 'mask'
+          const w = document.createElement('span'); w.className = 'w'; w.textContent = part
+          m.append(w); frag.append(m); words.push(w)
+        })
+        n.replaceWith(frag)
+      } else if (n.nodeName !== 'BR') walk(n, grad || n.classList.contains('grad'))
+    }
+  }
+  walk(el, false)
+  return words
+}
+
+// One gradient across a run of words: size each word's background to the run.
+function gradRuns() {
+  for (const g of $$('.grad')) {
+    const ws = $$('.w', g); if (!ws.length) continue
+    const boxes = ws.map((w) => w.getBoundingClientRect())
+    const left = Math.min(...boxes.map((b) => b.left)), right = Math.max(...boxes.map((b) => b.right))
+    ws.forEach((w, i) => { w.style.backgroundSize = `${right - left}px 100%`; w.style.backgroundPosition = `${left - boxes[i].left}px 0` })
+  }
+}
+
+const scenes = $$('.scene').map((el) => ({ el, start: +el.dataset.start }))
+const sceneOf = (el) => +el.closest('.scene').dataset.start
+
+const splits = $$('.split').map((el) => ({ el, at: +el.dataset.at + sceneOf(el), stagger: +(el.dataset.stagger || 0.045), words: split(el) }))
+const fxs = $$('.fx').map((el) => ({ el, at: +el.dataset.at + sceneOf(el), fx: el.dataset.fx, out: el.dataset.out ? +el.dataset.out + sceneOf(el) : null, fix: el.dataset.fix ? +el.dataset.fix + sceneOf(el) : null, svg: el instanceof SVGElement }))
+for (const f of fxs) if (f.svg) { f.el.style.transformBox = 'fill-box'; f.el.style.transformOrigin = 'center' }
+const types = $$('[data-type]').map((el) => ({ el, text: el.dataset.type, at: +el.dataset.at + sceneOf(el), dur: +el.dataset.dur }))
+
+// S1 pins
+const PINS = [{ x: 259, y: 111, at: 1.456 }, { x: 148, y: 140, at: 1.82 }, { x: 348, y: 228, at: 2.14 }, { x: 276, y: 268, at: 2.31 }]
+const NS = 'http://www.w3.org/2000/svg'
+const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.append(e); return e }
+PINS.forEach((p, i) => {
+  const g = mk('g', {}, $('#pins'))
+  p.ring = mk('circle', { cx: p.x, cy: p.y, r: 9, fill: 'none', stroke: 'oklch(0.76 0.12 32)', 'stroke-width': 1.5 }, g)
+  p.dot = mk('g', {}, g)
+  mk('circle', { cx: p.x, cy: p.y, r: 9, fill: 'oklch(0.76 0.12 32)' }, p.dot)
+  const tx = mk('text', { x: p.x, y: p.y + 3.5, 'text-anchor': 'middle', 'font-size': 10, 'font-weight': 600, fill: '#111' }, p.dot); tx.textContent = i + 1
+  for (const e of [p.ring, p.dot]) { e.style.transformBox = 'fill-box'; e.style.transformOrigin = 'center' }
+})
+
+// S2 diagram: nodes have a draft and a fixed state; edges follow the nodes.
+const dia = $('#dia')
+const NODES = {
+  users: { c: '#b7d4a8', g: 'U', x: 112, y: 210, s: 104, fs: 56, fix: 1.75 },
+  afd: { c: '#a9cbe0', g: 'FD', x: 238, y: 224, fy: 210, s: 56, fix: 1.9 },
+  aks: { c: '#8fdcc6', g: 'K8s', x: 400, y: 210, s: 56 },
+  sb: { c: '#e5d3a6', g: 'SB', x: 552, y: 210, s: 56 },
+  cosmos: { c: '#a8e0c4', g: 'DB', x: 700, y: 210, s: 56 },
+  evh: { c: '#eec4a8', g: 'EH', x: 552, y: 380, s: 56 },
+  entra: { c: '#bccad6', g: 'ID', x: 668, y: 262, fx: 400, fy: 380, s: 56, fix: 2.05 },
+}
+const S2 = 5.2
+mk('rect', { x: 24, y: 40, width: 772, height: 470, rx: 16, fill: 'none', stroke: 'rgba(143,220,198,0.35)', 'stroke-dasharray': '6 6', pathLength: 1, id: 'sub' }, dia)
+const subT = mk('text', { x: 44, y: 66, 'font-size': 14, fill: '#a1a1aa' }, dia); subT.textContent = 'rg-orders · Azure subscription'
+mk('rect', { x: 320, y: 110, width: 456, height: 380, rx: 12, fill: 'rgba(143,220,198,0.05)', stroke: 'rgba(143,220,198,0.22)', id: 'vnet' }, dia)
+const vnT = mk('text', { x: 336, y: 134, 'font-size': 13, fill: '#71717a' }, dia); vnT.textContent = 'vnet-spoke · 10.20.0.0/16'
+const hatchArea = mk('g', {}, dia)
+mk('pattern', { id: 'hatch2', width: 8, height: 8, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, mk('defs', {}, dia)).append(mk('rect', { width: 2, height: 8, fill: 'oklch(0.76 0.12 32)', opacity: 0.4 }))
+mk('rect', { x: 44, y: 300, width: 250, height: 190, rx: 10, fill: 'url(#hatch2)', stroke: 'oklch(0.76 0.12 32)', 'stroke-dasharray': '5 5' }, hatchArea)
+const legend = mk('g', {}, dia)
+mk('rect', { x: 44, y: 300, width: 250, height: 190, rx: 10, fill: '#17171a', stroke: 'rgba(255,255,255,0.14)' }, legend)
+const lgT = mk('text', { x: 62, y: 328, 'font-size': 13, fill: '#a1a1aa' }, legend); lgT.textContent = 'FLOWS'
+;['1  request in', '2  route to AKS', '3  publish order', '4  persist'].forEach((s, i) => {
+  mk('circle', { cx: 70, cy: 354 + i * 32, r: 9, fill: '#8fdcc6' }, legend)
+  const n = mk('text', { x: 70, y: 358 + i * 32, 'font-size': 11, 'font-weight': 700, 'text-anchor': 'middle', fill: '#0e1413' }, legend); n.textContent = i + 1
+  const tx = mk('text', { x: 90, y: 358 + i * 32, 'font-size': 14, fill: '#e4e4e7' }, legend); tx.textContent = s.slice(3)
+})
+const EDGES = [['users', 'afd', 1], ['afd', 'aks', 2], ['aks', 'sb', 3], ['sb', 'cosmos', 4], ['sb', 'evh', 0], ['entra', 'aks', 0]]
+const edgeG = mk('g', {}, dia)
+EDGES.forEach((e, i) => {
+  e.path = mk('path', { fill: 'none', stroke: i === 5 ? 'rgba(188,202,214,0.7)' : 'rgba(228,228,231,0.55)', 'stroke-width': 2, 'stroke-dasharray': i === 5 ? '5 5' : '', 'marker-end': '' }, edgeG)
+  e.head = mk('path', { fill: i === 5 ? 'rgba(188,202,214,0.7)' : 'rgba(228,228,231,0.75)' }, edgeG)
+  if (e[2]) { e.badge = mk('g', {}, edgeG); mk('circle', { r: 10, fill: '#8fdcc6' }, e.badge); const t = mk('text', { y: 4, 'font-size': 11, 'font-weight': 700, 'text-anchor': 'middle', fill: '#0e1413' }, e.badge); t.textContent = e[2] }
+})
+const nodeG = mk('g', {}, dia)
+for (const [k, n] of Object.entries(NODES)) {
+  n.g0 = mk('g', {}, nodeG)
+  n.r = mk('rect', { rx: 14, fill: n.c }, n.g0)
+  n.t = mk('text', { 'text-anchor': 'middle', 'font-weight': 700, fill: '#0e1413', 'font-family': 'Fira Sans' }, n.g0); n.t.textContent = n.g
+  n.l = mk('text', { 'text-anchor': 'middle', 'font-size': 14, fill: '#e4e4e7' }, nodeG); n.l.textContent = k
+}
+// Draft issue overlays
+const hl = mk('g', {}, dia)
+const hUsers = mk('rect', { rx: 18, fill: 'none', 'stroke-width': 2, 'stroke-dasharray': '6 5' }, hl)
+const hBase = mk('path', { d: 'M70 238H735', fill: 'none', 'stroke-width': 1.5, 'stroke-dasharray': '4 5' }, hl)
+const hBaseT = mk('text', { x: 262, y: 284, 'font-size': 13 }, hl); hBaseT.textContent = '7px off baseline'
+const hOver = mk('rect', { x: 628, y: 232, width: 110, height: 76, rx: 12, fill: 'none', 'stroke-width': 2, 'stroke-dasharray': '6 5' }, hl)
+const hOverT = mk('text', { x: 628, y: 326, 'font-size': 13 }, hl); hOverT.textContent = 'labels overlap'
+const hWsT = mk('text', { x: 64, y: 400, 'font-size': 14 }, hl); hWsT.textContent = 'empty 128×280'
+
+// S3 doc tokens
+const toks = [0, 1, 2, 3, 4].map((i) => { const el = $('#k' + i); const o = $('.o', el), nw = $('.nw', el); return { o, nw, wo: 0, wn: 0, flag: [0.98, 1.05, 1.12, 1.26, 1.33][i] + 8.8, fix: [1.65, 1.8, 1.95, 2.1, 2.25][i] + 8.8 } })
+
+// S4 pills
+const PILL = ['page-as-data', 'diagrams', 'documents'].map((cap, i) => {
+  const f = document.createElement('div'); f.className = 'flip'; f.style.left = `${960 - 165 + (i - 1) * 420}px`
+  f.innerHTML = `<div class="face f1">● exit 1</div><div class="face f2">✓ exit 0</div><div class="ring"></div><div class="cap">${cap}</div>`
+  $('#pills').append(f); return { f, ring: $('.ring', f), cap: $('.cap', f), f1: $('.f1', f), f2: $('.f2', f) }
+})
+
+// Grain: a few noise frames, cycled.
+const grainCv = $('#grain'), gctx = grainCv.getContext('2d')
+const GRAIN = Array.from({ length: 6 }, (_, k) => {
+  const c = document.createElement('canvas'); c.width = 480; c.height = 270
+  const x = c.getContext('2d'), d = x.createImageData(480, 270)
+  let s = 1234 + k * 999
+  for (let i = 0; i < d.data.length; i += 4) { s = (s * 16807) % 2147483647; const v = s % 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255 }
+  x.putImageData(d, 0, 0); return c
+})
+
+function measure() {
+  gradRuns()
+  for (const k of toks) { k.o.style.maxWidth = k.nw.style.maxWidth = 'none'; k.wo = k.o.scrollWidth; k.wn = k.nw.scrollWidth }
+  const r = $('#period').getBoundingClientRect(), s = $('#stage').getBoundingClientRect(), sc = s.width / 1920
+  periodXY = [(r.left + r.width * 0.42 - s.left) / sc, (r.top + r.height * 0.78 - s.top) / sc]
+}
+let periodXY = [960, 540]
+
+/* ---------- render ---------- */
+const set = (el, css) => Object.assign(el.style, css)
+const blurF = (id, x, y) => { $(`#${id}g`).setAttribute('stdDeviation', `${x.toFixed(2)} ${y.toFixed(2)}`); return x + y > 0.4 ? `url(#${id})` : 'none' }
+
+function render(t) {
+  // Backdrop
+  const gx = Math.sin(t * 0.45) * 60, gy = Math.cos(t * 0.33) * 40
+  $('#glow').style.background = `radial-gradient(760px 520px at ${1640 + gx}px ${1180 + gy}px, rgba(110,190,170,0.13), transparent 70%), radial-gradient(640px 440px at ${2020 - gx}px ${760 + gy}px, rgba(150,200,185,0.08), transparent 70%), radial-gradient(1100px 600px at ${420 + gy}px ${80 + gx}px, rgba(255,255,255,0.05), transparent 70%), radial-gradient(700px 500px at ${260 - gx}px ${1260}px, rgba(143,220,198,${0.04 + 0.05 * P(t, 12.4, 14)}), transparent 70%)`
+  const gi = Math.floor(t * FPS) % GRAIN.length
+  gctx.drawImage(GRAIN[gi], 0, 0, 1920, 1080)
+
+  // HUD
+  const fr = Math.round(t * FPS)
+  const s = Math.floor(fr / FPS), f = fr % FPS
+  $('#tc').textContent = `00:${String(s).padStart(2, '0')}:${String(f).padStart(2, '0')}`
+  $('#rec').style.opacity = Math.floor(t * 2) % 2 ? 0.25 : 1
+  $('#barFill').style.width = `${(t / DUR) * 100}%`
+  $('#sceneLbl').textContent = t < 1.95 ? 'Reel 001 · open-source agent skills' : t < 5.35 ? '01 · read pages as data' : t < 8.95 ? '02 · architecture diagrams' : t < 12.35 ? '03 · design documents' : 'Keen Skills · by D2 Studio'
+  $('#hud').style.opacity = P(t, 0.1, 0.6)
+
+  // Scene visibility
+  scenes.forEach((sc, i) => { const end = scenes[i + 1] ? scenes[i + 1].start + 0.4 : DUR + 1; sc.el.style.display = t >= sc.start - 0.02 && t <= end ? '' : 'none' })
+
+  // Generic: split words
+  for (const sp of splits) sp.words.forEach((w, i) => {
+    const a = sp.at + i * sp.stagger, p = P(t, a, a + 0.7)
+    w.style.transform = `translateY(${(1 - p) * 140}%) rotate(${(1 - p) * 6}deg)`
+  })
+  // Generic: fx
+  for (const o of fxs) {
+    let p, css = {}
+    const q = clamp((t - o.at) / 0.6)
+    switch (o.fx) {
+      case 'rise': p = E.outExpo(q); css = { opacity: clamp(q * 2.2), transform: `translateY(${(1 - p) * (o.svg ? 10 : 26)}px)` }; break
+      case 'blur': p = E.outExpo(q); css = { opacity: clamp(q * 2), transform: `translateY(${(1 - p) * 14}px)`, filter: `blur(${(1 - p) * 10}px)` }; break
+      case 'pop': p = spring(t - o.at, 260, 16); css = { opacity: clamp(q * 4), transform: `scale(${0.4 + 0.6 * p})` }; break
+      case 'draw': p = E.outCubic(clamp((t - o.at) / 0.4)); css = { strokeDasharray: 1, strokeDashoffset: 1 - p, opacity: t >= o.at ? 1 : 0 }; break
+      case 'line': {
+        p = E.outExpo(q); css = { opacity: clamp(q * 2.5), transform: `translateX(${(1 - p) * 30}px)`, filter: `blur(${(1 - p) * 6}px)` }
+        if (o.fix != null) {
+          const fp = P(t, o.fix, o.fix + 0.3, E.inOutCubic)
+          const st = $('s', o.el); if (st) st.style.transform = `scaleX(${fp})`
+          const x = $('.x', o.el); x.style.color = fp > 0 ? `color-mix(in oklab, #f4f4f5 ${100 - fp * 60}%, #71717a)` : ''
+          const n = $('.n', o.el); const done = t >= o.fix + 0.15
+          n.style.background = done ? 'var(--ok-soft)' : ''; n.style.color = done ? 'var(--ok)' : ''; n.textContent = done ? '✓' : n.dataset.n || (n.dataset.n = n.textContent)
+          if (done) n.style.transform = `scale(${0.6 + 0.4 * spring(t - o.fix - 0.15, 300, 14)})`; else n.style.transform = ''
+        }
+        break
+      }
+    }
+    if (o.out != null && t >= o.out) { const op = P(t, o.out, o.out + 0.25); css.opacity = 1 - op; css.filter = `blur(${op * 8}px)`; css.transform = `translateY(${-op * 12}px)` }
+    set(o.el, css)
+  }
+  // Generic: typing
+  for (const ty of types) {
+    const p = clamp((t - ty.at) / ty.dur), n = Math.round(ty.text.length * p)
+    const caretOn = t >= ty.at - 0.3 && (p < 1 ? true : Math.floor(t * 3) % 2 === 0) && t < ty.at + ty.dur + 0.6
+    ty.el.innerHTML = `<span class="p">$ </span>${ty.text.slice(0, n)}${caretOn ? '<span class="caret"></span>' : ''}`
+  }
+
+  renderS0(t); renderS1(t); renderS2(t); renderS3(t); renderS4(t); renderTransitions(t)
+}
+
+function renderS0(t) {
+  const dot = spring(t - 0.1, 300, 20)
+  const line = P(t, 0.42, 1.0)
+  set($('#dot'), { transform: `scale(${dot * (1 - line)}) `, opacity: line < 1 ? 1 : 0 })
+  set($('#hookLine'), { transform: `scaleX(${line * (1 - P(t, 1.45, 1.8, E.inOutCubic))})` })
+  set($('#wAgents'), { transform: `translateY(${(1 - P(t, 0.55, 1.15)) * 105}%)` })
+  const swap = P(t, 1.32, 1.62, E.inOutCubic)
+  set($('#wGuess'), { transform: `translateY(${(1 - P(t, 0.66, 1.26)) * 105 - swap * 105}%)`, filter: `blur(${swap * 12}px)` })
+  set($('#strike'), { transform: `scaleX(${P(t, 1.06, 1.3, E.inOutCubic)})`, opacity: 1 - P(t, 1.34, 1.5) })
+  set($('#wCheck'), { transform: `translateY(${(1 - P(t, 1.4, 1.85)) * 105}%)`, filter: `blur(${(1 - P(t, 1.4, 1.75)) * 12}px)` })
+  set($('#hookSub'), { opacity: 1 - P(t, 1.5, 1.7) })
+  set($('#hookSub .w'), { transform: `translateY(${(1 - P(t, 0.8, 1.3)) * 105}%)` })
+  // Zoom through the period of "check."
+  const z = P(t, 1.78, 2.12, E.inExpo)
+  const sc = $('#s0')
+  set(sc, { transformOrigin: `${periodXY[0]}px ${periodXY[1]}px`, transform: `scale(${1 + z * 60})`, opacity: 1 - P(t, 2.0, 2.12, E.lin) })
+}
+
+function renderS1(t) {
+  const u = t - 1.85, sc = $('#s1')
+  const enter = P(u, 0, 0.55)
+  const ex = P(u, 3.35, 3.65, E.inExpo)
+  const blurX = ex * 70
+  set(sc, { transform: `translateX(${-ex * 1500}px) scale(${lerp(1.35, 1, enter) * (1 + Math.max(0, u) * 0.006)})`, opacity: clamp(u / 0.18), filter: blurX > 0.4 ? blurF('mb1', blurX, 0) : `blur(${(1 - enter) * 18}px)` })
+  set($('#win'), { transform: `perspective(1600px) rotateY(${lerp(16, 5, P(u, 0, 1.4))}deg) rotateX(${lerp(8, 2, P(u, 0, 1.4))}deg) translateY(${(1 - P(u, 0, 0.8)) * 60}px)` })
+  set($('#t1'), { transform: `translateY(${(1 - P(u, 0.05, 0.8)) * 70}px)`, opacity: P(u, 0.05, 0.4) })
+  const host = 'localhost:3000'
+  $('#host').textContent = host.slice(0, Math.round(host.length * P(u, 0.35, 0.7, E.lin)))
+  const lb = P(u, 0.45, 1.1, E.inOutCubic)
+  set($('#loadbar'), { transform: `scaleX(${lb})`, transformOrigin: '9px 0', opacity: u > 0.45 && u < 1.25 ? 1 - P(u, 1.1, 1.25) : 0 })
+  const spin = $('#spin'); spin.style.opacity = u > 0.45 && u < 1.12 ? 1 : 0; spin.setAttribute('transform', `rotate(${u * 720} 292 24)`)
+  const by = lerp(44 - 46, 284, P(u, 1.2, 2.4, E.lin))
+  const beam = $('#beam'); beam.setAttribute('y', by); beam.style.opacity = u > 1.2 && u < 2.5 ? 1 : 0
+  for (const p of PINS) {
+    const k = spring(u - p.at, 380, 15)
+    p.dot.style.transform = `scale(${k})`; p.dot.style.opacity = u >= p.at ? 1 : 0
+    const r = clamp((u - p.at) / 0.7)
+    p.ring.style.transform = `scale(${1 + E.outCubic(r) * 1.6})`; p.ring.style.opacity = u >= p.at ? (1 - r) : 0
+  }
+}
+
+function edgePath(a, b) {
+  const A = NODES[a], B = NODES[b]
+  let x1, y1, x2, y2, d
+  if (Math.abs(A.cy - B.cy) < 30 && Math.abs(A.cx - B.cx) > 40) {
+    const dir = Math.sign(B.cx - A.cx)
+    x1 = A.cx + dir * (A.cs / 2 + 8); y1 = A.cy; x2 = B.cx - dir * (B.cs / 2 + 12); y2 = B.cy
+    const my = (y1 + y2) / 2
+    d = `M${x1} ${y1} C${(x1 + x2) / 2} ${y1} ${(x1 + x2) / 2} ${y2} ${x2} ${y2}`
+    return { d, x2, y2, ang: dir > 0 ? 0 : 180, mx: (x1 + x2) / 2, my }
+  }
+  const dir = Math.sign(B.cy - A.cy)
+  x1 = A.cx; y1 = A.cy + dir * (A.cs / 2 + (dir > 0 ? 34 : 10)); x2 = B.cx; y2 = B.cy - dir * (B.cs / 2 + (dir > 0 ? 12 : 36))
+  d = `M${x1} ${y1} C${x1} ${(y1 + y2) / 2} ${x2} ${(y1 + y2) / 2} ${x2} ${y2}`
+  return { d, x2, y2, ang: dir > 0 ? 90 : -90, mx: (x1 + x2) / 2, my: (y1 + y2) / 2 }
+}
+
+function renderS2(t) {
+  const v = t - S2, sc = $('#s2')
+  const en = P(v, 0, 0.45)
+  const ex = P(v, 3.6, 3.9, E.inExpo)
+  const bx = (1 - P(v, 0, 0.32)) * 70, by = ex * 70
+  set(sc, { transform: `translateX(${(1 - en) * 1500}px) translateY(${-ex * 1200}px) scale(${1 + Math.max(0, v) * 0.006})`, filter: blurF('mb2', bx, by), opacity: v > -0.01 ? 1 : 0 })
+  set($('#canvas'), { transform: `perspective(1800px) rotateY(${lerp(-12, -3, P(v, 0, 1.6))}deg) translateY(${(1 - P(v, 0.05, 0.8)) * 50}px)` })
+  set($('#t2'), { transform: `translateY(${(1 - P(v, 0.1, 0.85)) * 70}px)`, opacity: P(v, 0.1, 0.45) })
+
+  const sub = $('#sub'); sub.style.strokeDashoffset = 1 - P(v, 0.2, 0.9, E.inOutCubic); sub.style.strokeDasharray = '1'
+  subT.style.opacity = P(v, 0.5, 0.8); vnT.style.opacity = P(v, 0.6, 0.9)
+  $('#vnet').style.opacity = P(v, 0.35, 0.7)
+  // nodes
+  let i = 0
+  for (const [k, n] of Object.entries(NODES)) {
+    const fixP = n.fix ? spring(v - n.fix, 200, 17) : 0
+    n.cx = lerp(n.x, n.fx ?? n.x, fixP); n.cy = lerp(n.y, n.fy ?? n.y, fixP); n.cs = lerp(n.s, n.fs ?? n.s, fixP)
+    const ap = spring(v - (0.3 + i * 0.07), 260, 15)
+    const sz = n.cs
+    n.r.setAttribute('x', n.cx - sz / 2); n.r.setAttribute('y', n.cy - sz / 2); n.r.setAttribute('width', sz); n.r.setAttribute('height', sz)
+    n.t.setAttribute('x', n.cx); n.t.setAttribute('y', n.cy + sz * 0.11); n.t.setAttribute('font-size', sz * (n.g.length > 2 ? 0.27 : 0.34))
+    n.g0.setAttribute('transform', `translate(${n.cx} ${n.cy}) scale(${Math.max(0.001, ap)}) translate(${-n.cx} ${-n.cy})`)
+    n.g0.style.opacity = clamp((v - (0.3 + i * 0.07)) * 6)
+    n.l.setAttribute('x', n.cx); n.l.setAttribute('y', n.cy + sz / 2 + 22); n.l.style.opacity = P(v, 0.45 + i * 0.07, 0.75 + i * 0.07)
+    i++
+  }
+  // edges
+  EDGES.forEach((e, j) => {
+    const g = edgePath(e[0], e[1])
+    e.path.setAttribute('d', g.d)
+    const dp = P(v, 0.75 + j * 0.06, 1.15 + j * 0.06, E.inOutCubic)
+    e.path.setAttribute('pathLength', 1)
+    if (j === 5) { e.path.style.strokeDasharray = '0.02 0.02'; e.path.style.opacity = dp } else { e.path.style.strokeDasharray = `${dp} 1` }
+    e.head.setAttribute('d', 'M0 0L-10 -5.5L-10 5.5Z'); e.head.setAttribute('transform', `translate(${g.x2 + (g.ang === 0 ? 10 : g.ang === 180 ? -10 : 0)} ${g.y2 + (g.ang === 90 ? 10 : g.ang === -90 ? -10 : 0)}) rotate(${g.ang})`)
+    e.head.style.opacity = dp > 0.95 ? 1 : 0
+    if (e.badge) { const bp = spring(v - (1.0 + j * 0.06), 300, 15); e.badge.setAttribute('transform', `translate(${g.mx} ${g.my - 18}) scale(${Math.max(0.001, bp)})`) }
+  })
+  // issue overlays: red on lint, green on fix, then gone
+  const tone = (fix) => (v >= fix ? 'oklch(0.86 0.09 170)' : 'oklch(0.76 0.12 32)')
+  const vis = (on, fix) => P(v, on, on + 0.2) * (1 - P(v, fix + 0.25, fix + 0.5))
+  const pulse = 0.75 + 0.25 * Math.sin(v * 14)
+  const U = NODES.users
+  set(hUsers, {}); hUsers.setAttribute('x', U.cx - U.cs / 2 - 10); hUsers.setAttribute('y', U.cy - U.cs / 2 - 10); hUsers.setAttribute('width', U.cs + 20); hUsers.setAttribute('height', U.cs + 20)
+  hUsers.setAttribute('stroke', tone(1.75)); hUsers.style.opacity = vis(1.28, 1.75) * pulse
+  hBase.setAttribute('stroke', tone(1.9)); hBase.style.opacity = vis(1.44, 1.9) * pulse; hBaseT.setAttribute('fill', tone(1.9)); hBaseT.style.opacity = vis(1.44, 1.9)
+  hOver.setAttribute('stroke', tone(2.05)); hOver.style.opacity = vis(1.36, 2.05) * pulse; hOverT.setAttribute('fill', tone(2.05)); hOverT.style.opacity = vis(1.36, 2.05)
+  hatchArea.style.opacity = P(v, 1.52, 1.72) * (1 - P(v, 2.2, 2.35))
+  hWsT.setAttribute('fill', 'oklch(0.76 0.12 32)'); hWsT.style.opacity = P(v, 1.52, 1.72) * (1 - P(v, 2.2, 2.3))
+  const lg = spring(v - 2.2, 220, 18)
+  legend.setAttribute('transform', `translate(0 ${(1 - lg) * 40})`); legend.style.opacity = clamp((v - 2.2) * 5)
+  // The real render wipes up over the canvas
+  const rv = P(v, 2.75, 3.15, E.inOutExpo)
+  set($('#render'), { clipPath: `inset(${(1 - rv) * 100}% 0 0 0 round 22px)` })
+  set($('#render img'), { transform: `scale(${lerp(1.15, 1.0, P(v, 2.75, 3.7))})` })
+  set($('#renderTag'), { opacity: P(v, 3.0, 3.2), transform: `translateY(${(1 - P(v, 3.0, 3.4)) * 14}px)` })
+  $$('#files span').forEach((s, j) => set(s, { transform: `scale(${0.4 + 0.6 * spring(v - 3.1 - j * 0.07, 300, 15)})`, opacity: clamp((v - 3.1 - j * 0.07) * 6) }))
+}
+
+function renderS3(t) {
+  const w = t - 8.8, sc = $('#s3')
+  const en = P(w, 0, 0.45)
+  const ex = P(w, 3.4, 3.7, E.inOutCubic)
+  const by = (1 - P(w, 0, 0.32)) * 70
+  set(sc, { transform: `translateY(${(1 - en) * 1200}px) scale(${(1 - ex * 0.18) * (1 + Math.max(0, w) * 0.006)})`, filter: by > 0.4 ? blurF('mb3', 0, by) : `blur(${ex * 22}px)`, opacity: 1 - ex })
+  const pr = P(w, 0.05, 1.0)
+  set($('#pg1'), { transform: `rotateX(${lerp(24, 7, pr)}deg) rotateZ(${lerp(-7, -2.5, pr)}deg) translateY(${(1 - pr) * 120}px)` })
+  set($('#pg2'), { transform: `rotateX(${lerp(24, 7, pr)}deg) rotateZ(${lerp(-7, -6, pr)}deg) translate(${lerp(0, -30, pr)}px, ${(1 - pr) * 140 + 10}px)` })
+  set($('#pg3'), { transform: `rotateX(${lerp(24, 7, pr)}deg) rotateZ(${lerp(-7, -9.5, pr)}deg) translate(${lerp(0, -58, pr)}px, ${(1 - pr) * 160 + 22}px)` })
+  set($('#t3'), { transform: `translateY(${(1 - P(w, 0.1, 0.85)) * 70}px)`, opacity: P(w, 0.1, 0.45) })
+  for (const k of toks) {
+    const flag = P(t, k.flag, k.flag + 0.35, E.outCubic)
+    const fix = P(t, k.fix, k.fix + 0.45, E.inOutExpo)
+    k.o.style.backgroundSize = `${flag * 100}% 46%`
+    k.o.style.maxWidth = `${k.wo * (1 - fix)}px`
+    k.o.style.opacity = 1 - fix
+    k.o.style.filter = `blur(${fix * 6}px)`
+    k.nw.style.maxWidth = `${k.wn * fix}px`
+    k.nw.style.backgroundSize = `100% ${46 * (1 - P(t, k.fix + 0.7, k.fix + 1.2))}%`
+  }
+}
+
+function renderS4(t) {
+  const x = t - 12.2, sc = $('#s4')
+  sc.style.opacity = P(x, 0.15, 0.4)
+  PILL.forEach((p, i) => {
+    const a = 0.2 + i * 0.08
+    const inP = spring(x - a, 240, 17)
+    const flip = P(x, 0.55 + i * 0.08, 0.9 + i * 0.08, E.inOutCubic)
+    const go = P(x, 1.08 + i * 0.04, 1.38 + i * 0.04, E.inExpo)
+    set(p.f, { transform: `translateY(${(1 - inP) * 120 - go * 260}px) rotateX(${flip < 1 ? flip * 180 : 0}deg) scale(${1 - go * 0.4})`, opacity: clamp((x - a) * 5) * (1 - go), filter: go > 0.01 ? `blur(${go * 14}px)` : 'none' })
+    // Opacity or filter on .flip would flatten its 3D, so pick the visible face by hand.
+    p.f1.style.opacity = flip < 0.5 ? 1 : 0; p.f2.style.opacity = flip < 0.5 ? 0 : 1
+    // Flip done: drop the rotation so fading the pill (which flattens 3D) keeps the green face.
+    p.f2.style.transform = flip < 1 ? '' : 'none'
+    const r = clamp((x - 0.9 - i * 0.08) / 0.6)
+    set(p.ring, { transform: `rotateX(${flip < 1 ? 180 : 0}deg) scale(${1 + E.outCubic(r) * 0.35})`, opacity: x >= 0.9 + i * 0.08 ? 1 - r : 0 })
+    set(p.cap, { transform: `rotateX(${flip > 0.5 ? 180 : 0}deg)`, opacity: 1 - P(x, 0.55, 0.75) })
+  })
+  const lg = spring(x - 1.12, 260, 14)
+  set($('#logo'), { transform: `scale(${lg}) rotate(${(1 - lg) * -40}deg)`, opacity: clamp((x - 1.12) * 6) })
+}
+
+function renderTransitions(t) {
+  // Light streak through each whip
+  const whips = [[5.15, 5.6, 1], [8.75, 9.2, 1], [12.15, 12.6, -1]]
+  let op = 0, xPos = 0
+  for (const [a, b, d] of whips) { if (t >= a && t <= b) { const p = (t - a) / (b - a); op = Math.sin(Math.PI * p); xPos = d > 0 ? lerp(2200, -400, p) : lerp(-400, 2200, p) } }
+  set($('#streak'), { opacity: op * 0.9, transform: `translateX(${xPos}px) skewX(-14deg)` })
+  $('#flash').style.opacity = 0.35 * bell(t, 1.98, 2.25) + 0.18 * bell(t, 12.45, 12.75)
+}
+
+/* ---------- boot ---------- */
+window.render = render
+window.ready = (async () => {
+  await document.fonts.ready
+  await Promise.all($$('img').map((i) => (i.complete ? 0 : new Promise((r) => (i.onload = i.onerror = r)))))
+  measure()
+  render(0)
+  return true
+})()
+
+// Preview: play in a loop, scaled to the window. ?t=7.5 freezes a frame.
+const q = new URLSearchParams(location.search)
+if (!q.has('render')) {
+  window.ready.then(() => {
+    const fit = () => { const k = Math.min(innerWidth / 1920, innerHeight / 1080); $('#stage').style.transform = `scale(${k})` }
+    fit(); addEventListener('resize', fit)
+    if (q.has('t')) return render(+q.get('t'))
+    const t0 = performance.now()
+    const loop = (now) => { render(((now - t0) / 1000) % DUR); requestAnimationFrame(loop) }
+    requestAnimationFrame(loop)
+  })
+}
+</script>
+</body>
+</html>

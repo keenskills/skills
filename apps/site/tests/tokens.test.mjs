@@ -10,6 +10,8 @@ const tokens = (text) => Object.fromEntries([...text.matchAll(/--([a-z-]+):\s*ok
   const [L, C, H] = lch.trim().split(/\s+/).map(Number)
   return [k, { L, C, H, a: alpha ? Number(alpha) : 1 }]
 }))
+// Dark warn text is the warn fill itself (`--warn-ink: var(--warn)`); light has its own darker shade.
+const withAliases = (t) => ({ 'warn-ink': t.warn, ...t })
 
 // OKLCH → gamma-encoded sRGB (browsers composite alpha in gamma space).
 function srgb({ L, C, H }) {
@@ -28,13 +30,13 @@ const contrast = (x, y) => {
   return (a + 0.05) / (b + 0.05)
 }
 
-for (const [theme, t] of [['light', tokens(block(':root'))], ['dark', tokens(block(':root[data-theme="dark"]'))]]) {
+for (const [theme, t] of [['light', withAliases(tokens(block(':root')))], ['dark', withAliases(tokens(block(':root[data-theme="dark"]')))]]) {
   describe(`${theme} tokens`, () => {
     const on = (fg, bg) => contrast(over(t[fg], t[bg]), srgb(t[bg]))
     for (const [fg, bg] of [
       ['text', 'bg'], ['text', 'surface'], ['muted', 'bg'], ['muted', 'surface'], ['muted', 'code'],
       ['accent', 'bg'], ['accent', 'surface'],
-      ['danger', 'bg'], ['danger', 'code'], ['warn', 'bg'], ['warn', 'code'], ['ok', 'bg'], ['ok', 'code'],
+      ['danger', 'bg'], ['danger', 'code'], ['warn-ink', 'bg'], ['warn-ink', 'code'], ['ok', 'bg'], ['ok', 'code'],
     ]) {
       it(`${fg} on ${bg} is at least 4.5:1`, () => assert.ok(on(fg, bg) >= 4.5, on(fg, bg).toFixed(2)))
     }
@@ -43,9 +45,9 @@ for (const [theme, t] of [['light', tokens(block(':root'))], ['dark', tokens(blo
       const ratio = contrast(srgb(t.accent), tint)
       assert.ok(ratio >= 4.5, ratio.toFixed(2))
     })
-    for (const s of ['danger', 'warn', 'ok']) {
+    for (const [s, ink] of [['danger', 'danger'], ['warn', 'warn-ink'], ['ok', 'ok']]) {
       it(`${s} text on its own soft tint is at least 4.5:1`, () => {
-        const ratio = contrast(srgb(t[s]), over(t[`${s}-soft`], t.surface))
+        const ratio = contrast(srgb(t[ink]), over(t[`${s}-soft`], t.surface))
         assert.ok(ratio >= 4.5, ratio.toFixed(2))
       })
     }

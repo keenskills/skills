@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { FileCheck, MessageText, TerminalSquare } from 'reicon-react'
+import { AgentLogo } from '@/components/agent-logo'
 import { HeroReveal } from '@/components/hero-reveal'
 import { DiagramDraw } from '@/components/illustrations/diagram-draw'
 import { DocCheck } from '@/components/illustrations/doc-check'
@@ -17,9 +19,9 @@ import { agents, skills } from '@/lib/content'
 export const metadata: Metadata = pageMeta({ path: '/' })
 
 const STEPS = [
-  { title: 'Install the skill', body: 'Run init in your project. It finds the agents you use and writes the skill in each one’s own format.' },
-  { title: 'Ask your agent', body: 'Say what you need in plain words: check this page on a phone, draw this system on one A4 page, or write the design document on our template.' },
-  { title: 'Get real output', body: 'Your agent reads the page as data, builds a draw.io file with PNG and PDF, or writes a Word document, and fixes what its checks find.' },
+  { icon: TerminalSquare, title: 'Install the skill', body: 'Run init in your project. It finds the agents you use and writes the skill in each one’s own format.' },
+  { icon: MessageText, title: 'Ask your agent', body: 'Say what you need in plain words: check this page on a phone, draw this system on one A4 page, or write the design document on our template.' },
+  { icon: FileCheck, title: 'Get real output', body: 'Your agent reads the page as data, builds a draw.io file with PNG and PDF, or writes a Word document, and fixes what its checks find.' },
 ]
 
 const FAQS = [
@@ -72,10 +74,10 @@ export default function Home() {
         </p>
         </HeroReveal>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="#skills" className="rounded-lg bg-text px-4 py-2 text-sm font-medium text-bg">
+          <Link href="#skills" className="inline-flex h-9 items-center rounded-lg bg-text px-4 text-sm font-medium text-bg pt-0.5">
             Browse skills
           </Link>
-          <Link href="/how-to-use" className="rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium">
+          <Link href="/how-to-use" className="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-4 text-sm font-medium pt-0.5">
             How to use
           </Link>
         </div>
@@ -133,9 +135,11 @@ export default function Home() {
           Three steps, no setup
         </h2>
         <ol className="mt-8 grid gap-8 md:grid-cols-3">
-          {STEPS.map((s, i) => (
+          {STEPS.map((s) => (
             <li key={s.title}>
-              <span className="flex size-7 items-center justify-center rounded-full bg-accent-soft text-sm font-medium text-accent">{i + 1}</span>
+              <span className="flex size-8 items-center justify-center rounded-full bg-accent-soft text-accent">
+                <s.icon size={18} weight="Filled" aria-hidden="true" />
+              </span>
               <h3 className="mt-3 font-medium">{s.title}</h3>
               <p className="mt-1.5 text-sm text-muted text-pretty">{s.body}</p>
             </li>
@@ -149,7 +153,8 @@ export default function Home() {
         </h2>
         <ul className="mt-6 flex flex-wrap gap-2">
           {agents.map((a) => (
-            <li key={a.id} className="rounded-full border border-border bg-surface px-3 py-1 text-sm">
+            <li key={a.id} className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-sm">
+              <AgentLogo id={a.id} />
               {a.label}
             </li>
           ))}

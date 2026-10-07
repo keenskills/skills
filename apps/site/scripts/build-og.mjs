@@ -11,7 +11,7 @@ import { SITE, ogImage } from '../lib/site.mjs'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const { skills } = JSON.parse(readFileSync(join(root, '.generated/content.json'), 'utf8'))
-const icon = `data:image/png;base64,${readFileSync(join(root, 'app/icon.png')).toString('base64')}`
+const icon = `data:image/png;base64,${readFileSync(join(root, 'public/icon-light.png')).toString('base64')}`
 const esc = (s) => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
 const CHROME = [process.env.CHROME_PATH, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].find((p) => p && existsSync(p))

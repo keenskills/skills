@@ -8,7 +8,7 @@ import { Command, TerminalReplay } from './terminal-replay'
 type Read = { command: string; output: string; exit: number; screenshot: { src: string; width: number; height: number } }
 export type PadShowcase = { fixture: string; widths: number[]; read: Record<string, Read>; check: { command: string; output: string; exit: number } }
 
-const TONE: Record<string, string> = { error: 'text-danger', warning: 'text-warn', section: 'mt-3 text-muted', title: 'text-muted' }
+const TONE: Record<string, string> = { error: 'text-danger', warning: 'text-warn-ink', section: 'mt-3 text-muted', title: 'text-muted' }
 
 // Each kind of problem the read lists, counted, in the order it first appears.
 const NOUN: Record<string, [string, string]> = {

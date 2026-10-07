@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Keen Skills Showreel</title>
+<!--
+  Brand: Keen Skills
+  Concept: keen means sharp. A four-point spark is the agent's sense: it is born,
+  cuts the screen, then leads each skill (scan line, pen tip, writing cursor) and
+  lands as the mark beside the name.
+  15 s, 1920x1080, 128 BPM: 32 beats, every cut on a beat. Flat solid colour only.
+  Every frame is a pure function of t, so record.mjs can seek to any frame.
+-->
+<style>
+/* Mona Sans (OFL), installed locally. A full weight range stops Chrome from faking bold. */
+@font-face { font-family: KSN; font-weight: 100 900; src: local('Mona-Sans-BlackNarrow'), local('Mona-Sans Black Narrow'); }
+@font-face { font-family: KSB; font-weight: 100 900; src: local('Mona-Sans-Black'), local('Mona-Sans Black'); }
+@font-face { font-family: KSM; font-weight: 100 900; src: local('Mona-Sans-SemiBold'), local('Mona-Sans SemiBold'); }
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+canvas { display: block; width: 100vw; height: 100vh; object-fit: contain; }
+</style>
+</head>
+<body>
+<canvas id="view" width="1920" height="1080"></canvas>
+<script>
+'use strict'
+const W = 1920, H = 1080, B = 0.46875, DUR = 15
+const C = { ink: '#0E0E10', paper: '#F4EFE4', orange: '#FF4B1F', blue: '#2B3BFF', blueD: '#1722B0', yellow: '#FFD21F', pink: '#FF5FA2', grey: '#A39C8E', dim: '#E2DACA' }
+const N = 'KSN', K = 'KSB', M = 'KSM', MONO = "ui-monospace, 'SF Mono', Menlo, monospace"
+
+const view = document.getElementById('view'), vctx = view.getContext('2d')
+const off = document.createElement('canvas'); off.width = W; off.height = H
+const ctx = off.getContext('2d')
+
+// ---- time and easing (all times are in beats) ----
+const cl = (x, a = 0, b = 1) => (x < a ? a : x > b ? b : x)
+const pr = (b, start, dur) => cl((b - start) / dur)
+const mix = (a, b, k) => a + (b - a) * k
+const out = (k, n = 3) => 1 - (1 - k) ** n
+const inn = (k, n = 3) => k ** n
+const io = (k, n = 3) => (k < 0.5 ? 2 ** (n - 1) * k ** n : 1 - (-2 * k + 2) ** n / 2)
+const back = (k, s = 1.7) => 1 + (s + 1) * (k - 1) ** 3 + s * (k - 1) ** 2
+const spring = (k, f = 2, d = 5) => (k <= 0 ? 0 : k >= 1 ? 1 : 1 - Math.exp(-d * k) * Math.cos(f * 2 * Math.PI * k))
+const pop = (b, a, d = 0.45) => back(pr(b, a, d))
+
+// ---- drawing primitives ----
+function rr(x, y, w, h, r, c) { if (w <= 0 || h <= 0) return; ctx.beginPath(); ctx.roundRect(x, y, w, h, Math.min(r, w / 2, h / 2)); ctx.fillStyle = c; ctx.fill() }
+function circ(x, y, r, c) { if (r <= 0) return; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = c; ctx.fill() }
+function at(x, y, s, rot, fn) { if (s <= 0) return; ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot); ctx.scale(s, s); fn(); ctx.restore() }
+function star(x, y, r, rot, q = 0.14) {
+  const c = q * r
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.beginPath(); ctx.moveTo(0, -r)
+  ctx.quadraticCurveTo(c, -c, r, 0); ctx.quadraticCurveTo(c, c, 0, r); ctx.quadraticCurveTo(-c, c, -r, 0); ctx.quadraticCurveTo(-c, -c, 0, -r)
+  ctx.closePath(); ctx.restore()
+}
+function spark(x, y, r, rot, c, q) { if (r <= 0) return; star(x, y, r, rot, q); ctx.fillStyle = c; ctx.fill() }
+// Radial dashes: the head leaves first, the tail catches up.
+function burst(b, a, x, y, r0, r1, n, colors, lw = 10, d = 0.8) {
+  const k = pr(b, a, d); if (k <= 0 || k >= 1) return
+  const head = mix(r0, r1, out(k, 4)), tail = mix(r0, r1, out(k, 1.5))
+  ctx.lineCap = 'round'; ctx.lineWidth = lw
+  for (let i = 0; i < n; i++) {
+    const g = (i / n) * Math.PI * 2 + 0.26
+    ctx.beginPath(); ctx.moveTo(x + Math.cos(g) * tail, y + Math.sin(g) * tail); ctx.lineTo(x + Math.cos(g) * head, y + Math.sin(g) * head)
+    ctx.strokeStyle = colors[i % colors.length]; ctx.stroke()
+  }
+}
+function tick(b, a, x, y, r, c = C.blue) {
+  at(x, y, pop(b, a, 0.4), 0, () => {
+    circ(0, 0, r, c)
+    ctx.beginPath(); ctx.moveTo(-r * 0.42, 0.02 * r); ctx.lineTo(-r * 0.1, r * 0.32); ctx.lineTo(r * 0.45, -r * 0.3)
+    ctx.lineWidth = r * 0.24; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = C.paper; ctx.stroke()
+  })
+}
+function marker(b, a, x, y, n) {
+  const k = pr(b, a, 0.7)
+  if (k > 0 && k < 1) { ctx.beginPath(); ctx.arc(x, y, mix(30, 84, out(k, 3)), 0, 7); ctx.lineWidth = mix(12, 0, k); ctx.strokeStyle = C.orange; ctx.stroke() }
+  at(x, y, pop(b, a), 0, () => { circ(0, 0, 28, C.orange); txt(n, 0, 2, K, 30, C.paper, 'center', 'middle') })
+}
+// A polyline drawn up to k of its length. Returns the head point.
+function trace(pts, k, color, lw, arrow = 0) {
+  if (k <= 0) return null
+  const seg = []; let len = 0
+  for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); seg.push(d); len += d }
+  let rem = len * k, hx = pts[0][0], hy = pts[0][1], ang = 0
+  ctx.beginPath(); ctx.moveTo(hx, hy)
+  for (let i = 0; i < seg.length && rem > 0; i++) {
+    const f = Math.min(1, rem / seg[i])
+    hx = mix(pts[i][0], pts[i + 1][0], f); hy = mix(pts[i][1], pts[i + 1][1], f)
+    ang = Math.atan2(pts[i + 1][1] - pts[i][1], pts[i + 1][0] - pts[i][0]); ctx.lineTo(hx, hy); rem -= seg[i]
+  }
+  ctx.lineWidth = lw; ctx.strokeStyle = color; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke()
+  at(hx, hy, arrow, ang, () => { ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(-12, -12); ctx.lineTo(-12, 12); ctx.closePath(); ctx.fillStyle = color; ctx.fill() })
+  return [hx, hy]
+}
+// A dash pattern that stops after k of len, so a dashed outline can draw itself on.
+function dashUpTo(len, k, on = 14, gap = 12) { const d = []; for (let L = len * k; L > 0; L -= on + gap) d.push(Math.min(on, L), gap); d.push(0, 1e5); return d }
+
+// ---- type ----
+function setFont(fam, size, wt = 900, ls = 0) { ctx.font = `${wt} ${size}px ${fam}`; ctx.letterSpacing = `${ls * size}px` }
+function txt(s, x, y, fam, size, color, align = 'left', base = 'alphabetic', wt = 900) {
+  setFont(fam, size, wt); ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = base; ctx.fillText(s, x, y)
+}
+const advCache = new Map()
+function adv(s, fam, size, wt, ls) {
+  const key = [s, fam, size, wt, ls].join('|'); let a = advCache.get(key)
+  if (!a) { setFont(fam, size, wt, ls); a = []; for (let i = 0; i <= s.length; i++) a.push(ctx.measureText(s.slice(0, i)).width); advCache.set(key, a) }
+  return a
+}
+const width = (s, fam, size, wt = 900, ls = 0) => adv(s, fam, size, wt, ls)[s.length]
+const fit = (s, fam, w, wt = 900, ls = 0) => (100 * w) / width(s, fam, 100, wt, ls)
+// Letters (or words) rise out of a mask from beat o.a; o.out sends them on up and away.
+function rise(b, s, x, y, o) {
+  const { fam = N, size, wt = 900, ls = 0, color = C.paper, a = 0, st = 0.04, d = 0.55, align = 'left', word = false } = o
+  const px = adv(s, fam, size, wt, ls), w = px[s.length]
+  const x0 = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x
+  if (b < a) return w
+  setFont(fam, size, wt, ls); ctx.fillStyle = color; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'
+  ctx.save(); ctx.beginPath(); ctx.rect(x0 - size * 0.2, y - size * 0.82, w + size * 0.4, size * 1.08); ctx.clip()
+  let wi = 0
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === ' ') { wi++; continue }
+    const n = word ? wi : i
+    let dy = (1 - out(pr(b, a + n * st, d), 4)) * size * 1.1
+    if (o.out != null) dy -= inn(pr(b, o.out + n * st * 0.5, 0.35), 3) * size * 1.1
+    ctx.fillText(s[i], x0 + px[i], y + dy)
+  }
+  ctx.restore()
+  return w
+}
+// A justified stack: each line is sized to fill the column. Returns the stack's bottom.
+function lockup(b, a, lines, x, w, colors, idx, pkg, fg) {
+  const gap = 28, sz = lines.map((s) => fit(s, N, w)), cap = sz.map((s) => s * 0.73)
+  let y = (H - cap.reduce((p, c) => p + c, 0) - gap * (lines.length - 1)) / 2
+  rise(b, idx, x + 4, y - 42, { fam: MONO, size: 24, wt: 700, color: fg, a, st: 0.02 })
+  lines.forEach((s, i) => { y += cap[i]; rise(b, s, x, y, { size: sz[i], color: colors[i], a: a + 0.08 + i * 0.14, st: 0.035 }); y += gap })
+  y -= gap
+  rise(b, pkg, x + 4, y + 62, { fam: MONO, size: 24, wt: 700, color: fg, a: a + 0.5, st: 0.012 })
+  return y
+}
+
+// ---- wipes ----
+function bandDown(k) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, k * (H + 260)); ctx.lineTo(0, k * (H + 260) - 260); ctx.closePath() }
+function bandAcross(k) { const x = mix(-500, W + 500, k); ctx.beginPath(); ctx.moveTo(-10, -10); ctx.lineTo(x + 250, -10); ctx.lineTo(x - 250, H + 10); ctx.lineTo(-10, H + 10); ctx.closePath() }
+// Solid bands follow each other across; the last one is a window onto the next scene.
+function wipe(b, a, path, colors, next) {
+  colors.forEach((c, i) => { const k = io(pr(b, a + i * 0.1, 0.5), 3); if (k > 0) { path(k); ctx.fillStyle = c; ctx.fill() } })
+  const k = io(pr(b, a + colors.length * 0.1, 0.5), 3)
+  if (k > 0) { ctx.save(); path(k); ctx.clip(); next(b); ctx.restore() }
+}
+
+// ---- A. hook, beats 0-6: the spark is born, the word is cut, the tagline lands ----
+const HOOK = (() => {
+  const size = fit('SHARPER', N, 1480), cap = size * 0.73
+  return { size, cap, by: H / 2 + cap / 2, ax: W / 2 + 740 + 46, ay: H / 2 - cap / 2 - 34, sx: W / 2 + width('SENSES', N, size) / 2 + 60, sy: 640 - cap - 6 }
+})()
+function hook(b) {
+  const G = HOOK, th = -0.17, tn = Math.tan(th)
+  if (b >= 2) {
+    ctx.fillStyle = C.orange; ctx.fillRect(0, 0, W, H)
+    rise(b, 'SENSES', W / 2, 640, { size: G.size, color: C.ink, a: 3.12, st: 0.05, align: 'center' })
+    rise(b, 'FOR YOUR CODING AGENT', W / 2, 778, { fam: K, size: 64, ls: 0.02, color: C.ink, a: 4, st: 0.1, word: true, align: 'center' })
+    const s = pop(b, 3.75) * mix(1, 0.5, io(pr(b, 5.1, 0.35), 2))
+    if (b < 5.45) spark(G.sx, G.sy, 50 * s, b * 0.5, C.paper)
+  }
+  if (b >= 3.6) return
+  // The ink layer in two halves along the cut: nudged apart by the blade, then thrown off.
+  const shift = out(pr(b, 2.12, 0.3), 4) * 26 + inn(pr(b, 3, 0.6), 3) * 2400
+  for (const top of [1, 0]) {
+    const d = (top ? 1 : -1) * shift, far = top ? -2 * H : 3 * H
+    ctx.save(); ctx.translate(d * Math.cos(th), d * Math.sin(th))
+    ctx.beginPath(); ctx.moveTo(-3 * W, H / 2 - 3.5 * W * tn); ctx.lineTo(4 * W, H / 2 + 3.5 * W * tn); ctx.lineTo(4 * W, far); ctx.lineTo(-3 * W, far); ctx.clip()
+    ctx.fillStyle = C.ink; ctx.fillRect(top ? 0 : -3 * W, -2 * H, 4 * W, 5 * H)
+    rise(b, 'SHARPER', W / 2, G.by, { size: G.size, a: 1, st: 0.045, d: 0.5, align: 'center' })
+    const k = out(pr(b, 1, 0.5), 4)
+    burst(b, 0.05, W / 2, H / 2, 120, 300, 8, [C.paper], 12, 0.9)
+    spark(mix(W / 2, G.ax, k), mix(H / 2, G.ay, k), spring(pr(b, 0, 1.1), 1.6, 5) * mix(96, 50, k), -1.6 * (1 - out(pr(b, 0, 0.9), 3)) + b * 0.4, C.orange)
+    ctx.restore()
+  }
+  const head = mix(-300, W + 600, out(pr(b, 2, 0.3), 2)), tail = mix(-300, W + 600, pr(b, 2.05, 0.36))
+  if (b >= 2 && head > tail) {
+    const y = (x) => H / 2 + (x - W / 2) * tn
+    ctx.beginPath(); ctx.moveTo(tail, y(tail)); ctx.lineTo(head, y(head) - 10); ctx.lineTo(head + 40, y(head + 40)); ctx.lineTo(head, y(head) + 10); ctx.closePath()
+    ctx.fillStyle = C.paper; ctx.fill()
+  }
+}
+// The spark blows up into a blue diamond that swallows the frame.
+function iris(b) {
+  const k = pr(b, 5.45, 0.55)
+  star(HOOK.sx, HOOK.sy, 25 * Math.exp(k * Math.log(3400 / 25)), b * 0.5 + k * 1.3, mix(0.14, 0.5, k))
+}
+
+// ---- B. page-as-data, beats 6-12: a scan turns pixels into structure, then flags what broke ----
+const scanY = (b) => (b < 7.25 ? 0 : 748 * io(pr(b, 7.25, 2), 2))
+const crossB = (y) => { const f = y / 748; return 7.25 + 2 * (f < 0.5 ? Math.sqrt(f / 2) : 1 - Math.sqrt((1 - f) / 2)) }
+function see(b) {
+  ctx.fillStyle = C.blue; ctx.fillRect(0, 0, W, H)
+  lockup(b, 6.05, ['READS', 'PAGES', 'AS DATA'], 110, 660, [C.paper, C.paper, b >= 7.25 ? C.yellow : C.paper], '01 / 03', '@keenskills/page-as-data', C.paper)
+
+  const ys = scanY(b)
+  ctx.save(); ctx.translate(1090, 540 + (1 - back(pr(b, 6.05, 0.8), 1.1)) * 1100); ctx.rotate((1 - spring(pr(b, 6.05, 1.6), 1.4, 5)) * 0.2)
+  rr(-182, -372, 400, 780, 56, C.blueD); rr(-200, -390, 400, 780, 56, C.ink)
+  ctx.save(); ctx.beginPath(); ctx.roundRect(-184, -374, 368, 748, 42); ctx.fillStyle = C.paper; ctx.fill(); ctx.clip(); ctx.translate(-184, -374)
+  // below the scan line: the page as a picture
+  ctx.save(); ctx.beginPath(); ctx.rect(0, ys, 368, 748 - ys); ctx.clip()
+  circ(38, 46, 13, C.ink); rr(274, 38, 60, 16, 8, C.ink)
+  rr(24, 84, 320, 190, 18, C.orange); circ(272, 138, 24, C.yellow)
+  ctx.beginPath(); ctx.moveTo(24, 274); ctx.lineTo(130, 150); ctx.lineTo(200, 230); ctx.lineTo(240, 190); ctx.lineTo(320, 274); ctx.closePath(); ctx.fillStyle = C.ink; ctx.fill()
+  rr(24, 304, 290, 28, 8, C.ink); rr(24, 344, 200, 28, 8, C.ink)
+  ;[320, 300, 220].forEach((w, i) => rr(24, 398 + i * 24, w, 12, 6, C.grey))
+  rr(24, 500, 420, 72, 20, C.blue); rr(64, 528, 170, 16, 8, C.paper)
+  rr(24, 612, 320, 112, 18, C.dim)
+  ctx.restore()
+  // above it: the page as data
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, 368, ys); ctx.clip()
+  ctx.lineWidth = 4; ctx.strokeStyle = C.ink
+  for (const [x, y, w, h, tag] of [[20, 22, 328, 48, 'nav'], [24, 84, 320, 190, 'img'], [24, 300, 290, 76, 'h1'], [24, 390, 320, 76, 'p'], [24, 500, 420, 72, 'button'], [24, 612, 320, 112, 'div']]) {
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 12); ctx.stroke(); txt(tag, x + 14, y + 30, MONO, 20, C.ink, 'left', 'alphabetic', 700)
+  }
+  ctx.beginPath(); ctx.moveTo(250, 200); ctx.lineTo(310, 250); ctx.moveTo(310, 200); ctx.lineTo(250, 250); ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.strokeStyle = C.orange; ctx.stroke()
+  ctx.restore(); ctx.restore()
+  // the button's hidden overflow, outside the phone
+  const ov = out(pr(b, crossB(540), 0.3), 4)
+  if (ov > 0) { ctx.beginPath(); ctx.roundRect(184, 126, 76 * ov, 72, [0, 20, 20, 0]); ctx.setLineDash([12, 9]); ctx.lineWidth = 5; ctx.strokeStyle = C.orange; ctx.stroke(); ctx.setLineDash([]) }
+  const sw = out(pr(b, 7.05, 0.25), 3) * (1 - inn(pr(b, 9.25, 0.25), 3))
+  if (b >= 7.05 && sw > 0) { rr(-250 * sw, -374 + ys - 6, 500 * sw, 12, 6, C.yellow); spark(268 * sw, -374 + ys, 30 * sw, b * 2.4, C.yellow) }
+  marker(b, 9.5, 160, -290, '1'); marker(b, 10, 268, 162, '2'); marker(b, 10.5, 192, -384, '3')
+  ctx.restore()
+
+  // the readout
+  const tx = 1370 + (1 - out(pr(b, 6.45, 0.7), 4)) * 700, ty = 230
+  rr(tx + 18, ty + 18, 460, 620, 30, C.blueD); rr(tx, ty, 460, 620, 30, C.ink)
+  ;[C.orange, C.yellow, C.paper].forEach((c, i) => circ(tx + 36 + i * 24, ty + 36, 7, c))
+  const cmd = '$ page-as-data read --width 390'
+  txt(cmd.slice(0, Math.floor(pr(b, 6.9, 0.6) * cmd.length)), tx + 28, ty + 104, MONO, 19, C.paper, 'left', 'alphabetic', 700)
+  const rows = [
+    [crossB(330), 'HEADINGS', C.grey], [crossB(330) + 0.1, '  h1 Ship faster', C.paper],
+    [crossB(536), 'BUTTONS AND LINKS', C.grey], [crossB(536) + 0.1, '  Get started · Docs', C.paper],
+    [9.3, 'PROBLEMS', C.orange],
+    [9.5, 'broken image: hero.png', C.paper, '1'], [10, 'button "Get started" is cut off', C.paper, '2'], [10.5, 'uncaught exception: TypeError', C.paper, '3'],
+  ]
+  rows.forEach(([a, s, c, n], i) => {
+    if (b < a) return
+    const x = tx + 28 + (1 - out(pr(b, a, 0.3), 3)) * 40, y = ty + 150 + i * 46
+    if (n) { at(x + 12, y - 7, pop(b, a, 0.35), 0, () => { circ(0, 0, 13, C.orange); txt(n, 0, 1, K, 16, C.paper, 'center', 'middle') }) }
+    txt(s, x + (n ? 36 : 0), y, MONO, 19, c, 'left', 'alphabetic', 700)
+  })
+  at(tx + 124, ty + 562, pop(b, 11, 0.4), 0, () => { rr(-96, -25, 192, 50, 25, C.orange); txt('3 PROBLEMS', 0, 2, K, 22, C.paper, 'center', 'middle') })
+}
+
+// ---- C. diagrams, beats 12-18: nodes pop, lines draw, a lint fix snaps, it lands on a page ----
+function diagram(b) {
+  const snap = back(pr(b, 15.75, 0.35), 2.6)
+  const P = { users: [-370, 0], edge: [-150, 0], app: [110, -115], api: [mix(142, 110, snap), mix(152, 115, snap)], db: [365, 0] }
+  ctx.beginPath(); ctx.roundRect(5, -215, 445, 430, 30); ctx.setLineDash(dashUpTo(1700, io(pr(b, 14.5, 0.75), 2))); ctx.lineWidth = 4; ctx.lineCap = 'butt'; ctx.strokeStyle = C.ink
+  if (b >= 14.5) ctx.stroke()
+  ctx.setLineDash([])
+  at(84, -215, pop(b, 15.1, 0.4), 0, () => { rr(-50, -18, 100, 36, 18, C.ink); txt('VNET', 0, 1, MONO, 18, C.paper, 'center', 'middle', 700) })
+  const conns = [
+    [13.25, 0.45, [[P.users[0] + 54, 0], [P.edge[0] - 87, 0]]],
+    [13.5, 0.7, [[P.edge[0] + 75, -20], [-35, -20], [-35, P.app[1]], [P.app[0] - 87, P.app[1]]]],
+    [13.75, 0.7, [[P.edge[0] + 75, 20], [-35, 20], [-35, P.api[1]], [P.api[0] - 87, P.api[1]]]],
+    [14, 0.7, [[P.app[0] + 75, P.app[1]], [245, P.app[1]], [245, -24], [P.db[0] - 72, -24]]],
+    [14.25, 0.7, [[P.api[0] + 75, P.api[1]], [245, P.api[1]], [245, 24], [P.db[0] - 72, 24]]],
+  ]
+  let pen = null
+  for (const [a, d, pts] of conns) { const k = io(pr(b, a, d), 2), h = trace(pts, k, C.ink, 6, pop(b, a + d - 0.05, 0.3)); if (k > 0 && k < 1) pen = h }
+  const g = pr(b, 15.25, 0.25) - pr(b, 16.1, 0.2)
+  if (g > 0) { const top = b >= 16.1; ctx.beginPath(); ctx.moveTo(110, top ? mix(205, -205, g) : -205); ctx.lineTo(110, top ? 205 : mix(-205, 205, g)); ctx.lineWidth = 4; ctx.strokeStyle = C.orange; ctx.stroke() }
+  const node = (a, [x, y], rot, fn) => at(x, y, pop(b, a, 0.5), rot - (1 - out(pr(b, a, 0.6), 3)) * 0.35, fn)
+  const box = (label) => () => { rr(-75, -46, 150, 92, 22, C.ink); txt(label, 0, 2, MONO, 26, C.paper, 'center', 'middle', 700) }
+  node(12.25, P.users, 0, () => { circ(0, 0, 54, C.blue); circ(0, -14, 15, C.paper); ctx.beginPath(); ctx.arc(0, 34, 28, Math.PI, 0); ctx.fillStyle = C.paper; ctx.fill() })
+  node(12.5, P.edge, 0, box('edge'))
+  node(12.75, P.app, 0, box('app'))
+  node(13, P.api, b > 15.25 && b < 15.75 ? Math.sin((b - 15.25) * Math.PI * 8) * 0.07 : 0, box('api'))
+  node(13.25, P.db, 0, () => {
+    ctx.beginPath(); ctx.ellipse(0, -36, 60, 18, 0, Math.PI, 0); ctx.lineTo(60, 36); ctx.ellipse(0, 36, 60, 18, 0, 0, Math.PI); ctx.closePath(); ctx.fillStyle = C.orange; ctx.fill()
+    ctx.beginPath(); ctx.ellipse(0, -36, 60, 18, 0, 0, Math.PI); ctx.lineWidth = 4; ctx.strokeStyle = C.ink; ctx.stroke()
+    txt('db', 0, 16, MONO, 26, C.ink, 'center', 'middle', 700)
+  })
+  tick(b, 15.95, 181, 73, 20)
+  if (pen) spark(pen[0], pen[1], 22, b * 3, C.orange)
+}
+function drawBG(b) {
+  ctx.fillStyle = C.yellow; ctx.fillRect(0, 0, W, H)
+  const y = lockup(b, 12.05, ['DRAWS', 'PRINT-READY', 'DIAGRAMS'], 1170, 640, [C.ink, C.blue, C.ink], '02 / 03', '@keenskills/drawing-architecture-diagrams', C.ink)
+  let x = 1170
+  ;['DRAW.IO', 'PNG', 'PDF'].forEach((s, i) => {
+    const w = width(s, K, 30) + 52
+    at(x + w / 2, y + 140, pop(b, 16.5 + i * 0.25, 0.4), 0, () => { rr(-w / 2, -30, w, 60, 30, C.ink); txt(s, 0, 2, K, 30, C.paper, 'center', 'middle') })
+    x += w + 14
+  })
+}
+
+// ---- D. design documents, beats 18-24: the page turns into a document, gets checked and fixed ----
+function writeBG(b) {
+  ctx.fillStyle = C.pink; ctx.fillRect(0, 0, W, H)
+  lockup(b, 18, ['WRITES', 'DESIGN', 'DOCS'], 110, 660, [C.ink, C.ink, C.paper], '03 / 03', '@keenskills/writing-design-documents', C.ink)
+}
+const LINES = [420, 400, 420, 350, 420, 410, 270]
+const FLAGS = [[1, 120, 240, 20.5, 21.5], [3, 0, 250, 20.75, 21.75], [5, 170, 240, 21, 22]] // line, x, width, flagged at, fixed at
+function doc(b) {
+  const grow = (a, x, y, w, h, c, r = h / 2) => rr(x, y, w * out(pr(b, a, 0.4), 4), h, r, c)
+  at(62, 62, pop(b, 18.35), 0, () => rr(-14, -14, 28, 28, 7, C.orange))
+  grow(18.4, 92, 59, 420, 6, C.ink)
+  grow(18.5, 48, 108, 360, 30, C.ink, 8); grow(18.62, 48, 150, 240, 30, C.ink, 8)
+  grow(18.75, 48, 458, 170, 8, C.grey)
+  for (const [i, x, w, a, f] of FLAGS) { const k0 = io(pr(b, f, 0.3), 3), k1 = out(pr(b, a, 0.25), 4); if (k1 > k0) rr(48 + x + w * k0 - 6, 490 + i * 36, w * (k1 - k0) + 12, 32, 6, C.orange) }
+  LINES.forEach((w, i) => {
+    const a = 18.9 + i * 0.18, k = pr(b, a, 0.4), y = 500 + i * 36
+    grow(a, 48, y, w, 12, C.grey)
+    if (k > 0 && k < 1) spark(48 + w * out(k, 4) + 18, y + 6, 16, b * 3, C.orange)
+  })
+  for (const [i, x, w, , f] of FLAGS) { rr(48 + x, 500 + i * 36, w * io(pr(b, f, 0.3), 3), 12, 6, C.ink); tick(b, f + 0.2, 500, 506 + i * 36, 15) }
+  const k = pr(b, 22.5, 0.2)
+  if (k > 0) at(416, 764, mix(2.8, 1, inn(k, 2)) * (1 + 0.07 * Math.sin(pr(b, 22.7, 0.35) * Math.PI)), -0.14, () => { rr(-104, -42, 208, 84, 18, C.ink); txt('.DOCX', 0, 3, K, 46, C.paper, 'center', 'middle') })
+}
+// The diagram, then the sheet under it, then that sheet as the document. One object through two scenes.
+function stack(b) {
+  const k = io(pr(b, 17.2, 1.1), 3), w = mix(990, 560, k), h = mix(700, 792, k)
+  ctx.save(); ctx.translate(mix(610, 1340, k), mix(520, 540, k)); ctx.rotate(mix(0, -0.035, k)); ctx.scale(mix(1, 1.1, k), mix(1, 1.1, k))
+  if (b >= 16) {
+    const s = back(pr(b, 16, 0.5), 1.3), f = spring(pr(b, 22.5, 1.2), 1.4, 5)
+    ctx.save(); ctx.scale(s, s)
+    rr(-w / 2 + 18 + 70 * f, -h / 2 + 18 + 10 * f, w, h, 10, C.ink)
+    ;[[C.yellow, 2], [C.blue, 1]].forEach(([c, n]) => { if (f > 0) at(34 * n * f, 4 * n * f, 1, 0.075 * n * f, () => rr(-w / 2, -h / 2, w, h, 10, c)) })
+    rr(-w / 2, -h / 2, w, h, 10, C.paper)
+    ctx.restore()
+  }
+  if (b >= 17.6) { ctx.beginPath(); ctx.rect(-232, -190, 464, 238); ctx.setLineDash(dashUpTo(1404, pr(b, 17.6, 0.7), 1404, 0)); ctx.lineWidth = 3; ctx.strokeStyle = C.ink; ctx.stroke(); ctx.setLineDash([]) }
+  ctx.save(); ctx.translate(0, mix(0, -71, k)); ctx.scale(mix(1, 0.46, k), mix(1, 0.46, k)); ctx.translate(-13, 0); diagram(b); ctx.restore()
+  if (b >= 18.3) { ctx.translate(-280, -396); doc(b) }
+  ctx.restore()
+}
+
+// ---- E. outro, beats 24-32: three colours collide into the spark, the name follows ----
+const NAMES = ['page-as-data', 'drawing-architecture-diagrams', 'writing-design-documents'], SWAP = [27.5, 28.75, 29.75]
+function outro(b) {
+  ctx.fillStyle = C.ink; ctx.fillRect(0, 0, W, H)
+  const cx = W / 2, cy = 390, word = 'Keen Skills', ww = width(word, K, 220, 900, -0.03)
+  const lx = (W - (136 + 46 + ww)) / 2 + 68
+  if (b < 25.6) {
+    const k = inn(pr(b, 24.1, 0.9), 3), ko = out(pr(b, 25, 0.6), 3)
+    ;[[Math.PI, C.blue, 0], [-Math.PI / 3, C.yellow, 1], [Math.PI / 3, C.pink, 2]].forEach(([g, c, kind]) => {
+      const d = (1 - k) * 1400 - ko * 520
+      at(cx + Math.cos(g) * d, cy + Math.sin(g) * d, (1 - ko) * mix(0.6, 1, k), b * 2.2 + kind, () => {
+        if (kind === 0) circ(0, 0, 74, c)
+        else if (kind === 1) rr(-66, -66, 132, 132, 12, c)
+        else { ctx.beginPath(); ctx.moveTo(0, -84); ctx.lineTo(78, 56); ctx.lineTo(-78, 56); ctx.closePath(); ctx.fillStyle = c; ctx.fill() }
+      })
+    })
+  }
+  if (b >= 25 && b < 25.1) { ctx.fillStyle = C.paper; ctx.fillRect(0, 0, W, H) }
+  burst(b, 25, cx, cy, 180, 620, 12, [C.blue, C.yellow, C.pink], 16, 0.9)
+  const k2 = io(pr(b, 25.45, 0.6), 3), beat = b - Math.floor(b)
+  const turn = b < 26 ? -2.4 * (1 - out(pr(b, 25, 1), 3)) : (Math.floor(b) + out(cl(beat / 0.45), 4)) * (Math.PI / 2)
+  spark(mix(cx, lx, k2), cy, spring(pr(b, 25, 0.9), 1.5, 5) * mix(160, 68, k2) * (b >= 26 ? 1 + 0.12 * Math.exp(-7 * beat) : 1), turn, C.orange)
+  rise(b, word, lx + 68 + 46, cy + 80, { fam: K, size: 220, ls: -0.03, a: 25.7, st: 0.045 })
+  rise(b, 'Sharper senses for your coding agent', cx, cy + 204, { fam: M, wt: 600, size: 54, a: 26.5, st: 0.07, word: true, align: 'center' })
+
+  // the install command; the package name swaps on the beat and the pill follows its width
+  const cw = width('0', MONO, 30, 600), pre = 'npx @keenskills/', suf = ' init', py = 740
+  let i = 0, nw = NAMES[0].length * cw
+  for (let j = 1; j < 3; j++) if (b >= SWAP[j]) { i = j; nw = mix(NAMES[j - 1].length, NAMES[j].length, back(pr(b, SWAP[j], 0.45), 1.2)) * cw }
+  const tw = (pre.length + suf.length) * cw + nw, pw = tw + 112, s = pop(b, 27.5)
+  if (s > 0) {
+    ctx.save(); ctx.translate(cx, py); ctx.scale(s, s); ctx.translate(-pw / 2, 0)
+    rr(0, -44, pw, 88, 44, C.paper); circ(48, 0, 12, [C.blue, C.yellow, C.pink][i])
+    const tx = 76, mono = (str, x, y) => txt(str, x, y, MONO, 30, C.ink, 'left', 'middle', 600)
+    if (i === 0) {
+      const full = pre + NAMES[0] + suf, n = Math.floor(pr(b, 27.6, 0.8) * full.length)
+      mono(full.slice(0, n), tx, 1)
+      if (n < full.length) rr(tx + n * cw + 2, -18, 14, 36, 2, C.ink)
+    } else {
+      const xn = tx + pre.length * cw, t = out(pr(b, SWAP[i], 0.32), 4)
+      mono(pre, tx, 1); mono(suf, xn + nw, 1)
+      ctx.beginPath(); ctx.rect(xn, -30, Math.max(nw, NAMES[i].length * cw) + 4, 60); ctx.clip()
+      mono(NAMES[i - 1], xn, 1 - t * 60); mono(NAMES[i], xn, 1 + (1 - t) * 60)
+    }
+    ctx.restore()
+  }
+  rise(b, 'keenskills.d2studio.dev', cx, 880, { fam: MONO, wt: 700, size: 30, color: C.yellow, a: 30.5, st: 0.02, align: 'center' })
+}
+
+// ---- timeline ----
+function draw(t) {
+  const b = t / B
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.setLineDash([])
+  if (b < 6) hook(b)
+  if (b >= 5.45 && b < 6) { ctx.save(); iris(b); ctx.clip(); see(b); ctx.restore() } else if (b >= 6 && b < 12) see(b)
+  if (b >= 11.2 && b < 12) wipe(b, 11.2, bandDown, [C.orange, C.ink], drawBG)
+  if (b >= 12 && b < 18) drawBG(b)
+  if (b >= 17.3 && b < 18) wipe(b, 17.3, bandAcross, [C.ink], writeBG)
+  if (b >= 18 && b < 24) writeBG(b)
+  if (b >= 12 && b < 24) stack(b)
+  if (b >= 23.2 && b < 24) wipe(b, 23.2, bandAcross, [C.blue, C.yellow, C.orange], outro)
+  if (b >= 24) outro(b)
+}
+// n sub-frames averaged over a 180 degree shutter: real motion blur, still deterministic.
+function frame(t, n = 1, shutter = 0.5) {
+  for (let i = 0; i < n; i++) {
+    draw(cl(t + ((i + 0.5) / n - 0.5) * (shutter / 60), 0, DUR))
+    vctx.globalAlpha = 1 / (i + 1); vctx.drawImage(off, 0, 0)
+  }
+}
+window.render = (t) => frame(t, 16)
+window.ready = Promise.all([N, K, M].map((f) => document.fonts.load(`900 100px ${f}`))).then((r) => {
+  if (r.some((x) => !x.length)) throw new Error('Mona Sans is not installed')
+  if (new URLSearchParams(location.search).has('render')) return
+  // Preview: loops in real time; ?t=7.5 holds one frame.
+  const hold = new URLSearchParams(location.search).get('t')
+  if (hold != null) return frame(Number(hold), 16)
+  const loop = (ms) => { frame((ms / 1000) % DUR, 4); requestAnimationFrame(loop) }
+  requestAnimationFrame(loop)
+})
+</script>
+</body>
+</html>

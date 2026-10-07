@@ -1,33 +1,42 @@
 @import "tailwindcss";
 
-/* Palette after jakubantalik.com: near-monochrome, colour only where it means
-   something (status in the showcases). Light is the default; dark follows the
-   system unless data-theme pins one (set by the head script and the toggle). */
+/* Light palette from the portfolio's machined surface: a mid-neutral plate,
+   cards raised out of it with a top-lit edge, wells (chips, code) pressed in.
+   Colour only where it means something (status in the showcases). Dark
+   follows the system unless data-theme pins one (head script and toggle). */
 :root {
-  --bg: oklch(0.97 0.01 0);            /* #fdfdfd */
-  --surface: oklch(1 0 0);            /* #ffffff */
-  --text: oklch(0.3211 0 0);          /* #333 */
-  --muted: oklch(0.5103 0 0);         /* #666 */
-  --faint: oklch(0.683 0 0);         /* #999, decoration only, never body text */
-  --line: oklch(0 0 0 / 0.06);
-  --line-strong: oklch(0 0 0 / 0.12);
-  --accent: oklch(0.47 0.09 262);
-  --accent-soft: oklch(0.47 0.09 262 / 0.08);
-  --code: oklch(0.9846 0.0017 247.84); /* #f9fafb */
-  --chip: oklch(0.9612 0 0);          /* #f2f2f2 */
-  --chip-hover: oklch(0.931 0 0);    /* #e8e8e8 */
-  --danger: oklch(0.52 0.19 27);
-  --danger-soft: oklch(0.52 0.19 27 / 0.08);
-  --warn: oklch(0.53 0.12 65);
-  --warn-soft: oklch(0.53 0.12 65 / 0.09);
-  --ok: oklch(0.5 0.12 155);
-  --ok-soft: oklch(0.5 0.12 155 / 0.09);
-  --ink-06: oklch(0 0 0 / 0.06);
-  --ink-12: oklch(0 0 0 / 0.12);
+  --bg: oklch(0.952 0.002 247.84);  /* plate */
+  --surface: oklch(0.978 0.002 247.84);  /* raised */
+  --text: oklch(0.221 0.005 248.053);
+  --muted: oklch(0.459 0.008 255.52);
+  --faint: oklch(0.648 0.009 253.885);  /* decoration only, never body text */
+  --line: oklch(0.221 0.005 248.053 / 0.09);
+  --line-strong: oklch(0.221 0.005 248.053 / 0.14);
+  --accent: oklch(0.58 0.2 264.867);
+  --accent-soft: oklch(0.58 0.2 264.867 / 0.08);
+  --code: oklch(0.948 0.002 247.84);  /* well: a hair under the plate */
+  --chip: oklch(0.925 0.002 247.84);  /* chip */
+  --chip-hover: oklch(0.9 0.002 247.84);
+  --dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h2v2H0zM2 2h2v2H2z' fill='%231C1F21' fill-opacity='.05'/%3E%3C/svg%3E");  /* 2px checker, like the pasted 48px tile */
+  --danger: oklch(0.58 0.2 27);
+  --danger-soft: oklch(0.58 0.2 27 / 0.08);
+  --warn: oklch(0.8 0.17 92);  /* yellow fills, badges, marks */
+  --warn-ink: oklch(0.52 0.12 85);  /* same hue, dark enough for text */
+  --warn-soft: oklch(0.85 0.17 95 / 0.2);
+  --ok: oklch(0.58 0.15 155);
+  --ok-soft: oklch(0.58 0.15 155 / 0.1);
+  --ink-06: oklch(0.221 0.005 248.053 / 0.045);  /* placeholder bars, light */
+  --ink-12: oklch(0.221 0.005 248.053 / 0.09);  /* placeholder bars, dark */
   --border: var(--line);
-  --shadow: 0 1px 3px 0 oklch(0 0 0 / 0.04);
-  --card-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.04), inset 0 0 0 1px oklch(0 0 0 / 0.06), inset 0 -1px 0 0 oklch(0 0 0 / 0.06);
-  --hover-mix: black;
+  --shadow: 0 1px 1px 0 oklch(0 0 0 / 0.05);
+  --card-shadow: inset 0 2px 0.5px 0 oklch(1 0 0 / 0.6), 0 1px 1px 0 oklch(0 0 0 / 0.05), inset 0 0 0 1px oklch(0.221 0.005 248.053 / 0.08);
+  --hover-mix: white;
+  /* D2 chip light: a sink, shadow in from the top, highlight on the bottom edge. */
+  --d2-edge: oklch(0 0 0 / 0.12);
+  --d2-ring: oklch(1 0 0 / 0.9);
+  --d2-top: oklch(0 0 0 / 0.07);
+  --d2-bottom: oklch(1 0 0 / 0.3);
+  --d2-drop: oklch(0 0 0 / 0.18);
   color-scheme: light;
 }
 
@@ -40,14 +49,16 @@
     --faint: oklch(0.5517 0.0138 285.94); /* #71717a */
     --line: oklch(1 0 0 / 0.07);
     --line-strong: oklch(1 0 0 / 0.14);
-    --accent: oklch(0.82 0.06 250);
-    --accent-soft: oklch(0.82 0.06 250 / 0.1);
+    --accent: oklch(0.785 0.115 274.713);  /* indigo-300 */
+    --accent-soft: oklch(0.785 0.115 274.713 / 0.12);
     --code: oklch(0.2103 0.0059 285.89); /* #18181b */
     --chip: oklch(1 0 0 / 0.1);
     --chip-hover: oklch(1 0 0 / 0.15);
+    --dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h2v2H0zM2 2h2v2H2z' fill='%23ffffff' fill-opacity='.05'/%3E%3C/svg%3E");
     --danger: oklch(0.74 0.15 25);
     --danger-soft: oklch(0.74 0.15 25 / 0.12);
     --warn: oklch(0.82 0.13 80);
+    --warn-ink: var(--warn);
     --warn-soft: oklch(0.82 0.13 80 / 0.12);
     --ok: oklch(0.78 0.13 155);
     --ok-soft: oklch(0.78 0.13 155 / 0.12);
@@ -56,6 +67,11 @@
     --shadow: 0 1px 3px 0 oklch(0 0 0 / 0.3);
     --card-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.04), inset 0 1px 0 0 oklch(1 0 0 / 0.04), inset 0 0 0 1px oklch(0.8 0 0 / 0.07);
     --hover-mix: white;
+    --d2-edge: oklch(0 0 0 / 0.45);
+    --d2-ring: oklch(1 0 0 / 0.1);
+    --d2-top: oklch(0 0 0 / 0.4);
+    --d2-bottom: oklch(1 0 0 / 0.03);
+    --d2-drop: oklch(0 0 0 / 0.5);
     color-scheme: dark;
   }
 }
@@ -68,14 +84,16 @@
   --faint: oklch(0.5517 0.0138 285.94); /* #71717a */
   --line: oklch(1 0 0 / 0.07);
   --line-strong: oklch(1 0 0 / 0.14);
-  --accent: oklch(0.82 0.06 250);
-  --accent-soft: oklch(0.82 0.06 250 / 0.1);
+  --accent: oklch(0.785 0.115 274.713);  /* indigo-300 */
+  --accent-soft: oklch(0.785 0.115 274.713 / 0.12);
   --code: oklch(0.2103 0.0059 285.89); /* #18181b */
   --chip: oklch(1 0 0 / 0.1);
   --chip-hover: oklch(1 0 0 / 0.15);
+  --dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Cpath d='M0 0h2v2H0zM2 2h2v2H2z' fill='%23ffffff' fill-opacity='.05'/%3E%3C/svg%3E");
   --danger: oklch(0.74 0.15 25);
   --danger-soft: oklch(0.74 0.15 25 / 0.12);
   --warn: oklch(0.82 0.13 80);
+  --warn-ink: var(--warn);
   --warn-soft: oklch(0.82 0.13 80 / 0.12);
   --ok: oklch(0.78 0.13 155);
   --ok-soft: oklch(0.78 0.13 155 / 0.12);
@@ -84,6 +102,11 @@
   --shadow: 0 1px 3px 0 oklch(0 0 0 / 0.3);
   --card-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.04), inset 0 1px 0 0 oklch(1 0 0 / 0.04), inset 0 0 0 1px oklch(0.8 0 0 / 0.07);
   --hover-mix: white;
+  --d2-edge: oklch(0 0 0 / 0.45);
+  --d2-ring: oklch(1 0 0 / 0.1);
+  --d2-top: oklch(0 0 0 / 0.4);
+  --d2-bottom: oklch(1 0 0 / 0.03);
+  --d2-drop: oklch(0 0 0 / 0.5);
   color-scheme: dark;
 }
 
@@ -103,6 +126,7 @@
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-warn: var(--warn);
+  --color-warn-ink: var(--warn-ink);
   --color-warn-soft: var(--warn-soft);
   --color-ok: var(--ok);
   --color-ok-soft: var(--ok-soft);
@@ -112,6 +136,7 @@
 
 /* Cards as on the reference: a ring and a bottom edge drawn inside, a faint drop outside. */
 .card { background: var(--surface); border-radius: 16px; box-shadow: var(--card-shadow); }
+.dots { background-image: var(--dots); }
 .card-hover { transition: background-color 150ms ease; }
 @media (hover: hover) and (pointer: fine) {
   .card-hover:hover { background-color: color-mix(in oklch, var(--surface) 98%, var(--hover-mix) 2%); }
