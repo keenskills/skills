@@ -153,6 +153,9 @@ body {
   color: var(--text);
 }
 
+/* Selected text turns blue-500 in place rather than sitting on a band. */
+::selection { background-color: transparent; color: oklch(0.623 0.214 259.815); }
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;

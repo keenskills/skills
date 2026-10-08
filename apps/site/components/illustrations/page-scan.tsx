@@ -85,7 +85,7 @@ export function PageScan({ command, problems, summary }: { command: string; prob
             <rect x="36" y="103" width="52" height="16" rx="6" fill="var(--ink-12)" />
             <rect x="94" y="103" width="52" height="16" rx="6" fill="var(--ink-12)" />
             <g clipPath="url(#scan-toolbar)">
-              <rect x="187" y="103" width="60" height="16" rx="6" fill="var(--muted)" />
+              <rect x="187" y="103" width="60" height="16" rx="6" fill="color-mix(in oklch, var(--muted), var(--faint))" />
             </g>
           </g>
           <g className="sc sc-rise" style={d(OPEN + 550)}>
