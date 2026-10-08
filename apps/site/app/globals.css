@@ -12,8 +12,8 @@
   --faint: oklch(0.648 0.009 253.885);  /* decoration only, never body text */
   --line: oklch(0.221 0.005 248.053 / 0.09);
   --line-strong: oklch(0.221 0.005 248.053 / 0.14);
-  --accent: oklch(0.58 0.2 264.867);
-  --accent-soft: oklch(0.58 0.2 264.867 / 0.08);
+  --accent: oklch(0.546 0.245 262.881);  /* blue-600 */
+  --accent-soft: oklch(0.546 0.245 262.881 / 0.08);
   --code: oklch(0.948 0.002 247.84);  /* well: a hair under the plate */
   --chip: oklch(0.925 0.002 247.84);  /* chip */
   --chip-hover: oklch(0.9 0.002 247.84);
@@ -49,8 +49,8 @@
     --faint: oklch(0.5517 0.0138 285.94); /* #71717a */
     --line: oklch(1 0 0 / 0.07);
     --line-strong: oklch(1 0 0 / 0.14);
-    --accent: oklch(0.785 0.115 274.713);  /* indigo-300 */
-    --accent-soft: oklch(0.785 0.115 274.713 / 0.12);
+    --accent: oklch(0.707 0.165 254.624);  /* blue-400 */
+    --accent-soft: oklch(0.707 0.165 254.624 / 0.12);
     --code: oklch(0.2103 0.0059 285.89); /* #18181b */
     --chip: oklch(1 0 0 / 0.1);
     --chip-hover: oklch(1 0 0 / 0.15);
@@ -84,8 +84,8 @@
   --faint: oklch(0.5517 0.0138 285.94); /* #71717a */
   --line: oklch(1 0 0 / 0.07);
   --line-strong: oklch(1 0 0 / 0.14);
-  --accent: oklch(0.785 0.115 274.713);  /* indigo-300 */
-  --accent-soft: oklch(0.785 0.115 274.713 / 0.12);
+  --accent: oklch(0.707 0.165 254.624);  /* blue-400 */
+  --accent-soft: oklch(0.707 0.165 254.624 / 0.12);
   --code: oklch(0.2103 0.0059 285.89); /* #18181b */
   --chip: oklch(1 0 0 / 0.1);
   --chip-hover: oklch(1 0 0 / 0.15);
@@ -184,3 +184,49 @@ body {
   :root:not([data-theme="light"]) .shiki, :root:not([data-theme="light"]) .shiki span { color: var(--shiki-dark); }
 }
 :root[data-theme="dark"] .shiki, :root[data-theme="dark"] .shiki span { color: var(--shiki-dark); }
+
+/* pro-d2's relay button surface: a face lit along its top edge, brightness
+   rather than a tint under the pointer (a light face darkens, a dark face
+   brightens), and a 0.97 press. The glint drops to a tenth on the ink face in light and a fifth on dark faces.
+   .relay-ink is the same surface on --text, so its light and dark swap. */
+.relay {
+  --glint: oklch(1 0 0);
+  --lift: oklch(0 0 0 / 0.05);
+  box-shadow: inset 0 1px 0 var(--glint), 0 1px 2px 0 var(--lift);
+  transition: filter 200ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1), scale 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* A 5% drop is lost on a dark page; dark lifts with the site's own 30%. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .relay { --glint: oklch(1 0 0 / 0.2); --lift: oklch(0 0 0 / 0.3); } }
+:root[data-theme="dark"] .relay { --glint: oklch(1 0 0 / 0.2); --lift: oklch(0 0 0 / 0.3); }
+@media (hover: hover) and (pointer: fine) {
+  .relay:hover { filter: brightness(0.96); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .relay:hover { filter: brightness(1.35); } }
+  :root[data-theme="dark"] .relay:hover { filter: brightness(1.35); }
+}
+.relay:active { scale: 0.97; transition-duration: 100ms; }
+@media (prefers-reduced-motion: reduce) {
+  .relay { transition: none; }
+  .relay:active { scale: 1; }
+}
+.relay-ink { --glint: oklch(1 0 0 / 0.1); }
+@media (hover: hover) and (pointer: fine) {
+  .relay-ink:hover { filter: brightness(1.35); }
+}
+/* In dark the ink face is near white, where a white glint vanishes; it steps
+   down a little so the top edge reads as it does in light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .relay-ink { --glint: oklch(1 0 0); --face: oklch(0.86 0.004 286); background-color: var(--face); border-color: var(--face); }
+  @media (hover: hover) and (pointer: fine) { :root:not([data-theme="light"]) .relay-ink:hover { filter: brightness(0.96); } }
+}
+:root[data-theme="dark"] .relay-ink { --glint: oklch(1 0 0); --face: oklch(0.86 0.004 286); background-color: var(--face); border-color: var(--face); }
+@media (hover: hover) and (pointer: fine) { :root[data-theme="dark"] .relay-ink:hover { filter: brightness(0.96); } }
+/* Dark hover: brightness alone barely moves a dim face, so the top edge also
+   catches more light under the pointer (box-shadow is already transitioned). */
+@media (hover: hover) and (pointer: fine) {
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .relay:not(.relay-ink):hover { --glint: oklch(1 0 0 / 0.4); }
+    :root:not([data-theme="light"]) .relay-ink:hover { filter: brightness(1.08); }
+  }
+  :root[data-theme="dark"] .relay:not(.relay-ink):hover { --glint: oklch(1 0 0 / 0.4); }
+  :root[data-theme="dark"] .relay-ink:hover { filter: brightness(1.08); }
+}

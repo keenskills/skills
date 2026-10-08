@@ -74,10 +74,10 @@ export default function Home() {
         </p>
         </HeroReveal>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="#skills" className="inline-flex h-9 items-center rounded-lg bg-text px-4 text-sm font-medium text-bg pt-0.5">
+          <Link href="#skills" className="relay relay-ink inline-flex h-9 items-center whitespace-nowrap rounded-lg border border-text bg-text px-4 pt-0.5 text-sm font-medium text-bg">
             Browse skills
           </Link>
-          <Link href="/how-to-use" className="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-4 text-sm font-medium pt-0.5">
+          <Link href="/how-to-use" className="relay inline-flex h-9 items-center whitespace-nowrap rounded-lg border border-border bg-chip px-4 pt-0.5 text-sm font-medium text-text">
             How to use
           </Link>
         </div>
