@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // transitions.dev "Number pop-in", played once when the number scrolls into view.
 // Digits are visible without the class, so no script means a plain number.
@@ -29,4 +29,22 @@ export function Count({ value }: { value: number }) {
       ))}
     </span>
   )
+}
+
+/** Last week's npm downloads: the build's number first, then npm's current one,
+ *  so a static page does not go stale between deploys. A failed fetch keeps the
+ *  build's number. */
+export function WeeklyDownloads({ name, value }: { name: string; value: number }) {
+  const [n, setN] = useState(value)
+  useEffect(() => {
+    const ctrl = new AbortController()
+    fetch(`https://api.npmjs.org/downloads/point/last-week/${name}`, { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (Number.isFinite(d?.downloads)) setN(d.downloads)
+      })
+      .catch(() => {})
+    return () => ctrl.abort()
+  }, [name])
+  return <Count key={n} value={n} />
 }
