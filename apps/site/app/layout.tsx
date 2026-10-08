@@ -30,6 +30,14 @@ export const metadata: Metadata = {
   category: 'technology',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
   formatDetection: { telephone: false, email: false, address: false },
+  // The D2 mark, holographic on light and pastel on dark, from d2studio-ui; favicon.ico is a file convention next to this; the rest live in public/.
+  icons: {
+    icon: [
+      { url: '/icon-light.png', media: '(prefers-color-scheme: light)', type: 'image/png', sizes: '512x512' },
+      { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: '/apple-icon.png',
+  },
 }
 
 const WEBSITE = {

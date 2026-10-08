@@ -172,7 +172,7 @@ export function ShowcaseDesignDocs({ data }: { data: DesignDocsShowcase }) {
         </div>
         <div className="min-w-0 overflow-hidden rounded-2xl border border-border bg-code">
           <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
-            <span className={`inline-flex items-center gap-2 text-xs font-medium ${step === 'final' ? 'text-ok' : 'text-warn'}`}>
+            <span className={`inline-flex items-center gap-2 text-xs font-medium ${step === 'final' ? 'text-ok' : 'text-warn-ink'}`}>
               {step === 'final' ? <SuccessCheck /> : null}
               <span ref={chipRef} className="t-text-swap">
                 {chip}
@@ -201,7 +201,7 @@ export function ShowcaseDesignDocs({ data }: { data: DesignDocsShowcase }) {
                     {l}
                   </span>
                 ) : (
-                  <span key={l} className="flex gap-2 text-warn" {...over(data.owner[i])}>
+                  <span key={l} className="flex gap-2 text-warn-ink" {...over(data.owner[i])}>
                     <span aria-label={`problem ${data.owner[i] + 1}`} className="mt-1 grid size-4 shrink-0 place-items-center rounded-full bg-warn-soft text-[10px] font-semibold leading-none">
                       {data.owner[i] + 1}
                     </span>

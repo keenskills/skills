@@ -92,7 +92,7 @@ export function ShowcaseDiagrams({ data }: { data: DiagramShowcase }) {
         />
         <div className="min-w-0 overflow-hidden rounded-2xl border border-border bg-code">
           <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-2">
-            <span className={`inline-flex items-center gap-2 text-xs font-medium ${step === 'final' ? 'text-ok' : 'text-warn'}`}>
+            <span className={`inline-flex items-center gap-2 text-xs font-medium ${step === 'final' ? 'text-ok' : 'text-warn-ink'}`}>
               {step === 'final' ? <SuccessCheck /> : null}
               <span ref={chipRef} className="t-text-swap">
                 {chip}
@@ -128,7 +128,7 @@ export function ShowcaseDiagrams({ data }: { data: DiagramShowcase }) {
                 <Command text={lint.command} />
               </span>
               {lint.output.split('\n').map((l) => (
-                <span key={l} className={`block pl-[2ch] -indent-[2ch] ${step === 'final' ? 'text-ok' : 'text-warn'}`}>
+                <span key={l} className={`block pl-[2ch] -indent-[2ch] ${step === 'final' ? 'text-ok' : 'text-warn-ink'}`}>
                   {l}
                 </span>
               ))}

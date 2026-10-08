@@ -89,3 +89,24 @@
   .scan-pin { transition: opacity 160ms ease; }
   .scene .scan-pin[data-hot] { transform: none; }
 }
+
+/* Play button: while the scene runs the icon folds away (transitions.dev icon
+   swap's blur and scale, plus a 1fr to 0fr column so the pill narrows instead
+   of jumping) and the label swaps to Playing…. */
+.scene-play-icon { display: inline-grid; grid-template-columns: 1fr; transition: grid-template-columns var(--icon-swap-dur) var(--ease-out); }
+.scene-play-icon > span {
+  min-width: 0;
+  overflow: hidden;
+  display: inline-flex;
+  padding-right: 4px;
+  transition:
+    opacity   var(--icon-swap-dur) var(--icon-swap-ease),
+    filter    var(--icon-swap-dur) var(--icon-swap-ease),
+    transform var(--icon-swap-dur) var(--icon-swap-ease);
+}
+.scene-play-icon[data-hidden] { grid-template-columns: 0fr; }
+.scene-play-icon[data-hidden] > span { opacity: 0; filter: blur(var(--icon-swap-blur)); transform: scale(var(--icon-swap-start-scale)); }
+@media (prefers-reduced-motion: reduce) {
+  .scene-play-icon, .scene-play-icon > span { transition: none; }
+}
+

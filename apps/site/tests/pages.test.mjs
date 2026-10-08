@@ -37,9 +37,10 @@ describe('home', () => {
     assert.match(html, /<noscript><style>[^<]*\.t-stagger-line/)
   })
 
-  it('has the D2 favicon, as an icon, an .ico and an Apple touch icon', () => {
+  it('has the D2 favicon, light and dark, an .ico and an Apple touch icon', () => {
     const html = page('index.html')
-    assert.match(html, /<link rel="icon"[^>]*href="\/icon\.png/)
+    assert.match(html, /<link rel="icon"[^>]*href="\/icon-light\.png"[^>]*media="\(prefers-color-scheme: light\)"/)
+    assert.match(html, /<link rel="icon"[^>]*href="\/icon-dark\.png"[^>]*media="\(prefers-color-scheme: dark\)"/)
     assert.match(html, /<link rel="icon"[^>]*href="\/favicon\.ico/)
     assert.match(html, /<link rel="apple-touch-icon"[^>]*href="\/apple-icon\.png/)
   })

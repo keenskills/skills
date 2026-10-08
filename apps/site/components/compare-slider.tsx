@@ -40,7 +40,7 @@ export function CompareSlider({ before, after, value, onChange, animate }: { bef
         </div>
       </div>
       <div aria-hidden="true" className="flex items-center justify-between gap-3 border-t border-border px-4 py-2 text-xs font-medium">
-        <span style={{ opacity: value > 8 ? 1 : 0.4 }} className="cmp-chip text-warn">Draft</span>
+        <span style={{ opacity: value > 8 ? 1 : 0.4 }} className="cmp-chip text-warn-ink">Draft</span>
         <span className="font-normal text-muted">Drag to compare</span>
         <span style={{ opacity: value < 92 ? 1 : 0.4 }} className="cmp-chip text-ok">Final</span>
       </div>

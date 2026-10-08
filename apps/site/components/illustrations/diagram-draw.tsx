@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { d, SceneStatus, Typed, TYPE, type Step } from './scene-parts'
+import { d, SceneStatus, Typed, TYPE, type Step, ScenePlay } from './scene-parts'
 import { useScene } from './use-scene'
 
 type Lint = { command: string; output: string; exit: number }
@@ -59,7 +59,7 @@ const Tick = () => (
 // Northwind draft, each cut to its first clause; the drawing is a small
 // stand-in for that diagram with the same three faults.
 export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: Lint; findings: string[]; fixes: string[]; final: Lint; files: string[] }) {
-  const { ref, replay } = useScene<HTMLDivElement>()
+  const { ref, replay, playing } = useScene<HTMLDivElement>()
   const [hot, setHot] = useState<number[] | null>(null)
   const over = (nodes: number[]) => ({ onPointerEnter: () => setHot(nodes), onPointerLeave: () => setHot(null) })
 
@@ -71,12 +71,26 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
 
   return (
     <div ref={ref} className="scene grid items-start gap-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-      <div className="relative rounded-2xl bg-code p-4 pb-12 sm:p-6 sm:pb-12">
+      <div className="dots relative rounded-2xl bg-code p-4 pb-12 sm:p-6 sm:pb-12">
         <svg viewBox="0 0 480 300" role="img" aria-labelledby="draw-title" className="block h-auto w-full">
           <title id="draw-title">Illustration: the diagram skill draws an architecture diagram, lints it, fixes an oversized icon, an icon off its row and an overlapping label, and renders it</title>
           <defs>
             <pattern id="draw-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
               <rect width="2" height="6" fill="var(--warn)" opacity="0.4" />
+            </pattern>
+            {/* The D2 chip's light, as SVG: a sink, shadow pressing in from the top and the highlight on the bottom edge. */}
+            <linearGradient id="draw-chip-light" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="var(--d2-top)" />
+              <stop offset="0.12" stopColor="transparent" />
+              <stop offset="0.94" stopColor="transparent" />
+              <stop offset="1" stopColor="var(--d2-bottom)" />
+            </linearGradient>
+            <filter id="draw-chip-shadow" x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="1" stdDeviation="0.8" floodColor="var(--d2-drop)" />
+            </filter>
+            {/* Dot grid inside each group box, 12px pitch. */}
+            <pattern id="draw-dots" width="8" height="8" patternUnits="userSpaceOnUse">
+              <circle cx="4" cy="4" r="1" fill="var(--text)" fillOpacity="0.08" />
             </pattern>
           </defs>
           <g className="sc sc-rise">
@@ -86,6 +100,7 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
           </g>
           {BOXES.map((b) => (
             <g key={b.label}>
+              <rect className="sc sc-rise" style={d(b.at + 100)} x={b.x} y="52" width={b.w} height="220" rx="10" fill="url(#draw-dots)" />
               <rect className="sc sc-draw" pathLength={1} style={d(b.at)} x={b.x} y="52" width={b.w} height="220" rx="10" fill="none" stroke="var(--line-strong)" strokeWidth="1.25" />
               <text className="sc sc-rise" style={d(b.at + 200)} x={b.x + 10} y="68" fontSize="10" fill="var(--muted)">
                 {b.label}
@@ -93,7 +108,7 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
             </g>
           ))}
           {EDGES.map((e, i) => (
-            <path key={e} className="sc sc-draw" pathLength={1} style={d(1050 + i * 60)} d={e} fill="none" stroke="var(--faint)" strokeWidth="1.25" />
+            <path key={e} className="sc sc-draw" pathLength={1} style={d(1050 + i * 60)} d={e} fill="none" stroke="var(--faint)" strokeWidth="0.75" />
           ))}
 
           {/* What the lint points at: the row's baseline afd is off, and the place entra left empty. */}
@@ -104,8 +119,12 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
             const node = (
               <>
                 <g className={i === USERS ? 'sc sc-fix' : undefined} style={i === USERS ? d(FIX[0], { grow: GROWN }) : undefined}>
-                  <rect x={x} y={y} width="28" height="28" rx="7" fill="var(--accent-soft)" stroke="var(--accent)" strokeWidth="1" />
-                  <path d={`M${x + 8} ${y + 11}h12M${x + 8} ${y + 17}h8`} stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" />
+                  {/* A D2 chip: one plate, a hairline set off the edge, the sunken light, and the mark in the chip's own ink. */}
+                  <rect x={x - 1} y={y - 1} width="30" height="30" rx="8" fill="none" stroke="var(--d2-edge)" strokeWidth="0.5" />
+                  <rect x={x} y={y} width="28" height="28" rx="7" fill="var(--chip)" filter="url(#draw-chip-shadow)" />
+                  <rect x={x} y={y} width="28" height="28" rx="7" fill="url(#draw-chip-light)" />
+                  <rect x={x + 0.25} y={y + 0.25} width="27.5" height="27.5" rx="6.75" fill="none" stroke="var(--d2-ring)" strokeWidth="0.5" />
+                  <path d={`M${x + 8} ${y + 11}h12M${x + 8} ${y + 17}h8`} stroke="oklch(0.623 0.214 259.815)" strokeWidth="1.5" strokeLinecap="round" />
                 </g>
                 <text x={x + 14} y={y + 42} textAnchor="middle" fontSize="9" fill="var(--muted)">
                   {name}
@@ -131,7 +150,7 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
               <circle className="sc sc-ping" style={d(found(i))} cx={m.x} cy={m.y} r="11" fill="none" stroke="var(--warn)" strokeWidth="1.5" />
               <g className="sc sc-mark" style={d(found(i), { dur: FIX[m.fix] - found(i) + 200 })}>
                 <circle cx={m.x} cy={m.y} r="11" fill="var(--warn)" />
-                <text x={m.x} y={m.y + 4.5} textAnchor="middle" fontSize="12.5" fontWeight="600" fill="var(--surface)">
+                <text x={m.x} y={m.y + 4.5} textAnchor="middle" fontSize="12.5" fontWeight="600" fill="oklch(0.25 0.03 85)">
                   {i + 1}
                 </text>
               </g>
@@ -158,14 +177,7 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
           ))}
         </ul>
         <SceneStatus steps={status} final="Lint clean. Rendered for print." at={RELINT + 150} />
-        <button
-          type="button"
-          onClick={replay}
-          aria-label="Replay the diagram illustration"
-          className="press absolute bottom-3 right-3 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-muted shadow-[var(--card-shadow)] hover:text-text"
-        >
-          Replay
-        </button>
+        <ScenePlay onClick={replay} playing={playing} label="diagram" />
       </div>
       <div className="min-w-0">
         <p className="font-mono text-[12.5px] leading-5 text-muted [overflow-wrap:anywhere]">
@@ -179,7 +191,7 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
             return (
               <li key={f} className="sc sc-line flex gap-3" style={d(found(i) + 80)} {...over(MARKS[i].nodes)}>
                 <span className="mt-0.5 grid size-5 shrink-0">
-                  <span className="sc sc-swap-out col-start-1 row-start-1 grid place-items-center rounded-full bg-warn-soft text-[11px] font-semibold text-warn" style={d(at + 100)}>
+                  <span className="sc sc-swap-out col-start-1 row-start-1 grid place-items-center rounded-full bg-warn-soft text-[11px] font-semibold text-warn-ink" style={d(at + 100)}>
                     {i + 1}
                   </span>
                   <span className="sc sc-swap-in col-start-1 row-start-1 grid place-items-center rounded-full bg-ok-soft text-ok" style={d(at + 100)}>
@@ -198,7 +210,7 @@ export function DiagramDraw({ draft, findings, fixes, final, files }: { draft: L
             )
           })}
         </ol>
-        <p className="sc sc-pop mt-4 inline-flex rounded-full bg-warn-soft px-3 py-1 text-xs font-medium text-warn" style={d(found(findings.length - 1) + 300)}>
+        <p className="sc sc-pop mt-4 inline-flex rounded-full bg-warn-soft px-3 py-1 text-xs font-medium text-warn-ink" style={d(found(findings.length - 1) + 300)}>
           {findings.length} findings · exit {draft.exit}
         </p>
         <p className="mt-4 font-mono text-[12.5px] leading-5 text-muted [overflow-wrap:anywhere]">

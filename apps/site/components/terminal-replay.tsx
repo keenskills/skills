@@ -5,8 +5,8 @@ import { hangIndent, replaySchedule } from '@/lib/terminal.mjs'
 const TONE: Record<string, string> = {
   error: 'text-danger',
   fail: 'text-danger font-medium',
-  warning: 'text-warn',
-  'warn-head': 'text-warn font-medium',
+  warning: 'text-warn-ink',
+  'warn-head': 'text-warn-ink font-medium',
   pass: 'text-ok',
   summary: 'text-text font-medium',
   detail: 'text-muted',

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Skill } from '@/lib/content'
-import { Count } from './count'
+import { WeeklyDownloads } from './count'
 import { PmCommand } from './pm-command'
 
 // One full-width row per skill, so the longest install command fits on one line.
@@ -17,7 +17,7 @@ export function SkillCard({ skill }: { skill: Skill }) {
         <p className="max-w-2xl text-sm text-muted text-pretty">{skill.summary}</p>
         {skill.downloads !== null ? (
           <p className="mt-2 text-xs text-muted">
-            <Count value={skill.downloads} /> installs last week
+            <WeeklyDownloads name={skill.name} value={skill.downloads} /> installs last week
           </p>
         ) : null}
       </div>

@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { d, SceneStatus, Typed, type Step } from './scene-parts'
+import { d, SceneStatus, Typed, type Step, ScenePlay } from './scene-parts'
 import { useScene } from './use-scene'
 
 // The run, in ms: the command is typed, Chrome opens, the page loads and settles,
@@ -29,7 +29,7 @@ const NOTE = { fontSize: 8, fontFamily: 'var(--font-mono)', fill: 'var(--danger)
 // command and the list are real output, and the labels on the drawing are cut
 // from those lines; the drawing is not the fixture itself.
 export function PageScan({ command, problems, summary }: { command: string; problems: string[]; summary: string }) {
-  const { ref, replay } = useScene<HTMLDivElement>()
+  const { ref, replay, playing } = useScene<HTMLDivElement>()
   const [hot, setHot] = useState<number | null>(null)
   const over = (i: number) => ({ 'data-hot': hot === i ? '' : undefined, onPointerEnter: () => setHot(i), onPointerLeave: () => setHot(null) })
 
@@ -41,7 +41,7 @@ export function PageScan({ command, problems, summary }: { command: string; prob
 
   return (
     <div ref={ref} data-hot={hot ?? undefined} className="scene grid items-start gap-6 md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
-      <div className="relative rounded-2xl bg-code p-4 pb-12 sm:p-6 sm:pb-12">
+      <div className="dots relative rounded-2xl bg-code p-4 pb-12 sm:p-6 sm:pb-12">
         <svg viewBox="0 0 360 300" role="img" aria-labelledby="scan-title" className="block h-auto w-full overflow-visible">
           <title id="scan-title">Illustration: page-as-data opens a page in Chrome, waits for it to settle, scans it and marks four problems a screenshot would not explain</title>
           <defs>
@@ -85,7 +85,7 @@ export function PageScan({ command, problems, summary }: { command: string; prob
             <rect x="36" y="103" width="52" height="16" rx="6" fill="var(--ink-12)" />
             <rect x="94" y="103" width="52" height="16" rx="6" fill="var(--ink-12)" />
             <g clipPath="url(#scan-toolbar)">
-              <rect x="187" y="103" width="60" height="16" rx="6" fill="var(--text)" />
+              <rect x="187" y="103" width="60" height="16" rx="6" fill="color-mix(in oklch, var(--muted), var(--faint))" />
             </g>
           </g>
           <g className="sc sc-rise" style={d(OPEN + 550)}>
@@ -141,14 +141,7 @@ export function PageScan({ command, problems, summary }: { command: string; prob
           ))}
         </svg>
         <SceneStatus steps={STATUS} final="Settled, then read as data" at={BEAM - 100} />
-        <button
-          type="button"
-          onClick={replay}
-          aria-label="Replay the page-as-data illustration"
-          className="press absolute bottom-3 right-3 rounded-full bg-surface px-2.5 py-1 text-xs font-medium text-muted shadow-[var(--card-shadow)] hover:text-text"
-        >
-          Replay
-        </button>
+        <ScenePlay onClick={replay} playing={playing} label="page-as-data" />
       </div>
       <div className="min-w-0">
         <p className="font-mono text-[12.5px] leading-5 text-muted [overflow-wrap:anywhere]">
