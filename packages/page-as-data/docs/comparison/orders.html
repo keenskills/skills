@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orders · Harbor Supply admin</title>
+<!--
+  A made-up admin screen for the comparison at the top of the README. It has the
+  kind of bugs a real screen ships with, and every one of them looks fine, or
+  looks like nothing, in a screenshot:
+  - /api/orders/summary does not exist, so the revenue tile falls back to $0
+  - the refunds list throws while rendering, so it is just empty
+  - "Export CSV" sits past the right edge of a toolbar that clips
+  - the "Pending" badge text is too light to read
+  - the customer avatar points at a missing image
+  Serve this folder (python3 -m http.server 4173) and open /orders.html.
+-->
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1c2230; background: #f4f6fa; }
+  header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #fff; border-bottom: 1px solid #e3e7ef; }
+  header strong { font-size: 16px; }
+  header img { width: 32px; height: 32px; border-radius: 50%; margin-left: auto; background: #dde3ee; }
+  main { padding: 16px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 4px 0 14px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .tile { background: #fff; border: 1px solid #e3e7ef; border-radius: 10px; padding: 12px; }
+  .tile span { display: block; font-size: 12px; color: #5b6478; }
+  .tile b { font-size: 22px; }
+  .toolbar { display: flex; gap: 8px; margin: 18px 0 10px; overflow: hidden; white-space: nowrap; }
+  .toolbar input { flex: 0 0 220px; padding: 8px 10px; border: 1px solid #cfd6e3; border-radius: 8px; font: inherit; }
+  .toolbar button { flex: 0 0 auto; padding: 8px 14px; border-radius: 8px; border: 1px solid #cfd6e3; background: #fff; font: inherit; }
+  .toolbar .primary { background: #2453d4; border-color: #2453d4; color: #fff; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e3e7ef; border-radius: 10px; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #eef1f6; }
+  th { font-size: 12px; color: #5b6478; font-weight: 600; }
+  .badge { font-size: 12px; padding: 2px 8px; border-radius: 99px; }
+  .paid { background: #e3f5ea; color: #17643a; }
+  .pending { background: #fbf7ee; color: #d9cfb8; }
+  h2 { font-size: 17px; margin: 22px 0 8px; }
+  #refunds { background: #fff; border: 1px solid #e3e7ef; border-radius: 10px; min-height: 64px; padding: 4px 12px; }
+</style>
+</head>
+<body>
+<header>
+  <strong>Harbor Supply</strong>
+  <img src="/avatars/m-okafor.png" alt="Signed in as M. Okafor">
+</header>
+<main>
+  <h1>Orders</h1>
+  <section class="tiles" aria-label="Today">
+    <div class="tile"><span>Revenue today</span><b id="revenue">…</b></div>
+    <div class="tile"><span>Orders today</span><b>38</b></div>
+    <div class="tile"><span>Awaiting payment</span><b>4</b></div>
+  </section>
+
+  <div class="toolbar">
+    <input type="search" placeholder="Search orders" aria-label="Search orders">
+    <button type="button">Filter</button>
+    <button type="button" class="primary">New order</button>
+    <button type="button">Export CSV</button>
+  </div>
+
+  <table>
+    <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>#10482</td><td>Lindqvist Marine</td><td>$1,240.00</td><td><span class="badge paid">Paid</span></td></tr>
+      <tr><td>#10481</td><td>Ortega Tools</td><td>$318.50</td><td><span class="badge pending">Pending</span></td></tr>
+      <tr><td>#10480</td><td>Baines &amp; Co</td><td>$96.00</td><td><span class="badge paid">Paid</span></td></tr>
+      <tr><td>#10479</td><td>Kowal Freight</td><td>$2,005.75</td><td><span class="badge pending">Pending</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Refunds to approve</h2>
+  <div id="refunds"></div>
+</main>
+<script>
+  // The summary endpoint was renamed on the server; the screen still asks for the old one.
+  fetch('/api/orders/summary')
+    .then((r) => (r.ok ? r.json() : { revenue: 0 }))
+    .catch(() => ({ revenue: 0 }))
+    .then((s) => { document.getElementById('revenue').textContent = '$' + s.revenue.toLocaleString('en-US') })
+
+  // The refunds payload lost its "items" wrapper, so this throws and the list stays empty.
+  const payload = { refunds: [{ order: '#10477', amount: 54 }] }
+  document.getElementById('refunds').innerHTML = payload.items.map((x) => `<p>${x.order}: $${x.amount}</p>`).join('')
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+Orders · Harbor Supply admin — /orders.html @ 390px, settled in 256ms
+
+PROBLEMS
+  • uncaught exception: TypeError: Cannot read properties of undefined (reading 'map') |     at http://localhost:4173/orders.html:86:64
+  • failed request: GET http://localhost:4173/avatars/m-okafor.png → 404
+  • failed request: GET http://localhost:4173/api/orders/summary → 404
+  • broken image: http://localhost:4173/avatars/m-okafor.png
+  • layout: button "New order" is cut off (57% visible) by div.toolbar, and nothing scrolls to it
+  • layout: button "Export CSV" is cut off (0% visible) by div.toolbar, and nothing scrolls to it
+
+HEADINGS
+  h1 Orders
+    h2 Refunds to approve
+
+FORM FIELDS
+  Search orders [search] = ""
+
+TABLE 0 — 4 rows
+  Order | Customer | Total | Status
+  #10482 | Lindqvist Marine | $1,240.00 | Paid
+  #10481 | Ortega Tools | $318.50 | Pending
+  #10480 | Baines & Co | $96.00 | Paid
+  #10479 | Kowal Freight | $2,005.75 | Pending
+
+BUTTONS AND LINKS
+  Filter · New order · Export CSV
+
+INSPECT "Pending" — 2 found
+  span "Pending" at x301 y467 62×19: visible
+    colour rgb(217, 207, 184) on rgb(251, 247, 238), contrast 1.45:1 (TOO LOW); font 12px 400; inline, static
+  span "Pending" at x301 y547 62×19: visible
+    colour rgb(217, 207, 184) on rgb(251, 247, 238), contrast 1.45:1 (TOO LOW); font 12px 400; inline, static
+
+TEXT ON SCREEN
+  Orders
+  Revenue today
+  $0
+  Orders today
+  38
+  Awaiting payment
+  4
+  Filter
+  New order
+  Export CSV
+  
+  [table 0: 4 rows — see tables]
+  
+  Refunds to approve
+
+Screenshot saved to orders-390.png.

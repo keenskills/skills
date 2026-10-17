@@ -11,6 +11,48 @@ plain text or JSON, in one command.
 Take a screenshot only for what data cannot answer: images, charts, and
 "does it look right overall".
 
+**One screen, read both ways.** An orders page from a made-up admin app at
+phone width ([source](docs/comparison/orders.html)), read once as a screenshot
+and once with:
+
+```sh
+npx @keenskills/page-as-data read http://localhost:4173/orders.html --width 390 --launch --inspect "Pending"
+```
+
+![Screenshot of the orders page at 390px: revenue $0, an empty refunds box, a cut-off New order button](https://raw.githubusercontent.com/keenskills/skills/main/packages/page-as-data/docs/comparison/orders-390.png)
+
+The screenshot looks like a quiet day: revenue is $0, the refunds box is empty,
+and a button is slightly off the edge. The read starts with why
+([full output](docs/comparison/orders-390.txt)):
+
+```text
+PROBLEMS
+  • uncaught exception: TypeError: Cannot read properties of undefined (reading 'map')
+  • failed request: GET http://localhost:4173/avatars/m-okafor.png → 404
+  • failed request: GET http://localhost:4173/api/orders/summary → 404
+  • broken image: http://localhost:4173/avatars/m-okafor.png
+  • layout: button "New order" is cut off (57% visible) by div.toolbar, and nothing scrolls to it
+  • layout: button "Export CSV" is cut off (0% visible) by div.toolbar, and nothing scrolls to it
+
+INSPECT "Pending" — 2 found
+  span "Pending" … contrast 1.45:1 (TOO LOW)
+```
+
+| | Screenshot | page-as-data read |
+| --- | --- | --- |
+| Input tokens | 2,477 | 757 |
+| Failed requests | Not shown: the $0 looks like a real number | Both 404s, with URLs |
+| Uncaught exception | Not shown: the refunds box is just empty | The error and its line |
+| "Export CSV" button | Not on screen, so nothing to notice | Cut off, by which element |
+| "Pending" badge | Faint, hard to judge | Contrast 1.45:1, too low |
+| Table contents | Read off the picture | Four rows as text |
+
+Tokens were counted by sending each one to Claude (Haiku 5.5) on its own and
+subtracting the same request without it. The screenshot is the 1170×2532 PNG
+that `--screenshot` saves for a phone width; the read is the whole text output,
+1.6 KB. That is about a third of the tokens, and the read is the one that names
+all five bugs.
+
 ![How page-as-data helps](https://raw.githubusercontent.com/keenskills/skills/main/packages/page-as-data/docs/diagram/how-it-helps.png)
 
 Full guide: [docs/usage.md](https://github.com/keenskills/skills/blob/main/packages/page-as-data/docs/usage.md).
