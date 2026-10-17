@@ -11,7 +11,7 @@ export default function HowToUse() {
     <div className="py-12">
       <h1 className="text-3xl font-semibold tracking-tight">How to use</h1>
       <p className="mt-3 max-w-2xl text-muted text-pretty">
-        Each skill is its own npm package. Run init in your project: it finds the agents you use and installs the skill in each one’s format. Nothing else changes.
+        Install a skill with the skills CLI, which works for Claude Code, Codex, Cursor, Gemini CLI and more. Each skill is also its own npm package: run its init in your project and it finds the agents you use and installs the skill in each one’s format. Nothing else changes.
       </p>
 
       {skills.map((s) => (
@@ -20,7 +20,8 @@ export default function HowToUse() {
             {s.title}
           </h2>
           <div className="mt-4 grid gap-4">
-            <PmCommand pkg={s.name} args="init" label="This project, for the agents it uses" name="install" />
+            <PmCommand pkg="skills" args={`add keenskills/skills --skill ${s.pkg}`} label="With the skills CLI, for the agents you pick" name="install" />
+            <PmCommand pkg={s.name} args="init" label="Or with its own installer, for the agents this project uses" name="init" switcher={false} />
             <PmCommand pkg={s.name} args="init --global" label="Claude Code, in every project" name="global" switcher={false} />
             <PmCommand pkg={s.name} args="init --agent claude,cursor" label="Pick the agents yourself" name="agents" switcher={false} />
             <PmCommand pkg={s.name} args="init --dry-run" label="See the plan first, write nothing" name="dry-run" switcher={false} />

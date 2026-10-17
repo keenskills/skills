@@ -233,6 +233,8 @@ async function buildSkill(s) {
   const ctx = { pkg: s.pkg, slug: s.slug, sections: readme.sections.map((x) => x.slug), anchors: anchorMap(readme.sections), base: '' }
   const useSection = readme.sections.find((x) => /^use\b/i.test(x.heading))
   const skillMd = read(s.skillFile)
+  // The skills CLI reports installs to skills.sh; npx <package> init does not.
+  const install = `npx skills add keenskills/skills --skill ${s.pkg}`
   return {
     pkg: s.pkg,
     slug: s.slug,
@@ -241,14 +243,14 @@ async function buildSkill(s) {
     version: pkg.version,
     description: pkg.description,
     summary: firstSentence(pkg.description),
-    install: `npx ${pkg.name} init`,
+    install,
     repo: `${REPO}/tree/main/packages/${s.pkg}`,
     npm: `https://www.npmjs.com/package/${pkg.name}`,
     intro: await renderMarkdown(readme.intro, ctx),
     sections: await Promise.all(readme.sections.map(async (x) => ({ heading: x.heading, slug: x.slug, html: await renderMarkdown(x.markdown, ctx) }))),
     changelog: await renderMarkdown(read('CHANGELOG.md').replace(/^# .*\n/, ''), ctx),
     skill: await renderMarkdown(skillMd.replace(/^---\n[\s\S]*?\n---\n/, '').replace(/^\s*# .*\n/, ''), { ...ctx, base: posix.dirname(s.skillFile) }),
-    prompt: buildPrompt({ title: s.title, pkg: s.pkg, install: `npx ${pkg.name} init`, skillMd }),
+    prompt: buildPrompt({ title: s.title, pkg: s.pkg, install: `${install} -y`, skillMd }),
     gallery: useSection ? promptGallery(`## ${useSection.heading}\n${useSection.markdown}`) : [],
     downloads: await weeklyDownloads(pkg.name),
   }

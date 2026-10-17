@@ -15,7 +15,7 @@ export function SkillHeader({ skill }: { skill: Skill }) {
         <p className="text-sm text-muted">Paste it into Claude Code, Cursor or Codex.</p>
       </div>
       <div className="mt-6 max-w-xl">
-        <PmCommand pkg={skill.name} args="init" label="Install in your project" />
+        <PmCommand pkg="skills" args={`add keenskills/skills --skill ${skill.pkg}`} label="Install in your project" />
       </div>
       <ul className="mt-4 flex flex-wrap gap-4 text-sm">
         <li>

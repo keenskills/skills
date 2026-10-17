@@ -188,7 +188,15 @@ Chrome, bad URL, a step could not find its control).
 ## Install as an agent skill
 
 One command teaches the coding agents in a project to read screens with
-`page-as-data` instead of taking screenshots:
+`page-as-data` instead of taking screenshots. With the
+[skills CLI](https://skills.sh), for Claude Code, Codex, Cursor, Gemini CLI and
+more:
+
+```sh
+npx skills add keenskills/skills --skill page-as-data
+```
+
+Or with this package's own installer:
 
 ```sh
 npx @keenskills/page-as-data init
