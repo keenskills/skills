@@ -78,7 +78,7 @@ describe('buildContent', () => {
     const c = await buildContent()
     assert.deepEqual(c.skills.map((s) => s.slug), SKILLS.map((s) => s.slug))
     for (const s of c.skills) {
-      assert.match(s.install, /^npx @keenskills\/[a-z-]+ init$/)
+      assert.equal(s.install, `npx skills add keenskills/skills --skill ${s.pkg}`)
       assert.ok(s.sections.length >= 3, s.slug)
       assert.match(s.changelog, new RegExp(`<h2[^>]*>${s.version.replaceAll('.', '\\.')}</h2>`))
       assert.ok(s.skill.length > 500, s.slug)

@@ -36,7 +36,7 @@ describe('package manager switcher', { skip }, () => {
   it('rewrites every install command for pnpm', async () => {
     const r = await read('/how-to-use', { steps: [{ click: 'pnpm' }], inspect: ['[data-command="install"]', '[data-command="uninstall"]'] })
     ok(r)
-    assert.match(first(r, 0).text, /^pnpm dlx @keenskills\/page-as-data init/)
+    assert.match(first(r, 0).text, /^pnpm dlx skills add keenskills\/skills --skill page-as-data/)
     assert.match(first(r, 1).text, /^pnpm dlx @keenskills\/page-as-data uninstall/)
   })
 })

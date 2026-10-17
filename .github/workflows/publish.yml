@@ -7,7 +7,7 @@ on:
     tags: ['**']
 
 permissions:
-  contents: read
+  contents: write # gh release create
   id-token: write # npm provenance
 
 jobs:
@@ -35,3 +35,10 @@ jobs:
         working-directory: ${{ steps.target.outputs.dir }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Watchers' feeds and the repo sidebar show releases, not tags. The notes are
+      # this version's section of the package's CHANGELOG.md.
+      - run: |
+          awk -v v="## ${{ steps.target.outputs.version }}" '$0==v{f=1;next} /^## /{f=0} f' "${{ steps.target.outputs.dir }}/CHANGELOG.md" > notes.md
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "${{ steps.target.outputs.name }} ${{ steps.target.outputs.version }}" --notes-file notes.md
+        env:
+          GH_TOKEN: ${{ github.token }}

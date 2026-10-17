@@ -72,7 +72,8 @@ export default async function SkillPage({ params }: Props) {
           install: (
             <div className="grid gap-5">
               <h2 className="text-xl font-semibold tracking-tight">Install &amp; usage</h2>
-              <PmCommand pkg={skill.name} args="init" label="This project, for the agents it uses" name="install" />
+              <PmCommand pkg="skills" args={`add keenskills/skills --skill ${skill.pkg}`} label="With the skills CLI, for the agents you pick" name="install" />
+              <PmCommand pkg={skill.name} args="init" label="Or with its own installer, for the agents this project uses" name="init" switcher={false} />
               <PmCommand pkg={skill.name} args="init --dry-run" label="See the plan first, write nothing" name="dry-run" switcher={false} />
               <CodeCommand label="As a Claude Code plugin" command={`/plugin marketplace add keenskills/skills\n/plugin install ${skill.pkg}@keenskills`} />
               <Link href="/how-to-use" className="text-sm font-medium text-accent hover:underline">

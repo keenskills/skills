@@ -29,6 +29,12 @@ vocabulary, empty pages, table titles separated from their table, and captions s
 ## Install
 
 ```bash
+npx skills add keenskills/skills --skill writing-design-documents   # with the skills CLI (skills.sh), for the agents you pick
+```
+
+Or with this package's own installer:
+
+```bash
 npx @keenskills/writing-design-documents init            # this project, for the agents it uses
 npx @keenskills/writing-design-documents init --global   # Claude Code, every project
 npx @keenskills/writing-design-documents doctor          # check Python, python-docx, pymupdf and Word

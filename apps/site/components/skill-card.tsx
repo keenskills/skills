@@ -3,6 +3,9 @@ import type { Skill } from '@/lib/content'
 import { WeeklyDownloads } from './count'
 import { PmCommand } from './pm-command'
 
+// A small weekly count works against the skill, so it stays hidden until it is worth showing.
+const SHOW_DOWNLOADS_FROM = 100
+
 // One full-width row per skill, so the longest install command fits on one line.
 export function SkillCard({ skill }: { skill: Skill }) {
   return (
@@ -15,13 +18,13 @@ export function SkillCard({ skill }: { skill: Skill }) {
       </div>
       <div className="-mt-2">
         <p className="max-w-2xl text-sm text-muted text-pretty">{skill.summary}</p>
-        {skill.downloads !== null ? (
+        {skill.downloads !== null && skill.downloads >= SHOW_DOWNLOADS_FROM ? (
           <p className="mt-2 text-xs text-muted">
             <WeeklyDownloads name={skill.name} value={skill.downloads} /> installs last week
           </p>
         ) : null}
       </div>
-      <PmCommand pkg={skill.name} args="init" label="Install in your project" />
+      <PmCommand pkg="skills" args={`add keenskills/skills --skill ${skill.pkg}`} label="Install in your project" />
     </article>
   )
 }

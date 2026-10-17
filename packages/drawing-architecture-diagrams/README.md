@@ -29,6 +29,12 @@ requires viewing the rendered PNG.
 ## Install
 
 ```bash
+npx skills add keenskills/skills --skill drawing-architecture-diagrams   # with the skills CLI (skills.sh), for the agents you pick
+```
+
+Or with this package's own installer:
+
+```bash
 npx @keenskills/drawing-architecture-diagrams init            # this project, for the agents it uses
 npx @keenskills/drawing-architecture-diagrams init --global   # Claude Code, every project
 npx @keenskills/drawing-architecture-diagrams doctor          # check Python and draw.io

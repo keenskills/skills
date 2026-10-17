@@ -13,6 +13,9 @@ what makes a document look machine-made or reveals how the facts were collected.
 **Core rule:** the client reads a design, not a log of your session. State every fact as the configuration
 *as of a date*. Never write how it was obtained.
 
+## Setup
+Needs Python 3.9 or newer with `pip install python-docx pymupdf`. `finalize` needs Microsoft Word on Windows.
+
 ## Workflow
 1. **Facts.** Record each as current configuration. Anything unknown becomes "to be confirmed by <team>".
 2. **Figures.** Draw with the `drawing-architecture-diagrams` skill. Export figure-only images (`frame_content()`) and put
