@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist_Mono, Fira_Sans } from 'next/font/google'
+import { Figtree, Geist_Mono, Fira_Sans, Instrument_Sans } from 'next/font/google'
 import { Analytics } from '@/components/analytics'
 import { JsonLd } from '@/components/json-ld'
 import { SiteFooter } from '@/components/site-footer'
@@ -16,6 +16,9 @@ const sans = Fira_Sans({
   weight: ['300', '400', '500', '600', '700'],
 })
 const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
+// The home page's faces (app/home.css). Not preloaded: only the home page asks for them.
+const display = Instrument_Sans({ subsets: ['latin'], variable: '--font-instrument', weight: ['400', '500'], preload: false })
+const body = Figtree({ subsets: ['latin'], variable: '--font-figtree', weight: ['400', '500'], preload: false })
 
 // What every page shares. Titles, canonical URLs and social cards are per page: lib/meta.ts.
 export const metadata: Metadata = {
@@ -52,7 +55,7 @@ const WEBSITE = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${mono.variable} ${display.variable} ${body.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <noscript>

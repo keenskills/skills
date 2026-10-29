@@ -58,8 +58,8 @@
 @keyframes sc-spin  { 0% { opacity: 0; transform: rotate(0deg); } 10%, 85% { opacity: 1; } 100% { opacity: 0; transform: rotate(900deg); } }
 @keyframes sc-enter { from { opacity: 0; transform: translateY(var(--text-swap-translate-y)); filter: blur(var(--text-swap-blur)); } }
 @keyframes sc-leave {
-  from { opacity: 1; transform: translateY(0); filter: blur(0); }
-  to { opacity: 0; transform: translateY(calc(var(--text-swap-translate-y) * -1)); filter: blur(var(--text-swap-blur)); }
+  from { opacity: 1; visibility: visible; transform: translateY(0); filter: blur(0); }
+  to { opacity: 0; visibility: hidden; transform: translateY(calc(var(--text-swap-translate-y) * -1)); filter: blur(var(--text-swap-blur)); }
 }
 @keyframes sc-swap-in  { from { opacity: 0; transform: scale(var(--icon-swap-start-scale)); filter: blur(var(--icon-swap-blur)); } }
 @keyframes sc-swap-out {
@@ -71,6 +71,8 @@
 
 .scene .sc-beam, .scene .sc-ping, .scene .sc-flash, .scene .sc-flow,
 .scene .sc-load, .scene .sc-cover, .scene .sc-spin, .scene .sc-mark, .scene .sc-leave, .scene .sc-swap-out { opacity: 0; }
+/* A replaced status also leaves the accessibility and hit-test layers, not only the paint. */
+.scene .sc-leave { visibility: hidden; }
 
 /* Page scan: pointing at a pin or its line brings that pair forward. */
 .scan-pin { transform-box: fill-box; transform-origin: center; transition: opacity 160ms ease, transform 160ms var(--ease-out); }

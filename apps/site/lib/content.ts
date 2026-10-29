@@ -3,6 +3,7 @@ import data from '../.generated/content.json'
 
 export type Section = { heading: string; slug: string; html: string }
 export type Gallery = { title: string; note: string; prompts: string[] }
+export type Lead = { src: string; alt: string; width: number; height: number; command: string | null; output: string | null }
 export type Skill = {
   pkg: string
   slug: string
@@ -15,6 +16,7 @@ export type Skill = {
   repo: string
   npm: string
   intro: string
+  lead: Lead | null
   sections: Section[]
   changelog: string
   skill: string

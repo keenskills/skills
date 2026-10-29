@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { FileCheck, MessageText, TerminalSquare } from 'reicon-react'
 import { AgentLogo } from '@/components/agent-logo'
 import { HeroReveal } from '@/components/hero-reveal'
 import { DiagramDraw } from '@/components/illustrations/diagram-draw'
@@ -13,16 +12,14 @@ import { pageMeta } from '@/lib/meta'
 import { SITE } from '@/lib/site.mjs'
 import { problemLines } from '@/lib/terminal.mjs'
 import { JsonLd } from '@/components/json-ld'
-import { SkillCard } from '@/components/skill-card'
-import { agents, skills } from '@/lib/content'
+import { InstallPanel } from '@/components/install-panel'
+import { PmCommand } from '@/components/pm-command'
+import { NightSky } from '@/components/night-sky'
+import { ProofStage, type Proof } from '@/components/proof-stage'
+import { agents, skills, type Skill } from '@/lib/content'
+import './home.css'
 
 export const metadata: Metadata = pageMeta({ path: '/' })
-
-const STEPS = [
-  { icon: TerminalSquare, title: 'Install the skill', body: 'Run init in your project. It finds the agents you use and writes the skill in each one’s own format.' },
-  { icon: MessageText, title: 'Ask your agent', body: 'Say what you need in plain words: check this page on a phone, draw this system on one A4 page, or write the design document on our template.' },
-  { icon: FileCheck, title: 'Get real output', body: 'Your agent reads the page as data, builds a draw.io file with PNG and PDF, or writes a Word document, and fixes what its checks find.' },
-]
 
 const FAQS = [
   {
@@ -62,119 +59,140 @@ const docFindings = docs.fixes.map((_, i) => {
   return line.length > 40 ? line.slice(0, line.indexOf(': ')) : line
 })
 
+// Each skill's proof beside its row: its README's lead image, and where the
+// README shows no output, the clean final run of its showcase.
+const VERDICT: Record<string, Proof['verdict']> = {
+  'architecture-diagrams': diagrams.final.lint,
+  'design-documents': docs.final.check,
+}
+const proofs: Proof[] = skills.map((s) => {
+  if (!s.lead) throw new Error(`${s.slug}: its README has no lead image for the home page`)
+  return { slug: s.slug, title: s.title, summary: s.summary, version: s.version, lead: s.lead, verdict: s.lead.output ? null : (VERDICT[s.slug] ?? null) }
+})
+
+const COUNT = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six']
+
+// A chapter per skill: its name, the package's own summary, its install and docs, then
+// the scene built from its real output.
+function Chapter({ skill, id, children }: { skill: Skill; id: string; children: React.ReactNode }) {
+  return (
+    <section aria-labelledby={id} className="chapter">
+      <div className="section-head">
+        <h2 id={id} className="display-section">
+          {skill.title}
+        </h2>
+        <p className="section-lede">{skill.summary}</p>
+      </div>
+      <div className="chapter-actions">
+        <div className="chapter-install">
+          <PmCommand pkg="skills" args={`add keenskills/skills --skill ${skill.pkg}`} label="Install in your project" />
+        </div>
+        <Link href={`/${skill.slug}`} className="text-link">
+          Read the {skill.title} docs
+        </Link>
+      </div>
+      <div className="panel chapter-scene">{children}</div>
+    </section>
+  )
+}
+
 export default function Home() {
   return (
-    <>
-      <section className="py-16 sm:py-24">
-        <HeroReveal>
-        <p className="t-stagger-line t-stagger-line--1 text-sm font-medium text-accent">Open-source agent skills</p>
-        <h1 className="t-stagger-line t-stagger-line--2 mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{SITE.tagline}</h1>
-        <p className="t-stagger-line t-stagger-line--3 mt-4 max-w-2xl text-lg text-muted text-pretty">
-          Skills that let an agent read what a web page really shows, draw architecture diagrams you can print, and write design documents that read as written by a consultant. Each one installs with a single command.
-        </p>
-        </HeroReveal>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="#skills" className="relay relay-ink inline-flex h-9 items-center whitespace-nowrap rounded-lg border border-text bg-text px-4 pt-0.5 text-sm font-medium text-bg">
-            Browse skills
-          </Link>
-          <Link href="/how-to-use" className="relay inline-flex h-9 items-center whitespace-nowrap rounded-lg border border-border bg-chip px-4 pt-0.5 text-sm font-medium text-text">
-            How to use
-          </Link>
+    <div id="home">
+      <section className="hero night" aria-labelledby="hero-title">
+        <div className="ground" aria-hidden="true">
+          <NightSky seed={7} />
         </div>
-      </section>
-
-      <section id="skills" aria-labelledby="skills-title" className="scroll-mt-6 pb-16">
-        <h2 id="skills-title" className="text-xl font-semibold tracking-tight">
-          Skills
-        </h2>
-        <div className="mt-6 grid gap-4">
-          {skills.map((s) => (
-            <SkillCard key={s.slug} skill={s} />
-          ))}
+        <div className="hero-copy">
+          <HeroReveal>
+            <h1 id="hero-title" className="t-stagger-line t-stagger-line--1 display-hero">{SITE.tagline}</h1>
+            <p className="t-stagger-line t-stagger-line--2 hero-lede">Open-source skills for coding agents, each installed with one command.</p>
+            <div className="t-stagger-line t-stagger-line--3 hero-actions">
+              <Link href="#skills" className="pill pill-lit">
+                Browse skills
+              </Link>
+              <Link href="/how-to-use" className="pill">
+                How to use
+              </Link>
+            </div>
+          </HeroReveal>
         </div>
+        <InstallPanel channels={skills.map((s) => ({ pkg: s.pkg, title: s.title, version: s.version }))} />
       </section>
 
-      <section aria-labelledby="see-pad" className="border-t border-border py-16">
-        <h2 id="see-pad" className="text-xl font-semibold tracking-tight">
-          Reads the page, not the pixels
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted text-pretty">
-          page-as-data opens the page in Chrome, waits until it has settled, and reports what is on screen and what broke behind it.
-        </p>
-        <div className="mt-8">
-          <PageScan command={pad.read['390'].command} problems={scanLines} summary={`${problems.length} problems · exit ${pad.read['390'].exit}`} />
+      <section id="skills" aria-labelledby="skills-title" className="skills scroll-mt-6">
+        <div className="section-head">
+          <h2 id="skills-title" className="display-section">
+            {COUNT[skills.length] ?? skills.length} skills, each its own install.
+          </h2>
+          <p className="section-lede">Pick one to see what it hands back.</p>
         </div>
+        <ProofStage proofs={proofs} />
       </section>
 
-      <section aria-labelledby="see-diagrams" className="border-t border-border py-16">
-        <h2 id="see-diagrams" className="text-xl font-semibold tracking-tight">
-          Draws, checks and fixes its own diagrams
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted text-pretty">
-          The diagram skill writes a build script, lints the result for overlaps and wasted space, fixes what it finds and renders print-ready files.
-        </p>
-        <div className="mt-8">
-          <DiagramDraw draft={diagrams.draft.lint} findings={findings} fixes={fixes} final={diagrams.final.lint} files={diagrams.downloads.map((f) => f.href.split('/').pop() ?? f.ext)} />
+      <Chapter skill={skills[0]} id="see-pad">
+        <PageScan command={pad.read['390'].command} problems={scanLines} summary={`${problems.length} problems, exit ${pad.read['390'].exit}`} />
+      </Chapter>
+      <Chapter skill={skills[1]} id="see-diagrams">
+        <DiagramDraw draft={diagrams.draft.lint} findings={findings} fixes={fixes} final={diagrams.final.lint} files={diagrams.downloads.map((f) => f.href.split('/').pop() ?? f.ext)} />
+      </Chapter>
+      <Chapter skill={skills[2]} id="see-docs">
+        <DocCheck draft={docs.draft.check} findings={docFindings} fixes={docs.fixes} final={docs.final.check} files={docs.downloads.map((f) => f.href.split('/').pop() ?? f.ext)} />
+      </Chapter>
+
+      <section aria-labelledby="agents-title" className="pair">
+        <div className="section-head">
+          <h2 id="agents-title" className="display-section">
+            Works with the agent you use
+          </h2>
         </div>
-      </section>
-
-      <section aria-labelledby="see-docs" className="border-t border-border py-16">
-        <h2 id="see-docs" className="text-xl font-semibold tracking-tight">
-          Writes the document, then checks how it reads
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted text-pretty">
-          The design document skill builds the Word file on the client&rsquo;s own template, checks it for what makes text read as generated or reveals how the facts were collected, and fixes what it finds.
-        </p>
-        <div className="mt-8">
-          <DocCheck draft={docs.draft.check} findings={docFindings} fixes={docs.fixes} final={docs.final.check} files={docs.downloads.map((f) => f.href.split('/').pop() ?? f.ext)} />
-        </div>
-      </section>
-
-      <section aria-labelledby="steps-title" className="border-t border-border py-16">
-        <h2 id="steps-title" className="text-xl font-semibold tracking-tight">
-          Three steps, no setup
-        </h2>
-        <ol className="mt-8 grid gap-8 md:grid-cols-3">
-          {STEPS.map((s) => (
-            <li key={s.title}>
-              <span className="flex size-8 items-center justify-center rounded-full bg-accent-soft text-accent">
-                <s.icon size={18} weight="Filled" aria-hidden="true" />
-              </span>
-              <h3 className="mt-3 font-medium">{s.title}</h3>
-              <p className="mt-1.5 text-sm text-muted text-pretty">{s.body}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section aria-labelledby="agents-title" className="border-t border-border py-16">
-        <h2 id="agents-title" className="text-xl font-semibold tracking-tight">
-          Works with the agent you use
-        </h2>
-        <ul className="mt-6 flex flex-wrap gap-2">
+        <ul className="agent-rows">
           {agents.map((a) => (
-            <li key={a.id} className="flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-sm">
-              <AgentLogo id={a.id} />
-              {a.label}
+            <li key={a.id} className="agent-row">
+              <span className="agent-name">
+                <AgentLogo id={a.id} />
+                {a.label}
+              </span>
+              <code className="agent-path">{a.path}</code>
             </li>
           ))}
         </ul>
       </section>
 
-      <section aria-labelledby="faq-title" className="border-t border-border py-16">
-        <h2 id="faq-title" className="text-xl font-semibold tracking-tight">
-          Questions
-        </h2>
-        <div className="card mt-6 divide-y divide-border">
+      <section aria-labelledby="faq-title" className="pair">
+        <div className="section-head">
+          <h2 id="faq-title" className="display-section">
+            Questions
+          </h2>
+        </div>
+        <div className="faq-list">
           {FAQS.map((f) => (
-            <details key={f.q} className="t-accordion px-5 py-4">
-              <summary className="cursor-pointer font-medium">
+            <details key={f.q} className="t-accordion faq-item">
+              <summary className="cursor-pointer">
                 <span>{f.q}</span>
-                <svg className="chev size-4 shrink-0 text-muted" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+                <svg className="chev size-4 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
               </summary>
-              <p className="mt-2 text-sm text-muted text-pretty">{f.a}</p>
+              <p className="faq-answer">{f.a}</p>
             </details>
           ))}
+        </div>
+      </section>
+
+      <section className="closing night" aria-labelledby="closing-title">
+        <div className="ground" aria-hidden="true">
+          <NightSky seed={11} horizon={0.8} />
+        </div>
+        <h2 id="closing-title" className="display-closing">
+          Free, and open source.
+        </h2>
+        <p className="closing-lede">MIT licensed, every line on GitHub.</p>
+        <div className="hero-actions">
+          <a href={SITE.repo} className="pill pill-lit">
+            Open the repository
+          </a>
+          <Link href="/how-to-use" className="pill">
+            Install guide
+          </Link>
         </div>
       </section>
       <JsonLd
@@ -184,6 +202,6 @@ export default function Home() {
           mainEntity: FAQS.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
         }}
       />
-    </>
+    </div>
   )
 }

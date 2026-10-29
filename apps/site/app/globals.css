@@ -147,6 +147,7 @@
 @media (prefers-reduced-motion: reduce) { .press:active { transform: none; } }
 
 /* Header, main and footer share one width so their edges line up. */
+html, body { overflow-x: clip; }
 body {
   --site-max: 56rem;
   background: var(--bg);

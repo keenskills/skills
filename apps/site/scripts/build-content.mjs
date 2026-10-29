@@ -225,6 +225,30 @@ export async function weeklyDownloads(name, fetchImpl = fetch) {
   }
 }
 
+/** Width and height of a PNG, from its IHDR chunk. */
+export function pngSize(buf) {
+  if (buf.toString('ascii', 12, 16) !== 'IHDR') throw new Error('not a PNG')
+  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) }
+}
+
+/**
+ * The README's own proof, for the home page: the first image of its intro and,
+ * when the intro has one, the first plain-text block (the tool's output it shows)
+ * with the command above it.
+ */
+export function readmeLead(pkg, intro) {
+  const img = /!\[([^\]]*)\]\(([^)\s]+)\)/.exec(intro)
+  if (!img) return null
+  const own = `${RAW}/packages/${pkg}/`
+  const path = img[2].startsWith(own) ? img[2].slice(own.length) : clean(img[2])
+  if (isAbsolute(path)) return null
+  const src = copyImage(pkg, path)
+  const size = pngSize(readFileSync(new URL(`packages/${pkg}/${path}`, root)))
+  const command = /```(?:sh|bash|shell)\n([\s\S]*?)```/.exec(intro)
+  const text = /```text\n([\s\S]*?)```/.exec(intro)
+  return { src, alt: img[1], ...size, command: command && text ? command[1].trim() : null, output: text ? text[1].trimEnd() : null }
+}
+
 async function buildSkill(s) {
   const dir = new URL(`packages/${s.pkg}/`, root)
   const read = (f) => readFileSync(new URL(f, dir), 'utf8')
@@ -247,6 +271,7 @@ async function buildSkill(s) {
     repo: `${REPO}/tree/main/packages/${s.pkg}`,
     npm: `https://www.npmjs.com/package/${pkg.name}`,
     intro: await renderMarkdown(readme.intro, ctx),
+    lead: readmeLead(s.pkg, readme.intro),
     sections: await Promise.all(readme.sections.map(async (x) => ({ heading: x.heading, slug: x.slug, html: await renderMarkdown(x.markdown, ctx) }))),
     changelog: await renderMarkdown(read('CHANGELOG.md').replace(/^# .*\n/, ''), ctx),
     skill: await renderMarkdown(skillMd.replace(/^---\n[\s\S]*?\n---\n/, '').replace(/^\s*# .*\n/, ''), { ...ctx, base: posix.dirname(s.skillFile) }),

@@ -58,19 +58,15 @@ export function PageScan({ command, problems, summary }: { command: string; prob
             </pattern>
           </defs>
 
-          {/* Chrome opens: the window, the address typed in, a load bar and a spinner that ends in a tick. */}
+          {/* Chrome opens: the page, its address typed in, a load bar and a spinner that ends in a tick. No drawn browser chrome. */}
           <g className="sc sc-rise" style={d(OPEN)}>
             <rect x="8" y="8" width="300" height="284" rx="14" fill="var(--surface)" stroke="var(--line-strong)" />
             <path d="M8 40h300" stroke="var(--line-strong)" />
-            {[24, 36, 48].map((cx) => (
-              <circle key={cx} cx={cx} cy="24" r="3.5" fill="var(--ink-12)" />
-            ))}
-            <rect x="68" y="16" width="208" height="16" rx="8" fill="var(--code)" />
-            <text x="80" y="27.5" fontSize="9.5" fill="var(--muted)" fontFamily="var(--font-mono)">
+            <text x="24" y="27.5" fontSize="9.5" fill="var(--muted)" fontFamily="var(--font-mono)">
               {host}
             </text>
           </g>
-          <rect className="sc sc-cover" style={{ ...d(OPEN + 100), animationTimingFunction: `steps(${host.length}, end)` }} x="78" y="18" width={host.length * 5.8 + 6} height="12" fill="var(--code)" />
+          <rect className="sc sc-cover" style={{ ...d(OPEN + 100), animationTimingFunction: `steps(${host.length}, end)` }} x="22" y="18" width={host.length * 5.8 + 6} height="12" fill="var(--surface)" />
           <rect className="sc sc-load" style={d(OPEN + 100)} x="9" y="39" width="298" height="2" fill="var(--accent)" />
           <circle className="sc sc-spin" style={d(OPEN + 150)} cx="292" cy="24" r="4.5" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="16 12.3" />
           <path className="sc sc-draw" pathLength={1} style={d(BEAM - 100)} d="M288 24.5l3 3 5.5-6.5" fill="none" stroke="var(--ok)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
@@ -148,7 +144,7 @@ export function PageScan({ command, problems, summary }: { command: string; prob
           <span className="text-faint">$ </span>
           <Typed text={command} at={0} />
         </p>
-        <p className="sc sc-line mt-4 font-mono text-xs uppercase tracking-wide text-muted" style={d(BEAM)}>
+        <p className="sc sc-line mt-4 text-sm font-medium text-muted" style={d(BEAM)}>
           Problems
         </p>
         <ol className="mt-3 grid gap-2.5">
