@@ -1,0 +1,519 @@
+/* Hallmark · shape: Workbench · genre: atmospheric · theme: ribbon (by request) · redesign: full
+ * paper: oklch(96% 0.011 82), cards oklch(99.2% 0.004 82) · accent: oklch(44% 0.075 190) · display: Instrument Sans · body: Figtree · hero: Stage · nav: kept, lifted onto the night · footer: kept · signature: the installer built as a machined instrument over a night of page rows read by a passing light
+ * ribbon: two-in-the-morning on the hero and the closing band, dawn on the light page and two-in-the-morning on the dark one
+ * axes: light/grotesk-sans/chromatic-teal · posture: committed · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H5 E4 S5 R4 V4 · weakest: P, the night is borrowed from a sleep app; it reads as a page being scanned (rows of text, a light passing down) so it says what page-as-data does */
+/* Hallmark · waive 39b · copy buttons and the scenes' Play buttons stand 24 to 32px · they are tool controls inside the showcases, shared with the docs pages, not the page's marketing actions */
+/* Hallmark · waive 44c · the hero copy ends near y 520 while the instrument runs to y 710 · the Stage posture centres the copy against the instrument over a night that fills the screen */
+/* Hallmark · dismissed 40 · "Copy 3 commands" is amber-ink on an amber pill, well over 4.5:1; the render sampled it mid text-swap */
+/* Hallmark · dropped "Three steps, no setup" · its copy restated each skill by hand and the How to use page carries the steps */
+/* Hallmark · dropped "Open-source agent skills" · 54 names the eyebrow; the hero sentence now opens with it */
+
+:root {
+  /* Ribbon's palette, dawn and two in the morning; the blocks below map it onto the site's token names. */
+  --rb-dawn-bg: oklch(96% 0.011 82);  /* layer 1: paper plate */
+  --rb-dawn-surface: oklch(99.2% 0.004 82);  /* layer 2: cards, lighter than the plate */
+  --rb-dawn-code: oklch(92.3% 0.014 82);
+  --rb-dawn-chip: oklch(92.3% 0.014 82);
+  --rb-dawn-chip-hover: oklch(89.5% 0.014 82);
+  --rb-dawn-text: oklch(18% 0.006 80);
+  --rb-dawn-muted: oklch(41% 0.012 80);  /* secondary text */
+  --rb-dawn-faint: oklch(50.5% 0.012 80);  /* muted text: AA on bg, surface and code */
+  --rb-dawn-line: oklch(89.5% 0.011 82);
+  --rb-dawn-line-strong: oklch(82% 0.012 82);
+  --rb-dawn-accent: oklch(44% 0.075 190);
+  --rb-dawn-accent-hi: oklch(52% 0.08 190);
+  --rb-dawn-accent-soft: oklch(92% 0.028 190);
+  --rb-dawn-accent-ink: oklch(98% 0.006 85);
+  --rb-dawn-accent-ink-soft: oklch(20% 0.03 190 / 0.3);
+  --rb-dawn-ink-06: oklch(18% 0.006 80 / 0.06);
+  --rb-dawn-ink-12: oklch(18% 0.006 80 / 0.1);
+  --rb-dawn-metal-hi: oklch(97% 0.006 85);
+  --rb-dawn-metal-lo: oklch(85% 0.01 85);
+  --rb-dawn-edge-light: inset 0 1px 0 oklch(100% 0 0 / 0.5);
+  --rb-dawn-shadow-part: 0 1px 0 oklch(20% 0.01 80 / 0.25), 0 10px 18px -6px oklch(20% 0.01 80 / 0.3);
+  --rb-dawn-shadow-panel: 0 1px 0 oklch(20% 0.01 80 / 0.2), 0 24px 48px -16px oklch(20% 0.02 80 / 0.35);
+  --rb-dawn-shadow-bed: inset 0 2px 6px oklch(20% 0.01 80 / 0.16);
+  --rb-dawn-card-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.5), 0 1px 0 oklch(20% 0.01 80 / 0.12), 0 6px 14px -6px oklch(20% 0.01 80 / 0.25);
+  --rb-night-bg: oklch(13.2% 0.022 258);
+  --rb-night-surface: oklch(16.4% 0.022 258);
+  --rb-night-code: oklch(10.5% 0.02 258);
+  --rb-night-chip: oklch(20% 0.022 258);
+  --rb-night-chip-hover: oklch(24% 0.022 258);
+  --rb-night-text: oklch(93.5% 0.012 85);
+  --rb-night-muted: oklch(72% 0.02 255);
+  --rb-night-faint: oklch(58% 0.02 255);
+  --rb-night-line: oklch(27% 0.022 258);
+  --rb-night-line-strong: oklch(33% 0.022 258);
+  --rb-night-accent: oklch(82% 0.095 68);
+  --rb-night-accent-hi: oklch(88% 0.08 74);
+  --rb-night-accent-soft: oklch(82% 0.095 68 / 0.16);
+  --rb-night-accent-ink: oklch(20% 0.03 62);
+  --rb-night-accent-ink-soft: oklch(20% 0.03 62 / 0.35);
+  --rb-night-ink-06: oklch(93.5% 0.012 85 / 0.06);
+  --rb-night-ink-12: oklch(93.5% 0.012 85 / 0.12);
+  --rb-night-danger: oklch(74% 0.15 25);
+  --rb-night-danger-soft: oklch(74% 0.15 25 / 0.14);
+  --rb-night-warn: oklch(82% 0.13 80);
+  --rb-night-warn-ink: oklch(82% 0.13 80);
+  --rb-night-warn-soft: oklch(82% 0.13 80 / 0.14);
+  --rb-night-ok: oklch(78% 0.13 155);
+  --rb-night-ok-soft: oklch(78% 0.13 155 / 0.14);
+  --rb-night-metal-hi: oklch(44% 0.012 255);
+  --rb-night-metal-lo: oklch(25% 0.014 255);
+  --rb-night-edge-light: inset 0 1px 0 oklch(100% 0 0 / 0.08);
+  --rb-night-shadow-part: 0 1px 0 oklch(0% 0 0 / 0.45), 0 10px 18px -6px oklch(0% 0 0 / 0.6);
+  --rb-night-shadow-panel: 0 1px 0 oklch(0% 0 0 / 0.45), 0 30px 60px -20px oklch(0% 0 0 / 0.75);
+  --rb-night-shadow-bed: inset 0 2px 8px oklch(0% 0 0 / 0.55);
+  --rb-night-card-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.06), 0 1px 3px 0 oklch(0% 0 0 / 0.4);
+  --rb-night-sky-top: oklch(10.5% 0.02 258);
+  --rb-night-sky-mid: oklch(19% 0.045 238);
+  --rb-night-sky-land: oklch(8% 0.012 258);
+  --rb-night-sky-hill: oklch(12.5% 0.026 245);
+  --rb-night-sky-glow: oklch(48% 0.07 230 / 0.32);
+  --rb-night-sky-ink: oklch(80% 0.02 255);
+  --rb-night-sky-lit: oklch(82% 0.095 68);
+  --rb-night-sky-far: oklch(15.5% 0.032 240);
+  --rb-night-sky-town: oklch(12% 0.02 250);
+  --rb-night-sky-cool: oklch(90% 0.035 225);
+  --rb-night-sky-red: oklch(64% 0.18 27);
+}
+
+/* ---- Tokens: Ribbon, mapped onto the site's own token names so the shared
+   components (scenes, tabs, copy buttons, header, footer) take it on the home
+   page and nowhere else. Dawn is the light page. ---- */
+body:has(#home) {
+  --site-max: 76rem;
+  --bg: var(--rb-dawn-bg);
+  --surface: var(--rb-dawn-surface);
+  --code: var(--rb-dawn-code);
+  --chip: var(--rb-dawn-chip);
+  --chip-hover: var(--rb-dawn-chip-hover);
+  --text: var(--rb-dawn-text);
+  --muted: var(--rb-dawn-muted);
+  --faint: var(--rb-dawn-faint);
+  --line: var(--rb-dawn-line);
+  --line-strong: var(--rb-dawn-line-strong);
+  --border: var(--line);
+  --accent: var(--rb-dawn-accent);
+  --accent-hi: var(--rb-dawn-accent-hi);
+  --accent-soft: var(--rb-dawn-accent-soft);
+  --accent-ink: var(--rb-dawn-accent-ink);
+  --accent-ink-soft: var(--rb-dawn-accent-ink-soft);
+  --ink-06: var(--rb-dawn-ink-06);
+  --ink-12: var(--rb-dawn-ink-12);
+  --metal-hi: var(--rb-dawn-metal-hi);
+  --metal-lo: var(--rb-dawn-metal-lo);
+  --edge-light: var(--rb-dawn-edge-light);
+  --shadow-part: var(--rb-dawn-shadow-part);
+  --shadow-panel: var(--rb-dawn-shadow-panel);
+  --shadow-bed: var(--rb-dawn-shadow-bed);
+  --card-shadow: var(--rb-dawn-card-shadow);
+  --tabs-text-muted: var(--muted);
+  --tabs-text-active: var(--text);
+  --tabs-bar-bg: var(--code);
+  --tabs-pill-bg: linear-gradient(var(--metal-hi), var(--metal-lo));
+  --font-display: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  /* The utilities' sans face follows: font-sans reads this variable. */
+  --font-fira-sans: var(--font-figtree);
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Two in the morning: the night bands always, and the whole page in dark. */
+.night,
+body:has(#home) > header,
+:root[data-theme="dark"] body:has(#home) {
+  --bg: var(--rb-night-bg);
+  --surface: var(--rb-night-surface);
+  --code: var(--rb-night-code);
+  --chip: var(--rb-night-chip);
+  --chip-hover: var(--rb-night-chip-hover);
+  --text: var(--rb-night-text);
+  --muted: var(--rb-night-muted);
+  --faint: var(--rb-night-faint);
+  --line: var(--rb-night-line);
+  --line-strong: var(--rb-night-line-strong);
+  --border: var(--line);
+  --accent: var(--rb-night-accent);
+  --accent-hi: var(--rb-night-accent-hi);
+  --accent-soft: var(--rb-night-accent-soft);
+  --accent-ink: var(--rb-night-accent-ink);
+  --accent-ink-soft: var(--rb-night-accent-ink-soft);
+  --ink-06: var(--rb-night-ink-06);
+  --ink-12: var(--rb-night-ink-12);
+  --danger: var(--rb-night-danger);
+  --danger-soft: var(--rb-night-danger-soft);
+  --warn: var(--rb-night-warn);
+  --warn-ink: var(--rb-night-warn-ink);
+  --warn-soft: var(--rb-night-warn-soft);
+  --ok: var(--rb-night-ok);
+  --ok-soft: var(--rb-night-ok-soft);
+  --metal-hi: var(--rb-night-metal-hi);
+  --metal-lo: var(--rb-night-metal-lo);
+  --edge-light: var(--rb-night-edge-light);
+  --shadow-part: var(--rb-night-shadow-part);
+  --shadow-panel: var(--rb-night-shadow-panel);
+  --shadow-bed: var(--rb-night-shadow-bed);
+  --card-shadow: var(--rb-night-card-shadow);
+  --sky-top: var(--rb-night-sky-top);
+  --sky-mid: var(--rb-night-sky-mid);
+  --sky-land: var(--rb-night-sky-land);
+  --sky-hill: var(--rb-night-sky-hill);
+  --sky-glow: var(--rb-night-sky-glow);
+  --sky-ink: var(--rb-night-sky-ink);
+  --sky-lit: var(--rb-night-sky-lit);
+  --sky-far: var(--rb-night-sky-far);
+  --sky-town: var(--rb-night-sky-town);
+  --sky-cool: var(--rb-night-sky-cool);
+  --sky-red: var(--rb-night-sky-red);
+  color-scheme: dark;
+  color: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body:has(#home) {
+    --bg: var(--rb-night-bg);
+    --surface: var(--rb-night-surface);
+    --code: var(--rb-night-code);
+    --chip: var(--rb-night-chip);
+    --chip-hover: var(--rb-night-chip-hover);
+    --text: var(--rb-night-text);
+    --muted: var(--rb-night-muted);
+    --faint: var(--rb-night-faint);
+    --line: var(--rb-night-line);
+    --line-strong: var(--rb-night-line-strong);
+    --border: var(--line);
+    --accent: var(--rb-night-accent);
+    --accent-hi: var(--rb-night-accent-hi);
+    --accent-soft: var(--rb-night-accent-soft);
+    --accent-ink: var(--rb-night-accent-ink);
+  --accent-ink-soft: var(--rb-night-accent-ink-soft);
+    --ink-06: var(--rb-night-ink-06);
+    --ink-12: var(--rb-night-ink-12);
+    --danger: var(--rb-night-danger);
+    --danger-soft: var(--rb-night-danger-soft);
+    --warn: var(--rb-night-warn);
+    --warn-ink: var(--rb-night-warn-ink);
+    --warn-soft: var(--rb-night-warn-soft);
+    --ok: var(--rb-night-ok);
+    --ok-soft: var(--rb-night-ok-soft);
+    --metal-hi: var(--rb-night-metal-hi);
+    --metal-lo: var(--rb-night-metal-lo);
+    --edge-light: var(--rb-night-edge-light);
+    --shadow-part: var(--rb-night-shadow-part);
+    --shadow-panel: var(--rb-night-shadow-panel);
+    --shadow-bed: var(--rb-night-shadow-bed);
+    --card-shadow: var(--rb-night-card-shadow);
+    color-scheme: dark;
+  }
+}
+
+/* ---- Type ---- */
+#home { font-family: var(--font-body); font-size: 1.0625rem; }
+.display-hero, .display-section, .display-closing, .instrument-title, .level-name, .level-figure, .channel-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.035em;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+.display-hero { font-size: clamp(3rem, 1.4rem + 5vw, 6rem); line-height: 1; text-wrap: balance; }
+.display-section { font-size: clamp(2.25rem, 1.5rem + 2.4vw, 3.5rem); line-height: 1.04; text-wrap: balance; }
+.display-closing { font-size: clamp(2.75rem, 1.6rem + 4vw, 5.5rem); line-height: 1; text-wrap: balance; }
+.hero-lede, .closing-lede, .section-lede { color: var(--muted); font-size: 1.1875rem; line-height: 1.55; max-width: 30ch; text-wrap: pretty; }
+.hero-lede { margin-top: 1.5rem; }
+.closing-lede { margin-top: 1.25rem; }
+.section-lede { margin-top: 1rem; }
+
+/* ---- The night: the header and hero share it ---- */
+body:has(#home) > header { position: relative; z-index: 2; background: transparent; border-color: var(--line); }
+body:has(#home) > footer { margin-top: 0; border-top: 0; }
+body:has(#home) > footer > div { padding-top: 7.5rem; }
+.night { position: relative; isolation: isolate; }
+.ground {
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  left: 50%;
+  width: 100vmax;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(55% 34% at 50% 92%, var(--sky-glow), transparent 70%),
+    linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 64%, var(--sky-land) 86%, var(--sky-land) 100%);
+}
+/* A portrait screen is narrower than the container cap, so the ground spans the gutters instead. */
+@media (orientation: portrait) { .ground { left: -1rem; right: -1rem; width: auto; transform: none; } }
+@media (orientation: portrait) and (min-width: 40rem) { .ground { left: -1.5rem; right: -1.5rem; } }
+.night-sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.hero {
+  display: grid;
+  gap: 3rem;
+  align-items: center;
+  margin-top: -3.5rem;
+  padding-block: 7rem 6rem;
+}
+@media (min-width: 64rem) {
+  .hero { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 4rem; min-height: 100svh; padding-block: 6.5rem 5rem; }
+}
+.hero-actions { margin-top: 2.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+/* ---- Controls: machined pills, lit from above; the primary is the lit one ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding-inline: 1.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: linear-gradient(var(--surface), var(--bg));
+  box-shadow: var(--edge-light), var(--shadow-part);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  white-space: nowrap;
+  transition: filter 160ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.pill-lit {
+  border-color: var(--accent);
+  background: linear-gradient(var(--accent-hi), var(--accent));
+  color: var(--accent-ink);
+}
+@media (hover: hover) and (pointer: fine) { .pill:hover, .metal-pill:hover:not(:disabled) { filter: brightness(1.08); } }
+.pill:active, .metal-pill:active:not(:disabled) { transform: translateY(1px); }
+.pill:focus-visible, .metal-pill:focus-visible, .switch:focus-visible, .level:focus-visible, .text-link:focus-visible, .readout-line:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  transition: none;
+}
+
+/* ---- The instrument: the installer, built as a machined panel ---- */
+.instrument {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(var(--surface), var(--bg));
+  box-shadow: var(--edge-light), var(--shadow-panel);
+  min-width: 0;
+}
+.instrument-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.instrument-title { font-weight: 500; font-size: 1.375rem; letter-spacing: -0.02em; }
+.bed { border-radius: 14px; background: var(--code); box-shadow: var(--shadow-bed); }
+.channel { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.875rem; padding: 0.875rem 1rem; }
+.channel + .channel { border-top: 1px solid var(--line); }
+.channel-name { font-weight: 500; font-size: 1.0625rem; letter-spacing: -0.015em; }
+.channel-version { color: var(--muted); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+
+/* A switch: a pill track sunk into the bed, a metal knob with an index line that lights when on. */
+.switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 2.875rem;
+  height: 1.625rem;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: var(--shadow-bed), inset 0 0 0 1px var(--line);
+  cursor: pointer;
+  transition: background-color 240ms var(--ease-out);
+}
+.switch::before { content: ""; position: absolute; inset: -0.5rem; }
+/* On, the track is lit from inside: the one amber thing on each row. */
+.switch[aria-checked="true"] { background: linear-gradient(var(--accent-hi), var(--accent)); box-shadow: inset 0 1px 2px var(--accent-ink-soft), 0 0 12px -2px var(--accent-soft); }
+.switch-knob {
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(var(--metal-hi), var(--metal-lo));
+  box-shadow: var(--edge-light), var(--shadow-part);
+  transition: transform 240ms var(--ease-out);
+}
+.switch-knob::after { content: ""; position: absolute; left: 50%; top: 0.3125rem; bottom: 0.3125rem; width: 2px; margin-left: -1px; border-radius: 2px; background: var(--line-strong); }
+.switch[aria-checked="true"] .switch-knob { transform: translateX(1.25rem); }
+.switch[aria-checked="true"] .switch-knob::after { background: var(--accent-ink); }
+.switch:active .switch-knob { transform: translateY(1px); }
+.switch[aria-checked="true"]:active .switch-knob { transform: translate(1.25rem, 1px); }
+
+.readout { display: grid; gap: 0.5rem; min-height: 6.75rem; align-content: center; padding: 0.875rem 1rem; border-radius: 14px; background: var(--code); box-shadow: var(--shadow-bed); }
+.readout-line { font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.45; white-space: normal; overflow-wrap: break-word; color: var(--text); border-radius: 4px; }
+.readout-line::before { content: "$ "; color: var(--faint); }
+.readout-flag { white-space: nowrap; }
+.readout-empty { color: var(--muted); font-size: 0.9375rem; }
+.metal-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: linear-gradient(var(--chip-hover), var(--surface));
+  box-shadow: var(--edge-light), var(--shadow-part);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: filter 160ms var(--ease-out), transform 120ms var(--ease-out);
+}
+.metal-pill:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Generated grain (night-sky.tsx sets --grain) on the night and inside the panel. */
+.ground::after, .instrument::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: var(--grain, none);
+  background-size: 160px;
+  mix-blend-mode: soft-light;
+  opacity: 0.18;
+  pointer-events: none;
+}
+.instrument::after { z-index: -1; opacity: 0.25; }
+
+/* ---- The hero's intro (design-to-motion): armed by script, played once in view.
+   Rise and resolve from blur, staggered by --d; the same curves as the hero text. ---- */
+#home {
+  --e: cubic-bezier(0.16, 1, 0.3, 1);
+  --e2: cubic-bezier(0.33, 1, 0.68, 1);
+  --stagger-dur: 1050ms;
+  --stagger-distance: 10px;
+  --stagger-blur: 4px;
+  --stagger-stagger: 90ms;
+  --stagger-ease: var(--e);
+}
+html[data-intro="in"] #install.ix, html[data-intro="in"] #install .ix {
+  transition:
+    transform 1050ms var(--e) var(--d, 0ms),
+    opacity 750ms var(--e2) var(--d, 0ms),
+    filter 750ms var(--e2) var(--d, 0ms);
+}
+html[data-intro="in"] #install .switch.ix {
+  transition:
+    transform 1050ms var(--e) var(--d, 0ms),
+    opacity 750ms var(--e2) var(--d, 0ms),
+    filter 750ms var(--e2) var(--d, 0ms),
+    background-color 240ms var(--ease-out);
+}
+html[data-intro="armed"] #install.ix, html[data-intro="armed"] #install .ix { opacity: 0; filter: blur(4px); }
+html[data-intro="armed"] #install.ix-card { transform: translateY(24px) scale(0.985); filter: blur(6px); }
+html[data-intro="armed"] #install .ix-up { transform: translateY(10px); }
+html[data-intro="armed"] #install .ix-down { transform: translateY(-8px); }
+html[data-intro="armed"] #install .ix-left { transform: translateX(-10px); }
+html[data-intro="armed"] #install .ix-pop { transform: scale(0.86); }
+
+/* ---- One section head everywhere: the title, its lede under it, then the content ---- */
+.section-head { display: grid; gap: 0.75rem; margin-bottom: 3rem; max-width: 48rem; }
+.section-head .section-lede { max-width: 56ch; }
+@media (min-width: 64rem) { .section-head { margin-bottom: 4rem; } }
+
+/* ---- The skills as levels, beside their proof: both rounded panels ---- */
+.skills { padding-block: 6rem; }
+@media (min-width: 64rem) { .skills { padding-block: 9rem 8rem; } }
+.levels { display: grid; gap: 1.5rem; }
+@media (min-width: 64rem) { .levels { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 2rem; align-items: stretch; } }
+.level-list.panel { display: grid; gap: 0.375rem; padding: 0.5rem; }
+/* Beside the proof the list fills the same height, its rows sharing it evenly. */
+@media (min-width: 64rem) { .level-list.panel { grid-auto-rows: 1fr; } }
+.level {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem 1rem;
+  width: 100%;
+  align-content: center;
+  padding: 1.25rem 1.25rem 1.375rem;
+  border-radius: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 200ms var(--ease-out);
+}
+.level[aria-selected="true"] { background: var(--chip); box-shadow: var(--edge-light); }
+.level-name { font-size: 1.5rem; line-height: 1.15; color: var(--text); }
+.level-line { grid-column: 1 / -1; color: var(--muted); font-size: 0.9375rem; line-height: 1.55; text-wrap: pretty; }
+.level-figure { grid-column: 2; grid-row: 1; align-self: center; font-family: var(--font-body); font-size: 0.8125rem; letter-spacing: 0; line-height: 1; color: var(--faint); font-variant-numeric: tabular-nums lining-nums; }
+.level[aria-selected="true"] .level-figure { color: var(--accent); }
+@media (hover: hover) and (pointer: fine) { .level:not([aria-selected="true"]):hover { background: var(--ink-06); } }
+.level:active { opacity: 0.85; }
+
+.panel {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(var(--surface), var(--code));
+  box-shadow: var(--edge-light), var(--shadow-panel);
+}
+@media (min-width: 40rem) { .panel { padding: 1.5rem; } }
+.proof-panel { display: grid; gap: 1.25rem; align-items: start; }
+.proof-panel[data-active="false"] { display: none; }
+@media (min-width: 64rem) {
+  .proof-stage { display: grid; align-items: center; }
+  .proof-panel { grid-area: 1 / 1; }
+  .proof-panel[data-active="false"] { display: grid; visibility: hidden; }
+}
+.proof-image { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: var(--card-shadow); background: var(--bg); }
+.proof-panel[data-shape="tall"] .proof-image { width: min(100%, 13rem); }
+@media (min-width: 40rem) { .proof-panel[data-shape="tall"] { grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); } }
+.proof-command { display: block; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.25rem; color: var(--muted); overflow-wrap: break-word; }
+.proof-prompt { color: var(--faint); }
+.proof-problems { margin-top: 0.875rem; display: grid; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.25rem; }
+.proof-problems li { display: flex; gap: 0.625rem; }
+.proof-n { display: grid; place-items: center; flex-shrink: 0; width: 1.25rem; height: 1.25rem; border-radius: 999px; background: var(--danger-soft); color: var(--danger); font-family: var(--font-body); font-size: 0.6875rem; font-weight: 600; }
+.proof-verdict { display: grid; justify-items: start; gap: 0.5rem; }
+.proof-clean { display: inline-flex; padding: 0.25rem 0.75rem; border-radius: 999px; background: var(--ok-soft); color: var(--ok); font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.25rem; }
+.proof-caption { margin-top: 1rem; color: var(--muted); font-size: 0.9375rem; line-height: 1.5; max-width: 52ch; }
+
+/* ---- A chapter per skill: the standard head, its install, then its scene in a panel ---- */
+.chapter { padding-block: 6rem; border-top: 1px solid var(--line); }
+@media (min-width: 64rem) { .chapter { padding-block: 8rem; } }
+.chapter-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; justify-items: start; max-width: 48rem; margin-top: -1rem; }
+@media (min-width: 64rem) { .chapter-actions { margin-top: -2rem; } }
+.chapter-install { width: 100%; }
+.text-link { color: var(--accent); font-weight: 500; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: var(--line-strong); }
+@media (hover: hover) and (pointer: fine) { .text-link:hover { text-decoration-color: var(--accent); } }
+.text-link:active { opacity: 0.8; }
+/* The scene panel splits in two: the drawing on its dot pattern runs edge to edge
+   on one side, the output keeps the panel's padding on the other. */
+.chapter-scene { margin-top: 3rem; padding: 0; overflow: hidden; }
+.chapter-scene .scene { gap: 0; align-items: stretch; }
+.chapter-scene .scene > .dots { display: grid; align-content: center; border-radius: 0; box-shadow: inset 0 -1px 0 var(--line); }
+.chapter-scene .scene > div:last-child { padding: 1.5rem 1rem 1.75rem; }
+@media (min-width: 40rem) { .chapter-scene .scene > div:last-child { padding: 2rem 1.5rem; } }
+@media (min-width: 48rem) {
+  .chapter-scene .scene > .dots { padding: 2.5rem 2rem 3.5rem; box-shadow: inset -1px 0 0 var(--line); }
+  .chapter-scene .scene > div:last-child { padding: 2.5rem 2.25rem; align-self: center; }
+}
+
+/* ---- The standard head over a list of rows ---- */
+.pair { padding-block: 6rem; border-top: 1px solid var(--line); }
+@media (min-width: 64rem) { .pair { padding-block: 8rem; } }
+.agent-rows { border-top: 1px solid var(--line); }
+.agent-row { display: grid; gap: 0.25rem 1.5rem; padding-block: 1rem; border-bottom: 1px solid var(--line); }
+@media (min-width: 40rem) { .agent-row { grid-template-columns: minmax(0, 1fr) auto; align-items: center; } }
+.agent-name { display: inline-flex; align-items: center; gap: 0.625rem; font-weight: 500; }
+.agent-path { color: var(--muted); font-family: var(--font-mono); font-size: 0.8125rem; overflow-wrap: anywhere; }
+.faq-list { border-top: 1px solid var(--line); }
+.faq-item { border-bottom: 1px solid var(--line); padding-block: 1.25rem; }
+.faq-item summary { font-weight: 500; font-size: 1.0625rem; }
+.faq-item .chev { color: var(--muted); }
+.faq-answer { margin-top: 0.75rem; color: var(--muted); max-width: 62ch; line-height: 1.6; text-wrap: pretty; }
+
+/* ---- The closing band: the night again, over its horizon ---- */
+.closing { padding-block: 8rem 12rem; }
+@media (min-width: 64rem) { .closing { padding-block: 10rem 14rem; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-intro] #install.ix, html[data-intro] #install .ix { transition: none; opacity: 1; transform: none; filter: none; }
+  .pill, .metal-pill, .switch, .switch-knob, .level { transition: none; }
+  .pill:active, .metal-pill:active:not(:disabled) { transform: none; }
+}

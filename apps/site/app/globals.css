@@ -5,13 +5,13 @@
    Colour only where it means something (status in the showcases). Dark
    follows the system unless data-theme pins one (head script and toggle). */
 :root {
-  --bg: oklch(0.952 0.002 247.84);  /* plate */
-  --surface: oklch(0.978 0.002 247.84);  /* raised */
-  --text: oklch(0.221 0.005 248.053);
-  --muted: oklch(0.459 0.008 255.52);
-  --faint: oklch(0.648 0.009 253.885);  /* decoration only, never body text */
-  --line: oklch(0.221 0.005 248.053 / 0.09);
-  --line-strong: oklch(0.221 0.005 248.053 / 0.14);
+  --bg: oklch(0.952 0.002 247.84);  /* layer 1: plate */
+  --surface: oklch(0.993 0.002 247.84);  /* layer 2: card, near white so it lifts off the plate */
+  --text: oklch(0.2 0.005 248.053);  /* primary text */
+  --muted: oklch(0.41 0.009 255.52);  /* secondary text: AA on every light layer */
+  --faint: oklch(0.515 0.01 253.885);  /* muted text (prompts, numbers, captions): AA on bg, surface, code and chip */
+  --line: oklch(0.221 0.005 248.053 / 0.12);  /* layer 3: borders */
+  --line-strong: oklch(0.221 0.005 248.053 / 0.2);
   --accent: oklch(0.546 0.245 262.881);  /* blue-600 */
   --accent-soft: oklch(0.546 0.245 262.881 / 0.08);
   --code: oklch(0.948 0.002 247.84);  /* well: a hair under the plate */
@@ -29,7 +29,7 @@
   --ink-12: oklch(0.221 0.005 248.053 / 0.09);  /* placeholder bars, dark */
   --border: var(--line);
   --shadow: 0 1px 1px 0 oklch(0 0 0 / 0.05);
-  --card-shadow: inset 0 2px 0.5px 0 oklch(1 0 0 / 0.6), 0 1px 1px 0 oklch(0 0 0 / 0.05), inset 0 0 0 1px oklch(0.221 0.005 248.053 / 0.08);
+  --card-shadow: inset 0 2px 0.5px 0 oklch(1 0 0 / 0.6), 0 1px 2px 0 oklch(0 0 0 / 0.06), 0 2px 6px -2px oklch(0 0 0 / 0.06), inset 0 0 0 1px oklch(0.221 0.005 248.053 / 0.12);
   --hover-mix: white;
   /* D2 chip light: a sink, shadow in from the top, highlight on the bottom edge. */
   --d2-edge: oklch(0 0 0 / 0.12);
@@ -147,6 +147,7 @@
 @media (prefers-reduced-motion: reduce) { .press:active { transform: none; } }
 
 /* Header, main and footer share one width so their edges line up. */
+html, body { overflow-x: clip; }
 body {
   --site-max: 56rem;
   background: var(--bg);
