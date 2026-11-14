@@ -1,5 +1,5 @@
 /* Hallmark · shape: Workbench · genre: atmospheric · theme: ribbon (by request) · redesign: full
- * paper: oklch(98.2% 0.008 82) · accent: oklch(44% 0.075 190) · display: Instrument Sans · body: Figtree · hero: Stage · nav: kept, lifted onto the night · footer: kept · signature: the installer built as a machined instrument over a night of page rows read by a passing light
+ * paper: oklch(96% 0.011 82), cards oklch(99.2% 0.004 82) · accent: oklch(44% 0.075 190) · display: Instrument Sans · body: Figtree · hero: Stage · nav: kept, lifted onto the night · footer: kept · signature: the installer built as a machined instrument over a night of page rows read by a passing light
  * ribbon: two-in-the-morning on the hero and the closing band, dawn on the light page and two-in-the-morning on the dark one
  * axes: light/grotesk-sans/chromatic-teal · posture: committed · contrast: pass · fold: pass · v2.0.0 */
 /* Hallmark · pre-emit critique: P4 H5 E4 S5 R4 V4 · weakest: P, the night is borrowed from a sleep app; it reads as a page being scanned (rows of text, a light passing down) so it says what page-as-data does */
@@ -11,16 +11,16 @@
 
 :root {
   /* Ribbon's palette, dawn and two in the morning; the blocks below map it onto the site's token names. */
-  --rb-dawn-bg: oklch(98.2% 0.008 82);
-  --rb-dawn-surface: oklch(95.8% 0.011 82);
+  --rb-dawn-bg: oklch(96% 0.011 82);  /* layer 1: paper plate */
+  --rb-dawn-surface: oklch(99.2% 0.004 82);  /* layer 2: cards, lighter than the plate */
   --rb-dawn-code: oklch(92.3% 0.014 82);
   --rb-dawn-chip: oklch(92.3% 0.014 82);
   --rb-dawn-chip-hover: oklch(89.5% 0.014 82);
   --rb-dawn-text: oklch(18% 0.006 80);
-  --rb-dawn-muted: oklch(47% 0.012 80);
-  --rb-dawn-faint: oklch(62% 0.012 80);
+  --rb-dawn-muted: oklch(41% 0.012 80);  /* secondary text */
+  --rb-dawn-faint: oklch(50.5% 0.012 80);  /* muted text: AA on bg, surface and code */
   --rb-dawn-line: oklch(89.5% 0.011 82);
-  --rb-dawn-line-strong: oklch(84% 0.012 82);
+  --rb-dawn-line-strong: oklch(82% 0.012 82);
   --rb-dawn-accent: oklch(44% 0.075 190);
   --rb-dawn-accent-hi: oklch(52% 0.08 190);
   --rb-dawn-accent-soft: oklch(92% 0.028 190);

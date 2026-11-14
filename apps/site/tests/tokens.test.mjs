@@ -51,10 +51,26 @@ for (const [theme, t] of [['light', withAliases(tokens(block(':root')))], ['dark
         assert.ok(ratio >= 4.5, ratio.toFixed(2))
       })
     }
-    it('the page and card surfaces match the reference palette', () => {
-      const hex = (k) => srgb(t[k]).map((c) => Math.round(c * 255))
-      const want = theme === 'light' ? { bg: [253, 253, 253], surface: [255, 255, 255] } : { bg: [15, 15, 15], surface: [24, 24, 24] }
-      for (const [k, rgb] of Object.entries(want)) hex(k).forEach((c, i) => assert.ok(Math.abs(c - rgb[i]) <= 1, `${k} ${hex(k)}`))
-    })
+    if (theme === 'dark') {
+      it('the page and card surfaces match the reference palette', () => {
+        const hex = (k) => srgb(t[k]).map((c) => Math.round(c * 255))
+        const want = { bg: [15, 15, 15], surface: [24, 24, 24] }
+        for (const [k, rgb] of Object.entries(want)) hex(k).forEach((c, i) => assert.ok(Math.abs(c - rgb[i]) <= 1, `${k} ${hex(k)}`))
+      })
+    }
+    if (theme === 'light') {
+      // Layers: plate, then a card that lifts off it, then text in three tiers that read apart.
+      for (const [fg, bg] of [['faint', 'bg'], ['faint', 'surface'], ['faint', 'code']]) {
+        it(`${fg} on ${bg} is at least 4.5:1`, () => assert.ok(on(fg, bg) >= 4.5, on(fg, bg).toFixed(2)))
+      }
+      it('the card surface is lighter than the page by at least 1.1:1', () => {
+        const ratio = contrast(srgb(t.surface), srgb(t.bg))
+        assert.ok(t.surface.L > t.bg.L && ratio >= 1.1, ratio.toFixed(2))
+      })
+      it('primary, secondary and muted text step down on the card', () => {
+        const [p, s, m] = ['text', 'muted', 'faint'].map((k) => on(k, 'surface'))
+        assert.ok(p / s >= 1.8 && s / m >= 1.4, `${p.toFixed(2)} ${s.toFixed(2)} ${m.toFixed(2)}`)
+      })
+    }
   })
 }
